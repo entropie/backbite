@@ -18,6 +18,19 @@ module Ackro
       @name, @directory = name.to_sym, Pathname.new(directory)
     end
 
+    def inspect
+      "#{@directory.to_s}"
+    end
+
+    def components
+      @components ||= Components.load(join(:components))
+    end
+
+    def join(other_dir)
+      @directory.dup.join(other_dir.to_s)
+    end
+    
+    
     # unlinks everthing in our repos directory
     def remove!
       Warn << "say bye to your repos in 5 seconds..."
@@ -29,7 +42,8 @@ module Ackro
     # Creates a directory structure for the repos.
     def setup!
       Info << "creating directory structure for #{name}"
-      @directory.mkdir and (Info << "created #{directory}") unless @directory.exist?
+      @directory = Helper::File.ep(@directory)
+      @directory.mkdir and (Info << "created #{@directory}") unless @directory.exist?
       populate!      
       BaseDirs.each do |bdir|
         ndir = @directory.dup.join(bdir.to_s)

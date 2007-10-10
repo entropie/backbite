@@ -6,7 +6,7 @@
 describe Ackro::Repository do
 
   before(:each) do
-    @target = Ackro::Repository.new(:rspec, '/home/mit/Tmp/atmp')
+    @target = Ackro::Repository.new(:rspec, '~/Tmp/rspec')
   end
 
   it "should able to target a nonexistant directory" do
@@ -18,10 +18,10 @@ describe Ackro::Repository do
     @target.valid?.should
   end
 
-  it "should able to remove a directory structure" do
-    @target.remove!
-    @target.valid?.should_not
-  end
+  # it "should able to remove a directory structure" do
+  #   @target.remove!
+  #   @target.valid?.should_not
+  # end
 end
 
 

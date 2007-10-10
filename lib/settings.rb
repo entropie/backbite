@@ -7,6 +7,10 @@ module Ackro
 
   module ConfigParser
 
+    def inspect
+      "Cfg[#{order.join(', ')}]"
+    end
+    
     def cleanup
       class << self
         [:replace, :id, :clear].each do |m|
@@ -44,7 +48,7 @@ module Ackro
         order << m
         self[m] = v
       end
-      self[m].read(&b) if block_given?
+      self[m].read(&b) if block_given? #and self[m].respond_to?(:read)
       self[m]
     end
 
@@ -65,10 +69,6 @@ module Ackro
       end
     end
 
-    def inspect
-      "<#{@name.to_s.capitalize}  #{ @config[:defaults][:root]}>"
-    end
-
     def self.read(str)
       instance_eval(str)
     end
@@ -81,7 +81,25 @@ module Ackro
     # Call this to setup your repository.
     def setup(&blk)
       @config.read(&blk)
-      self
+      @config
+    end
+
+    def [](obj)
+      each do |n, v|
+        next unless obj == n
+        return v
+      end
+    end
+    
+    def []=(obj, val)
+      each do |n, v|
+        next unless obj == n
+        @config[obj] = val
+      end
+    end
+    
+    def each(&blk)
+      @config.each(&blk)
     end
     
   end

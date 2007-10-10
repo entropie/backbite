@@ -7,9 +7,15 @@ require 'pp'
 require 'pathname'
 require 'fileutils'
 require 'log4r'
+require 'yaml'
+
+require 'lib/helper'
 require 'lib/settings'
+require 'lib/components'
 require 'lib/informer'
 require 'lib/repos'
+require 'lib/tumblog'
+
 
 Dir['lib/ruby_ext/*.rb'].each do |re|
   require re
