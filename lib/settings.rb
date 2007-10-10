@@ -78,7 +78,7 @@ module Ackro
       @config = ConfigParser.config_hash
     end
 
-    # Call this to setup you repository.
+    # Call this to setup your repository.
     def setup(&blk)
       @config.read(&blk)
       self
