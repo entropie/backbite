@@ -41,6 +41,8 @@ module Ackro
 
   class Debug < Informer ; end
 
+  class Info  < Informer ; end
+
   class Warn  < Informer ; end
 
   class Error < Informer ; end
