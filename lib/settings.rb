@@ -3,17 +3,6 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-class Fixnum
-  def method_missing(m, *a, &blk)
-    if m.to_s =~ /^(em|px)$/
-      return "#{self}#{m}"
-    else
-      super
-    end
-  end
-end
-
-
 module Ackro
 
   module ConfigParser
@@ -57,7 +46,7 @@ module Ackro
       end
       self[m].read(&b) if block_given?
       self[m]
-    end   
+    end
 
     def self.config_hash
       Hash.new{ |h,k| h[k] = config_hash }.extend(ConfigParser).cleanup

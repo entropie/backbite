@@ -6,6 +6,10 @@
 require 'pp'
 require 'lib/settings'
 
+Dir['lib/ruby_ext/*.rb'].each do |re|
+  require re
+end
+
 module Ackro
 end
 
