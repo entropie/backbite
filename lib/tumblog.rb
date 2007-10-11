@@ -28,7 +28,7 @@ module Ackro
         process!(:way => :optional, :to => :optional, :array => :optional)
       params[:way] ||= :array
       params[:to]  ||= @repository.join('spool')
-      p components[component.to_sym].post(params)
+      components[component.to_sym].post(params)
     end
     
   end
