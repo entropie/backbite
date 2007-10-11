@@ -34,7 +34,7 @@ module Ackro
     end
     
     def self.do_log(lvl, msg)
-      Log4r::Logger['ackro'].send(lvl, msg)
+      #Log4r::Logger['ackro'].send(lvl, msg)
     end
     
   end

@@ -8,13 +8,15 @@ module Ackro
   class Tumblelog
 
     include Helper
+
+    attr_reader :repository, :config, :name
     
     def initialize(name, fdata)
       @name = name
       @config = Configurations.read(fdata)
       @repository =
         Repository.new(@name, @config[:defaults][:root])
-      p components
+      @repository.tlog = self
     end
 
     def components
@@ -23,7 +25,10 @@ module Ackro
     
     def post(component, params = { })
       params.extend(ParamHash).
-        process!(:way => :optional, :to => :optional)
+        process!(:way => :optional, :to => :optional, :array => :optional)
+      params[:way] ||= :array
+      params[:to]  ||= @repository.join('spool')
+      p components[component.to_sym].post(params)
     end
     
   end

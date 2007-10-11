@@ -12,6 +12,8 @@ module Ackro
 
     attr_reader :directory, :name
 
+    attr_accessor :tlog
+    
     BaseDirs = %w(plugins components htdocs tmp spool)
     
     def initialize(name, directory)
@@ -23,13 +25,13 @@ module Ackro
     end
 
     def components
-      @components ||= Components.load(join(:components))
+      @components ||= Components.load(join(:components), tlog)
     end
 
     def join(other_dir)
-      @directory.dup.join(other_dir.to_s)
+      dir = Pathname.new(File.expand_path(@directory))
+      dir.join(other_dir.to_s)
     end
-    
     
     # unlinks everthing in our repos directory
     def remove!
