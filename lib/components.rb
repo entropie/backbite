@@ -6,7 +6,7 @@
 module Ackro
 
   class Components < Array
-
+    
     def self.load(directory, tlog)
       ret = self.new
       (td = Helper::File.ep(directory)).entries.map do |comp|
@@ -21,6 +21,7 @@ module Ackro
     def [](obj)
       select { |comp| comp == obj }.first
     end
+    
   end
 
   
@@ -28,6 +29,14 @@ module Ackro
 
     attr_accessor :tlog
     
+    def self.define(name, &blk)
+      Component.new(name).read(&blk)
+    end
+    
+    def self.read(what)
+      eval(what.to_s)
+    end
+
     def post(params)
       @post_handler = @config[:fields].map do |field, defi|
         case field.to_s
@@ -41,7 +50,8 @@ module Ackro
         w.tlog    = @tlog
         w.handler = @post_handler
       end
-      pp w.process(params)
+      w.process(params)
+      w.write
       w
     end
 
@@ -68,14 +78,6 @@ module Ackro
       "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
     end
     
-    def self.define(name, &blk)
-      Component.new(name).read(&blk)
-    end
-    
-    def self.read(what)
-      eval(what.to_s)
-    end
-
     def ==(sym)
       @name == sym.to_sym
     end

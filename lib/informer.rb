@@ -5,8 +5,12 @@
 
 module Ackro
 
-  # Informer handles Logging, thanks to Log4r, once it’s instantiated
+  # Informer handles Logging, thanks to Log4r, once it's instantiated
   # we don't need to keep track of the instance.
+  #
+  # To finally do the log, pick one of the Subclasses of Informer and
+  #  Debug << "a debug message"
+  #  Error << "a error message"
   class Informer
 
     # Creates the logger.
@@ -39,15 +43,20 @@ module Ackro
     
   end
 
-  class Debug < Informer ; end
+  class Debug < Informer # :nodoc: All
+  end
 
-  class Info  < Informer ; end
+  class Info  < Informer # :nodoc: All
+  end
 
-  class Warn  < Informer ; end
+  class Warn  < Informer # :nodoc: All
+  end
 
-  class Error < Informer ; end
+  class Error < Informer # :nodoc: All
+  end
 
-  class Fatal < Informer ; end
+  class Fatal < Informer # :nodoc: All
+  end
   
 end
 

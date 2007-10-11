@@ -21,8 +21,6 @@ module Ackro
       end
 
       def run(params, tlog)
-        p @comp.plugins
-        p @comp.plugins.class
         @comp.plugins[@name]
       end
       

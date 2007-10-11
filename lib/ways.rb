@@ -5,6 +5,9 @@
 
 module Ackro
 
+  module SaveAble
+  end
+  
   module Ways
     class Way
       attr_accessor :handler
@@ -12,7 +15,7 @@ module Ackro
       attr_reader   :result
       
       def initialize
-        @result = { }
+        @result = { }.extend(SaveAble)
       end
       
       def inspect
@@ -31,6 +34,11 @@ module Ackro
         @result
       end
 
+      def write
+        p @result
+        1
+      end
+      
     end
 
     class Array < Way
