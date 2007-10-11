@@ -27,10 +27,10 @@ $default_config = <<EOF
         end
 
         replace do # no value of key means use config value.
-          author
-          working_title
+          author      'Michael Trommer'
+          title       'foobar title'
           description
-          password     lamda{ File.open('/home/mit/Data/Secured/ackro.org.pw').readlines.join.strip }
+          password     lambda{ File.open('/home/mit/Data/Secured/ackro.org.pw').readlines.join.strip }
           ftpuser     'ftp27676'
           target      'ftp://ftp.ackro.com/www.ackro.de/tlog'
         end
@@ -48,8 +48,7 @@ $default_config = <<EOF
 
       stylesheets do
         files[:base].media = :screen
-        files[:extended]..media = :screen
-        generate :generated #, :media => :screen
+        files[:extended].media = :screen
       end
 
       html do

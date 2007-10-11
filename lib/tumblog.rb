@@ -30,6 +30,10 @@ module Ackro
       params[:to]  ||= @repository.join('spool')
       components[component.to_sym].post(params)
     end
+
+    def config_with_replace
+      config = @config.with_replacer
+    end
     
   end
   

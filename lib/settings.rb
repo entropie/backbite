@@ -7,6 +7,55 @@ module Ackro
 
   module ConfigParser
 
+    module ConfigReplacer
+
+
+      attr_reader :root
+
+
+      def root=(obj)
+        @root = obj
+        self
+      end
+
+      # Walks the entire hash and substitutes every %replace_thing%
+      # for our values. It needs the toplevel element, :defaults to
+      # get the values to replace from config[:defaults][:replace].
+      def replace!
+        rpo = @root[:defaults][:replace]
+        rpfr = rpo.keys.map{ |k| "%#{k.to_s}%"}
+        ret = self
+        each do |a, b|
+          if b.kind_of?(Hash)
+            rp = b.extend(ConfigReplacer)
+            rp.root = @root
+            ret[a] = rp.replace!
+          else
+            ret[a] = b = b.call if b.kind_of?(Proc)
+            vlrg = Regexp.new("(#{rpfr.join('|')})")
+            while vlrg =~ b.to_s and str = $1
+              value = rpo[str.gsub(/%/, '').to_sym].to_s
+              ret[a].gsub!(/#{str}/, value)
+              b = ret[a]
+            end
+          end
+        end
+        ret
+      end
+      
+    end
+
+    # extends current instance with ConfigReplacer, starts the replace
+    # loop and after work is done it removes the
+    # config[:defaults][replace] pairs, because they're not longer needed.
+    def with_replacer
+      ret = extend(ConfigReplacer)
+      ret.root = self
+      ret.replace!
+      ret[:defaults].delete(:replace)
+      ret
+    end
+    
     def inspect
       "Cfg[#{order.join(', ')}]"
     end
@@ -19,7 +68,7 @@ module Ackro
       end
       self
     end
-    
+
     def read(&blk)
       instance_eval(&blk)
       self
@@ -53,7 +102,7 @@ module Ackro
     end
 
     def self.config_hash
-      Hash.new{ |h,k| h[k] = config_hash }.extend(ConfigParser).cleanup
+      r = Hash.new{ |h,k| h[k] = config_hash }.extend(ConfigParser).cleanup
     end
   end
 
@@ -72,7 +121,7 @@ module Ackro
     def self.read(str)
       instance_eval(str)
     end
-   
+    
     def initialize(name)
       @name = name
       @config = ConfigParser.config_hash

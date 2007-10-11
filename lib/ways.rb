@@ -48,15 +48,10 @@ module Ackro
       end
 
       def to_yaml
-      end
-      
-      def write
         Info << "writing post..."
         puts Hash[*@result.map{ |h,k|
                   [h,k.value]
                   }.flatten].to_yaml
-        nil
-        #self
       end
       
     end

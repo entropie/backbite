@@ -14,9 +14,11 @@ describe Ackro::Tumblelog do
   end
 
   it "should accept a post" do
-    post = @target.new(:rspec, $default_config).
-      post(:blog, :array => ['foo', 'bar'])
-    p post
+    tlog = @target.new(:rspec, $default_config)
+    puts
+    p tlog.config_with_replace
+    #post = tlog.post(:blog, :array => ['foo', 'bar'])
+    #p post
   end
   
   
