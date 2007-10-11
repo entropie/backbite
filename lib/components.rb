@@ -9,6 +9,7 @@ module Ackro
   # (and load them if necessary).
   class Components < Array
 
+
     # loads every single component in +directory+, returns an
     # Components instance.
     def self.load(directory, tlog)
@@ -22,6 +23,7 @@ module Ackro
       ret
     end
 
+    
     # Select component from list which matches +obj+.
     def [](obj)
       select { |comp| comp == obj }.first
@@ -35,16 +37,19 @@ module Ackro
 
     attr_accessor :tlog
 
+
     # creates the component
     def self.define(name, &blk)
       Component.new(name).read(&blk)
     end
+
 
     # eval +what+
     def self.read(what)
       eval(what.to_s)
     end
 
+    
     # Maps the <tt>@config[:fields]</tt> declarations to find the
     # right class for the Field, runs the <tt>Ways.dispatcher</tt> to
     # choose a proper way.
@@ -52,9 +57,9 @@ module Ackro
       @post_handler = @config[:fields].map do |field, defi|
         case field.to_s
         when /^plugin_(.*)/
-          Post::Plugin.new($1, defi, self)
+          Post::InputPlugin.new($1, defi, self)
         when /^input_(.*)/
-          Post::Input.new($1, defi, self)
+          Post::InputField.new($1, defi, self)
         end
       end
       w = Ways.dispatch(params[:way]) do |w|
@@ -62,7 +67,6 @@ module Ackro
         w.handler = @post_handler
       end
       w.process(params, self)
-      w.write
       w
     end
 
@@ -87,15 +91,18 @@ module Ackro
       return @plugins
     end
     
+
     def inspect
       "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
     end
+
 
     # returns true if +sym+ == <tt>self.name</tt>
     def ==(sym)
       @name == sym.to_sym
     end
     
+
     def initialize(name)
       @name = name
     end
@@ -105,12 +112,13 @@ module Ackro
       @config.each do |ident, values|
         case ident
         when :fields
-          (@config[ident] = Post::Fields.new).merge!(values)
+          (@config[ident] = Post::InputFields.new).merge!(values)
         when :style
-          (@config[ident] = Post::Styles.new).merge!(values)
+          (@config[ident] = Post::InputStyles.new).merge!(values)
         end
       end
     end
+
 
     # Creates a Configurations instance, evalutes <tt>&blk</tt> and reformats
     # the fields.

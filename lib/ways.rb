@@ -24,7 +24,7 @@ module Ackro
       end
       
       def inspect
-        "<#{self.class.name} Fields:#{handler.map{ |h| h.name }.join(',')}>"
+        "<#{self.class.name} Values:(#{@result.values.join(', ')})>"
       end
 
       # Parses the handler hash, and decides which Post class is
@@ -36,17 +36,27 @@ module Ackro
         @component = component
         handler.each do |hand|
           @result[hand.name.to_sym] =
-            if hand.class == Ackro::Post::Input
-              run(hand, params)
-            elsif hand.class == Ackro::Post::Plugin
-              hand.run(params, tlog)
+            if hand.class == Ackro::Post::InputField
+              field = hand.run( run(hand, params), params, tlog)
+              field
+            elsif hand.class == Ackro::Post::InputPlugin
+              plugin = hand.run(params, tlog).new(tlog).prepare
+              plugin
             end
         end
         @result
       end
 
+      def to_yaml
+      end
+      
       def write
-        self
+        Info << "writing post..."
+        puts Hash[*@result.map{ |h,k|
+                  [h,k.value]
+                  }.flatten].to_yaml
+        nil
+        #self
       end
       
     end

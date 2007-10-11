@@ -7,30 +7,44 @@ module Ackro
 
   module Post
     
-    class Input
+
+    class InputField
+
       attr_reader :name
+
       def initialize(name, defi, comp)
         @name, @defi, @comp = name, defi, comp
       end
+
+      def run(text, params, tlog)
+        @__text__ = text
+        self
+      end
+
+      def to_s
+        "#{ name }='#{ @__text__}'"
+      end
+
+      def value
+        @__text__
+      end
+      
     end
 
-    class Plugin < Input
-      attr_reader :name
-      def initialize(name, defi, comp)
-        @name, @defi, @comp = name, defi, comp
-      end
+
+    class InputPlugin < InputField
 
       def run(params, tlog)
         @comp.plugins[@name]
       end
-      
+
     end
     
-    class Fields < Hash
-    end
 
-    class Styles < Hash
-    end
+    class InputFields < Hash ; end
+
+
+    class InputStyles < Hash ; end
     
   end
 end

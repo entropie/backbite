@@ -12,8 +12,45 @@ module Ackro
   end
   
   class Plugin
+
+    AutoFieldNames = [:before, :content, :after]
+    
+    attr_reader :tlog
+
+    def prepare
+      AutoFieldNames.each do |afn|
+        if respond_to?(afn)
+          r = send(afn)
+          Debug << "sending message `#{afn}` to plugin #{name}; result is %iBytes" % r.to_s.size
+          @result[afn] = r
+        end
+      end
+      self
+    end
+    
+    def name
+      self.class.name.split('::').last.downcase
+    end
+    
+    def result
+      AutoFieldNames.inject([]) do |m, afn|
+        m << @result[afn]
+      end.join
+    end
+
+    alias :value :result
+    
+    def to_s
+      "#{name}={ #{result} }"
+    end
+    
     def self.inherited(o)
       @@rets << o
+    end
+
+    def initialize(tlog)
+      @result = { }
+      @tlog = tlog
     end
     
     def self.load(plugin_file)

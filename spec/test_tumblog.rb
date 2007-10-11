@@ -14,8 +14,9 @@ describe Ackro::Tumblelog do
   end
 
   it "should accept a post" do
-    pp @target.new(:rspec, $default_config).
+    post = @target.new(:rspec, $default_config).
       post(:blog, :array => ['foo', 'bar'])
+    p post
   end
   
   
