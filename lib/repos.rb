@@ -36,6 +36,7 @@ module Ackro
     end
     
     def components
+      #raise "not a valid repos yet" unless join(:components).exist?
       @components ||= Components.load(join(:components), tlog)
     end
 
@@ -46,9 +47,9 @@ module Ackro
     
     # unlinks everthing in our repos directory
     def remove!
-      Warn << "say bye to your repos in 5 seconds..."
+      Info << "say bye to your repos in 5 seconds..."
       sleep 5 unless $DEBUG
-      `rm -r #{directory}`
+      `rm -rv #{directory}`
       Info << "repos removed."
     end
     
@@ -83,7 +84,8 @@ module Ackro
       %w'plugins components'.each do |w|
         (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
           Info << " cp #{st.join(e)} to #{w}/#{e}"
-          system("cp #{st.join(e).to_s} #{@directory.join(w)}")
+          t = @directory.join(w)
+          system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
         end
       end
     end

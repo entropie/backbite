@@ -18,10 +18,10 @@ describe Ackro::Repository do
     @target.valid?.should
   end
 
-  # it "should able to remove a directory structure" do
-  #   @target.remove!
-  #   @target.valid?.should_not
-  # end
+  it "should able to remove a directory structure" do
+    @target.remove!
+    @target.valid?.should_not
+  end
 end
 
 

@@ -7,6 +7,7 @@ describe Ackro::Tumblelog do
 
   before(:each) do
     @target = Ackro::Tumblelog.new(:rspec, $default_config)
+    @target.repository.setup!
   end
 
   it "should respond non nil on various attributes" do
