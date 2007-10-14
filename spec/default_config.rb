@@ -20,7 +20,7 @@ $default_config = <<EOF
 
         editor       "e"
 
-        base_href = 'http://particle.enti.ty/~mit/Ackro.suc'
+        base_href  'http://particle.enti.ty/~mit/Ackro.suc'
 
         upload do
           shell "ftpsync --user %ftpuser% --password %password% %localdir% %target%"
@@ -76,7 +76,8 @@ $default_config = <<EOF
     end
 EOF
 
-
+require 'lib/ackro.rb'
+@a = Ackro::Tumblelog.new(:rspec, $default_config)
 
 
 =begin
