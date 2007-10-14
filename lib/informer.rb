@@ -5,14 +5,30 @@
 
 module Ackro
 
+  class DefaultLogFormatter < Log4r::Formatter
+    def format(event)
+      buff = Time.now.strftime("%a %m/%d/%y %H:%M %Z")
+      buff += " - #{Log4r::LNAMES[event.level]}"
+      buff += " - #{event.data}\n"
+    end
+  end
+
+  
   # Informer handles Logging, thanks to Log4r, once it's instantiated
   # we don't need to keep track of the instance.
   #
   # To finally do the log, pick one of the Subclasses of Informer and
   #  Debug << "a debug message"
   #  Error << "a error message"
+  #
+  # == Level
+  # * Debug
+  # * Info
+  # * Warn
+  # * Error
+  # * Fatal
   class Informer
-
+    
     # Creates the logger.
     def self.create
       new
@@ -20,8 +36,8 @@ module Ackro
     end
 
     def initialize
-      @logger = Log4r::Logger.new 'ackro'
-      @logger.outputters = Log4r::Outputter.stdout
+      @logger = Log4r::Logger.new 'ackro' #, :formatter=> DefaultLogFormatter
+      @logger.outputters = Log4r::SyslogOutputter.new('ackro')
     end
 
     def self.log(msg)
@@ -31,6 +47,7 @@ module Ackro
           name.to_s.split('::').last.downcase.to_sym
         end
       do_log(level, msg)
+      self
     end
 
     class << self
@@ -38,7 +55,10 @@ module Ackro
     end
     
     def self.do_log(lvl, msg)
-      #Log4r::Logger['ackro'].send(lvl, msg)
+      if lvl == :debug
+        lvl = :info
+      end
+      Log4r::Logger['ackro'].send(lvl, msg)
     end
     
   end

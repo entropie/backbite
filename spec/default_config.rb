@@ -30,7 +30,7 @@ $default_config = <<EOF
           author      'Michael Trommer'
           title       'foobar title'
           description
-          password     lambda{ File.open('/home/mit/Data/Secured/ackro.org.pw').readlines.join.strip }
+          password     'foobarbatz'
           ftpuser     'ftp27676'
           target      'ftp://ftp.ackro.com/www.ackro.de/tlog'
         end

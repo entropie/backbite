@@ -22,6 +22,10 @@ module Ackro
     def components
       @components ||= @repository.components
     end
+
+    def posts(params = { }, &blk)
+      @repository.posts #.collect(&blk)
+    end
     
     def post(component, params = { })
       params.extend(ParamHash).

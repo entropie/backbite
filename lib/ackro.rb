@@ -7,6 +7,8 @@ require 'pp'
 require 'pathname'
 require 'fileutils'
 require 'log4r'
+require 'log4r/outputter/syslogoutputter'
+
 require 'yaml'
 require 'readline'
 
@@ -37,8 +39,10 @@ module Ackro
     "ackro-version-#{Version.join('.')}"
   end
 
-  Informer.create << "starting logger for ackro.succ, #{version.to_s}."
-  Debug << "debugmode is on." if $DEBUG
+  if $DEBUG
+    Informer.create << "starting logger for ackro.succ, #{version.to_s}."
+    Debug << "debugmode is on."
+  end
 end
 
 

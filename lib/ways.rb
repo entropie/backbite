@@ -10,7 +10,6 @@ module Ackro
   module Ways
 
     # Parent class for any old way to post to a tumblog.
-    #
     class Way
 
       attr_accessor :handler
@@ -26,7 +25,7 @@ module Ackro
       def inspect
         "<#{self.class.name} Values:(#{@result.values.join(', ')})>"
       end
-
+      
       # Parses the handler hash, and decides which Post class is
       # qualified to handle the field.
       #
@@ -47,15 +46,48 @@ module Ackro
         @result
       end
 
+      def filename
+        "#{ @component.name }-#{Time.now.to_i}.yaml"
+      end
+      
+      def save(how = :to_yaml)
+        file = @tlog.repository.join('spool').join(filename)
+        Info << "write #{how} to #{file}"
+        file.open('w+') do |file|
+          file.write(send(how))
+        end
+        true
+      end
+      
       def to_yaml
-        Info << "writing post..."
-        puts Hash[*@result.map{ |h,k|
-                  [h,k.value]
-                  }.flatten].to_yaml
+        ::Hash[*@result.map{ |h,k|
+               [h,k.value]
+             }.flatten].to_yaml
       end
       
     end
 
+    class Hash < Way
+
+      def run(handler, params)
+        params[:array].shift
+      end
+    end
+
+    class Yaml < Way
+      attr_accessor :source
+
+      def run(handler, params)
+        p handler
+        params[:array].shift
+      end
+
+      def save(*args)
+        raise "cannot save a yaml instance"
+      end
+      
+    end
+    
     class Array < Way
       def run(handler, params)
         params[:array].shift

@@ -36,7 +36,7 @@ module Ackro
   class Component
 
     attr_accessor :tlog
-
+    attr_reader   :name
 
     # creates the component
     def self.define(name, &blk)
@@ -69,26 +69,37 @@ module Ackro
       w.process(params, self)
       w
     end
+    
 
+    # Iterates through the fields and loads necessary files.
+    #
+    # If +name+ is non nil, return specific plugin, if +name+ is nil,
+    # return all the plugins which are relevant for the current
+    # Component. <tt>&blk</tt> is optional.
+    def plugins(name = nil, force = false, &blk) # :yield: Plugin
+      tld = @tlog.repository.join('plugins')
 
-    # Iterates through the fields. If +name+ is non nil, return
-    # specific plugin, if +name+ is nil, return all the plugins which
-    # are relevant for the current Component.
-    def plugins(name = nil)
-      plugins = @config[:fields].map{ |f|
-        $1.to_sym if f.first.to_s =~ /^plugin_(.*)/
-      }.compact
+      if not @plugins or force
+        plugin_fields = @config[:fields].map{ |f|
+          $1.to_sym if f.first.to_s =~ /^plugin_(.*)/
+        }.compact
+        
+        plugins = tld.entries.map do |pl|
+          next if pl.to_s =~ /^\.+/
+          if plugin_fields.include?(pl.to_s[0..-4].to_sym)
+            Plugin.load(tld.join(pl.to_s))
+          end
+        end.compact
+        @plugins = Plugins.new.push(*plugins)
+      end
       
-      @plugins ||= (tld = @tlog.repository.join('plugins')).
-        entries.map do |pl|
-        next if pl.to_s =~ /^\.+/
-        if plugins.include?(pl.to_s[0..-4].to_sym)
-          Plugin.load(tld.join(pl.to_s))
-        end
-      end.compact
-      @plugins = Plugins.new.push(*@plugins)
-      return @plugins.select{ |pl| pl.name == name }.first if name
-      return @plugins
+      if name
+        return @plugins.select{ |pl| pl.name == name }.first
+      elsif block_given?
+        plugins.each(&blk)
+      end
+
+      @plugins
     end
     
 

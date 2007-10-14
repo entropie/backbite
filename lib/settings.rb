@@ -8,19 +8,19 @@ module Ackro
   module ConfigParser
 
     module ConfigReplacer
-
-
+      
+      
       attr_reader :root
-
 
       def root=(obj)
         @root = obj
         self
       end
 
+
       # Walks the entire hash and substitutes every %replace_thing%
-      # for our values. It needs the toplevel element, :defaults to
-      # get the values to replace from config[:defaults][:replace].
+      # for our values. It needs the toplevel element, <tt>:defaults</tt> to
+      # get the values to replace from <tt>config[:defaults][:replace]</tt>
       def replace!
         rpo = @root[:defaults][:replace]
         rpfr = rpo.keys.map{ |k| "%#{k.to_s}%"}
@@ -45,6 +45,7 @@ module Ackro
       
     end
 
+    
     # extends current instance with ConfigReplacer, starts the replace
     # loop and after work is done it removes the
     # config[:defaults][replace] pairs, because they're not longer needed.
@@ -56,9 +57,11 @@ module Ackro
       ret
     end
     
+
     def inspect
       "Cfg[#{order.join(', ')}]"
     end
+
     
     def cleanup
       class << self
@@ -69,16 +72,19 @@ module Ackro
       self
     end
 
+
     def read(&blk)
       instance_eval(&blk)
       self
     end
+
 
     # Returns an array containing the keys of the current Hash in the
     # order of inserting.
     def order
       @order ||= []
     end
+    
 
     # Returns an Array of nodes, ordered, first element is the name of
     # the node, second the ordered values array.
@@ -91,6 +97,7 @@ module Ackro
       ret
     end
     
+
     def method_missing(m, v = ConfigParser.config_hash, &b)
       m = m.to_s.gsub(/=$/, '').to_sym
       unless self.keys.include?(m)
@@ -101,14 +108,15 @@ module Ackro
       self[m]
     end
 
+
     def self.config_hash
-      r = Hash.new{ |h,k| h[k] = config_hash }.extend(ConfigParser).cleanup
+      Hash.new{ |h,k| h[k] = config_hash }.extend(ConfigParser).cleanup
     end
   end
 
 
   class Configurations
-
+    
     attr_reader :config
 
     # A dummy which returns a Configurations instance with the name set.
@@ -118,20 +126,24 @@ module Ackro
       end
     end
 
+
     def self.read(str)
       instance_eval(str)
     end
     
+
     def initialize(name)
       @name = name
       @config = ConfigParser.config_hash
     end
+
 
     # Call this to setup your repository.
     def setup(&blk)
       @config.read(&blk)
       @config
     end
+
 
     def [](obj)
       each do |n, v|
@@ -140,6 +152,7 @@ module Ackro
       end
     end
     
+
     def []=(obj, val)
       each do |n, v|
         next unless obj == n
@@ -147,6 +160,7 @@ module Ackro
       end
     end
     
+
     def each(&blk)
       @config.each(&blk)
     end

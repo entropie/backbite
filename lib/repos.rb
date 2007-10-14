@@ -10,6 +10,8 @@ module Ackro
   # data files and stuff like this. Each tumblog has excatly one repository.
   class Repository
 
+    include Helper
+    
     attr_reader :directory, :name
 
     attr_accessor :tlog
@@ -24,12 +26,21 @@ module Ackro
       "#{@directory.to_s}"
     end
 
+    def posts(params = { })
+      (par = join('spool')).entries.reject{ |e| e.to_s =~ /^\.+/ }.
+        inject([]) do |ma, f|
+        Ways.dispatch(:yaml) do |way|
+          way.source = YAML::load(par.join(f).readlines.join)
+        end
+      end
+    end
+    
     def components
       @components ||= Components.load(join(:components), tlog)
     end
 
     def join(other_dir)
-      dir = Pathname.new(File.expand_path(@directory))
+      dir = Pathname.new(::File.expand_path(@directory))
       dir.join(other_dir.to_s)
     end
     
@@ -43,29 +54,37 @@ module Ackro
     
     # Creates a directory structure for the repos.
     def setup!
-      Info << "creating directory structure for #{name}"
+      Info << "Creating directory structure for `#{name}`"
       @directory = Helper::File.ep(@directory)
       @directory.mkdir and (Info << "created #{@directory}") unless @directory.exist?
       populate!      
       BaseDirs.each do |bdir|
         ndir = @directory.dup.join(bdir.to_s)
         if ndir.exist?
-          Info << "subdirectory #{name}/#{bdir} is existing."
+          Info << " Subdirectory `#{name}/#{bdir}` is existing."
           next
         end
         ndir.mkdir and
-          Info << "created subdirectory #{name}/#{bdir}"
+          Info << " Created subdirectory `#{name}/#{bdir}`."
       end
-      Info << "done, #{name} should be valid now"
+      Info << "Done, `#{name}` should be valid repository now."
     end
 
     # Copy defaults to repos.
     def populate!
-      Info << "populating directory structure with defaults for #{name}"
-      source = Ackro::Source.join('skel')
-      begin
-        FileUtils.cp_r(source.to_s + "/.", @directory.to_s+ "/")
-      rescue Exception
+      Info << "populating directory structure with defaults for `#{name}`"
+
+      source =
+        if defined?(Spec)
+          Ackro::Source.join('spec_skel')
+        else
+          Ackro::Source.join('skel')
+        end
+      %w'plugins components'.each do |w|
+        (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
+          Info << " cp #{st.join(e)} to #{w}/#{e}"
+          system("cp #{st.join(e).to_s} #{@directory.join(w)}")
+        end
       end
     end
     private :populate!

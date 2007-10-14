@@ -3,6 +3,8 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
+require 'lib/ackro.rb'
+
 task :spec do
   ENV['DEBUG'] = '1'
   sh 'spec spec -r spec/default_config -r lib/ackro.rb'

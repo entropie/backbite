@@ -7,7 +7,9 @@ module Ackro
 
   class Plugins < Array
     def [](o)
-      select{|pl| pl.name.split('::').last.downcase == o }.shift
+      select{|pl|
+        pl.name.split('::').last.downcase.to_sym == o.to_sym
+      }.shift
     end
   end
   
@@ -31,8 +33,10 @@ module Ackro
     def name
       self.class.name.split('::').last.downcase
     end
-    
+
     def result
+      return @result.values.shift if @result.size == 1
+
       AutoFieldNames.inject([]) do |m, afn|
         m << @result[afn]
       end.join
