@@ -14,11 +14,11 @@ require 'readline'
 
 require 'lib/helper'
 require 'lib/settings'
+require 'lib/ways'
+require 'lib/post'
 require 'lib/components'
 require 'lib/informer'
 require 'lib/plugins'
-require 'lib/post'
-require 'lib/ways'
 require 'lib/repos'
 require 'lib/tumblog'
 

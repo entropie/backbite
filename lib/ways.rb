@@ -23,7 +23,7 @@ module Ackro
       end
       
       def inspect
-        "<#{self.class.name} Values:(#{@result.values.join(', ')})>"
+        "<#{self.class.name} Values:(#{@result.values.to_a.join(', ')})>"
       end
       
       # Parses the handler hash, and decides which Post class is
@@ -35,10 +35,10 @@ module Ackro
         @component = component
         handler.each do |hand|
           @result[hand.name.to_sym] =
-            if hand.class == Ackro::Post::InputField
+            if hand.class == Post::Fields::InputField
               field = hand.run( run(hand, params), params, tlog)
               field
-            elsif hand.class == Ackro::Post::InputPlugin
+            elsif hand.class == Post::Fields::InputPlugin
               plugin = hand.run(params, tlog).new(tlog).prepare
               plugin
             end
@@ -60,9 +60,16 @@ module Ackro
       end
       
       def to_yaml
-        ::Hash[*@result.map{ |h,k|
-               [h,k.value]
-             }.flatten].to_yaml
+        result = ::Hash[*@result.map{ |h,k| [h,k.value] }.flatten]
+        result[:metadata] =
+          Post::Metadata.new(:component => @component.name,
+                             :way => self.class.to_s)
+        result.to_yaml
+      end
+      private :to_yaml
+
+      def self.name
+        self.to_s.split('::').last.downcase.to_sym
       end
       
     end
@@ -75,11 +82,33 @@ module Ackro
     end
 
     class Yaml < Way
-      attr_accessor :source
+      attr_reader :source
 
+      def source=(src)
+        @source = src
+      end
+
+      def process(params, component)
+        meta = source.delete(:metadata)
+        @component = tlog.components[meta[:component]].
+          extend(Components::YAMLComponent)
+
+        pp @component.map(source)
+        #pp @component.
+        
+        
+        # source.each do |hand|
+        # end
+        #p source
+        #p comp.plugins #(meta[:component])
+        #p source
+        #p meta
+      end
+      
       def run(handler, params)
-        p handler
-        params[:array].shift
+        #p 23
+        #p handler
+        #params[:array].shift
       end
 
       def save(*args)
@@ -103,7 +132,7 @@ module Ackro
     class Editor < Way
     end
     
-    def self.dispatch(way) # :yield: way.new
+    def self.dispatch(way) # :yield: Way.new
       ret = nil
       if const = const_get(way.to_s.capitalize)
         yield ret = const.new

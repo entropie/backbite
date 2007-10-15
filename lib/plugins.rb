@@ -7,9 +7,11 @@ module Ackro
 
   class Plugins < Array
     def [](o)
-      select{|pl|
-        pl.name.split('::').last.downcase.to_sym == o.to_sym
+      r = select{|pl|
+        nam = o.to_s.gsub!(/^(plugin|input)_/, '') || o
+        pl.name.split('::').last.downcase.to_sym == nam.to_sym
       }.shift
+      r
     end
   end
   
@@ -58,7 +60,11 @@ module Ackro
     end
     
     def self.load(plugin_file)
-      @@rets = Plugins.new
+      ts = plugin_file.basename.to_s[0..-4].to_sym
+      @@rets ||= Plugins.new
+      if ret = @@rets[ts]
+        return ret
+      end
       eval(File.open(plugin_file).readlines.to_s)
       @@rets.last
     end

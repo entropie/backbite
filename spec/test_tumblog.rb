@@ -11,18 +11,20 @@ describe Ackro::Tumblelog do
   end
 
   it "should respond non nil on various attributes" do
-    [:repository, :config, :name].each do |attr|
+    [:repository, :config, :name, :root, :author, :url].each do |attr|
       @target.send(attr).should
     end
   end
 
   it "should accept a post" do
     post = @target.post(:test, :array => ['Hello from rspec', 'foo'])
-    post.save.should
+    ps = post.save
+    ps.should
   end
 
   it "should list posts" do
     posts = @target.posts
+    pp posts
   end
   
 end

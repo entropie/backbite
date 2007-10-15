@@ -30,8 +30,10 @@ module Ackro
       (par = join('spool')).entries.reject{ |e| e.to_s =~ /^\.+/ }.
         inject([]) do |ma, f|
         Ways.dispatch(:yaml) do |way|
+          way.tlog = @tlog
           way.source = YAML::load(par.join(f).readlines.join)
-        end
+        end.process(params, self)
+        
       end
     end
     

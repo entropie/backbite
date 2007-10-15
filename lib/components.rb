@@ -9,7 +9,18 @@ module Ackro
   # (and load them if necessary).
   class Components < Array
 
+    module YAMLComponent
+      def read ; raise "read not available in #{self}" end
+      def reread! ; raise "reread! not available in #{self}" end
+      def post ; raise "post not available in #{self}" end
 
+      def map(source)
+        self.source = source
+        post_handler
+      end
+    end
+
+    
     # loads every single component in +directory+, returns an
     # Components instance.
     def self.load(directory, tlog)
@@ -29,121 +40,138 @@ module Ackro
       select { |comp| comp == obj }.first
     end
     
-  end
+    # A component is a file with some declarations for fields and
+    # plugins, and some default behaviors.
+    class Component
+      
+      attr_accessor :tlog
+      attr_reader   :name
 
-  # A component is a file with some declarations for fields and
-  # plugins, and some default behaviors.
-  class Component
-
-    attr_accessor :tlog
-    attr_reader   :name
-
-    # creates the component
-    def self.define(name, &blk)
-      Component.new(name).read(&blk)
-    end
-
-
-    # eval +what+
-    def self.read(what)
-      eval(what.to_s)
-    end
-
-    
-    # Maps the <tt>@config[:fields]</tt> declarations to find the
-    # right class for the Field, runs the <tt>Ways.dispatcher</tt> to
-    # choose a proper way.
-    def post(params)
-      @post_handler = @config[:fields].map do |field, defi|
-        case field.to_s
-        when /^plugin_(.*)/
-          Post::InputPlugin.new($1, defi, self)
-        when /^input_(.*)/
-          Post::InputField.new($1, defi, self)
-        end
+      attr_accessor :source
+      
+      include Post
+      
+      # creates the component
+      def self.define(name, &blk)
+        Component.new(name).read(&blk)
       end
-      w = Ways.dispatch(params[:way]) do |w|
-        w.tlog    = @tlog
-        w.handler = @post_handler
+
+      
+      # eval +what+
+      def self.read(what)
+        eval(what.to_s)
       end
-      w.process(params, self)
-      w
-    end
-    
 
-    # Iterates through the fields and loads necessary files.
-    #
-    # If +name+ is non nil, return specific plugin, if +name+ is nil,
-    # return all the plugins which are relevant for the current
-    # Component. <tt>&blk</tt> is optional.
-    def plugins(name = nil, force = false, &blk) # :yield: Plugin
-      tld = @tlog.repository.join('plugins')
-
-      if not @plugins or force
-        plugin_fields = @config[:fields].map{ |f|
-          $1.to_sym if f.first.to_s =~ /^plugin_(.*)/
-        }.compact
-        
-        plugins = tld.entries.map do |pl|
-          next if pl.to_s =~ /^\.+/
-          if plugin_fields.include?(pl.to_s[0..-4].to_sym)
-            Plugin.load(tld.join(pl.to_s))
+      def post_handler(force = true)
+        @post_handler = nil if true
+        @post_handler ||= @config[:fields].map do |field, defi|
+          result =
+            case field.to_s
+            when /^plugin_(.*)/
+              Post::Fields::InputPlugin.new(field, defi, self)
+            when /^input_(.*)/
+              Post::Fields::InputField.new(field, defi, self)
+            end
+          if @source and value = @source[field]
+            result.value = value
           end
-        end.compact
-        @plugins = Plugins.new.push(*plugins)
+          result
+        end
       end
       
-      if name
-        return @plugins.select{ |pl| pl.name == name }.first
-      elsif block_given?
-        plugins.each(&blk)
+      
+      # Maps the <tt>@config[:fields]</tt> declarations to find the
+      # right class for the Field, runs the <tt>Ways.dispatcher</tt> to
+      # choose a proper way.
+      def post(params)
+        params.extend(Helper::ParamHash).
+          process!(:way   => :optional,
+                   :to    => :optional,
+                   :array => :optional)
+
+        post_handler
+        
+        post_way = Ways.dispatch(params[:way]) do |pw|
+          pw.tlog    = @tlog
+          pw.handler = @post_handler
+        end
+        post_way.process(params, self)
+        post_way
+      end
+      
+
+      # Iterates through the fields and loads necessary files.
+      #
+      # If +name+ is non nil, return specific plugin, if +name+ is nil,
+      # return all the plugins which are relevant for the current
+      # Component. <tt>&blk</tt> is optional.
+      def plugins(name = nil, force = false, &blk) # :yield: Plugin
+        tld = @tlog.repository.join('plugins')
+        if not @plugins # or force
+          plugin_fields = @config[:fields].map{ |f|
+            f.first
+          }.compact
+          plugins = tld.entries.map do |pl|
+            next if pl.to_s =~ /^\.+/
+            npl = ("plugin_" + pl.to_s[0..-4]).to_sym
+            if plugin_fields.include?(npl)
+              Plugin.load(tld.join(pl.to_s))
+            end
+          end.compact
+          @plugins = Plugins.new.push(*plugins)
+        end
+        if name
+          return @plugins[name]
+        elsif block_given?
+          plugins.each(&blk)
+        end
+
+        @plugins
+      end
+      
+
+      def inspect
+        "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
       end
 
-      @plugins
-    end
-    
 
-    def inspect
-      "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
-    end
+      # returns true if +sym+ == <tt>self.name</tt>
+      def ==(sym)
+        @name == sym.to_sym
+      end
+      
+
+      def initialize(name)
+        @name = name
+      end
 
 
-    # returns true if +sym+ == <tt>self.name</tt>
-    def ==(sym)
-      @name == sym.to_sym
-    end
-    
-
-    def initialize(name)
-      @name = name
-    end
-
-    
-    def reread!
-      @config.each do |ident, values|
-        case ident
-        when :fields
-          (@config[ident] = Post::InputFields.new).merge!(values)
-        when :style
-          (@config[ident] = Post::InputStyles.new).merge!(values)
+      # Wraps the config values to somewhat we can understand better here.
+      def reread!
+        @config.each do |ident, values|
+          case ident
+          when :fields
+            (@config[ident] = Fields.input_fields).merge!(values)
+          when :style
+            (@config[ident] = Fields.input_styles).merge!(values)
+          end
         end
       end
-    end
 
 
-    # Creates a Configurations instance, evalutes <tt>&blk</tt> and reformats
-    # the fields.
-    def read(&blk)
-      @config = Configurations.new(@name)
-      @config.setup(&blk)
-      reread!
-      self
+      # Creates a Configurations instance, evalutes <tt>&blk</tt> and reformats
+      # the fields.
+      def read(&blk)
+        @config = Configurations.new(@name)
+        @config.setup(&blk)
+        reread!
+        self
+      end
+      
     end
     
   end
-  
 end
-
 
 =begin
 Local Variables:
