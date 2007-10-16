@@ -29,7 +29,7 @@ module Ackro
     def posts(params = { })
       (par = join('spool')).entries.reject{ |e| e.to_s =~ /^\.+/ }.
         inject([]) do |ma, f|
-        Ways.dispatch(:yaml) do |way|
+        Post::Ways.dispatch(:yaml) do |way|
           way.tlog = @tlog
           way.source = YAML::load(par.join(f).readlines.join)
         end.process(params, self)

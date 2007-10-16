@@ -24,7 +24,7 @@ describe Ackro::Tumblelog do
 
   it "should list posts" do
     posts = @target.posts
-    pp posts
+    #pp posts
   end
   
 end

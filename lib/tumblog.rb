@@ -30,7 +30,7 @@ module Ackro
     
     def initialize(name, fdata)
       @name = name
-      @config = Configurations.read(fdata)
+      @config = Config.read(fdata)
       @repository =
         Repository.new(@name, @config[:defaults][:root])
       @repository.tlog = self

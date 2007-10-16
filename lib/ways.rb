@@ -7,6 +7,8 @@ module Ackro
 
   # Responsible for re-mapping the fields, calling plugin stuff and
   # saving the nut in the right place.
+  module Post
+
   module Ways
 
     # Parent class for any old way to post to a tumblog.
@@ -93,7 +95,8 @@ module Ackro
         @component = tlog.components[meta[:component]].
           extend(Components::YAMLComponent)
 
-        pp @component.map(source)
+        @component.map(source)
+        @component
         #pp @component.
         
         
@@ -144,7 +147,7 @@ module Ackro
   end
   
 end
-
+end
 
 =begin
 Local Variables:

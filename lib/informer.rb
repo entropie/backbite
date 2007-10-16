@@ -5,13 +5,13 @@
 
 module Ackro
 
-  class DefaultLogFormatter < Log4r::Formatter
-    def format(event)
-      buff = Time.now.strftime("%a %m/%d/%y %H:%M %Z")
-      buff += " - #{Log4r::LNAMES[event.level]}"
-      buff += " - #{event.data}\n"
-    end
-  end
+  # class DefaultLogFormatter < Log4r::Formatter
+  #   def format(event)
+  #     buff = Time.now.strftime("%a %m/%d/%y %H:%M %Z")
+  #     buff += " - #{Log4r::LNAMES[event.level]}"
+  #     buff += " - #{event.data}\n"
+  #   end
+  # end
 
   
   # Informer handles Logging, thanks to Log4r, once it's instantiated

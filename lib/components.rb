@@ -18,6 +18,7 @@ module Ackro
         self.source = source
         post_handler
       end
+
     end
 
     
@@ -45,6 +46,7 @@ module Ackro
     class Component
       
       attr_accessor :tlog
+
       attr_reader   :name
 
       attr_accessor :source
@@ -130,9 +132,9 @@ module Ackro
       end
       
 
-      def inspect
-        "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
-      end
+      # def inspect
+      #   "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
+      # end
 
 
       # returns true if +sym+ == <tt>self.name</tt>
@@ -162,7 +164,7 @@ module Ackro
       # Creates a Configurations instance, evalutes <tt>&blk</tt> and reformats
       # the fields.
       def read(&blk)
-        @config = Configurations.new(@name)
+        @config = Config::Configurations.new(@name)
         @config.setup(&blk)
         reread!
         self
