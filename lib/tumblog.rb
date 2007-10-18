@@ -43,7 +43,11 @@ module Ackro
 
 
     def posts(params = { }, &blk)
-      @repository.posts #.collect(&blk)
+      @repository.posts.map{ |co|
+        ret = co.to_post
+        yield ret if block_given?
+        ret
+      }
     end
     
 

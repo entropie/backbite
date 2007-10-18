@@ -4,9 +4,21 @@
 #
 
 module Ackro
+  
+  class Post < Delegator
 
-  class Post
+    attr_reader :component
+    
+    def initialize(component)
+      @component = component
+    end
 
+    def __getobj__
+      @component
+    end
+
+    
+    
     # Every time we write a file to disk, we create a new Metadata
     # instance to save additional information about the nut.
     #

@@ -33,7 +33,6 @@ module Ackro
           way.tlog = @tlog
           way.source = YAML::load(par.join(f).readlines.join)
         end.process(params, self)
-        
       end
     end
     

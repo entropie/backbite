@@ -7,7 +7,9 @@ module Ackro
 
   # Responsible for re-mapping the fields, calling plugin stuff and
   # saving the nut in the right place.
-  class Post
+  #
+  # Post delegates the Component instance.
+  class Post < Delegator
 
     module Ways
 

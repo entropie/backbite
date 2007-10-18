@@ -8,59 +8,64 @@ module Ackro
   # A dummy which returns a Configurations instance with the name set.
   class Config
 
+
     def self.[](obj)
-      Configurations.new(obj.to_sym)
+      Configuration.new(obj.to_sym)
     end
+    
 
     def self.read(data)
-      Configurations.read(data)
+      Configuration.read(data)
     end
 
-    module ConfigParser
-      module ConfigReplacer
-        
-        
-        attr_reader :root
 
-        def root=(obj)
-          @root = obj
-          self
-        end
+    module Replacer
+      
+      
+      attr_reader :root
+
+      def root=(obj)
+        @root = obj
+        self
+      end
 
 
-        # Walks the entire hash and substitutes every %replace_thing%
-        # for our values. It needs the toplevel element, <tt>:defaults</tt> to
-        # get the values to replace from <tt>config[:defaults][:replace]</tt>
-        def replace!
-          rpo = @root[:defaults][:replace]
-          rpfr = rpo.keys.map{ |k| "%#{k.to_s}%"}
-          ret = self
-          each do |a, b|
-            if b.kind_of?(Hash)
-              rp = b.extend(ConfigReplacer)
-              rp.root = @root
-              ret[a] = rp.replace!
-            else
-              ret[a] = b = b.call if b.kind_of?(Proc)
-              vlrg = Regexp.new("(#{rpfr.join('|')})")
-              while vlrg =~ b.to_s and str = $1
-                value = rpo[str.gsub(/%/, '').to_sym].to_s
-                ret[a].gsub!(/#{str}/, value)
-                b = ret[a]
-              end
+      # Walks the entire hash and substitutes every %replace_thing%
+      # for our values. It needs the toplevel element, <tt>:defaults</tt> to
+      # get the values to replace from <tt>config[:defaults][:replace]</tt>
+      def replace!
+        rpo = @root[:defaults][:replace]
+        rpfr = rpo.keys.map{ |k| "%#{k.to_s}%"}
+        ret = self
+        each do |a, b|
+          if b.kind_of?(Hash)
+            rp = b.extend(Replacer)
+            rp.root = @root
+            ret[a] = rp.replace!
+          else
+            ret[a] = b = b.call if b.kind_of?(Proc)
+            vlrg = Regexp.new("(#{rpfr.join('|')})")
+            while vlrg =~ b.to_s and str = $1
+              value = rpo[str.gsub(/%/, '').to_sym].to_s
+              ret[a].gsub!(/#{str}/, value)
+              b = ret[a]
             end
           end
-          ret
         end
-        
+        ret
       end
+      
+    end
+
+    
+    module Parser
 
       
       # extends current instance with ConfigReplacer, starts the replace
       # loop and after work is done it removes the
       # config[:defaults][replace] pairs, because they're not longer needed.
       def with_replacer
-        ret = extend(ConfigReplacer)
+        ret = extend(Replacer)
         ret.root = self
         ret.replace!
         ret[:defaults].delete(:replace)
@@ -108,7 +113,7 @@ module Ackro
       end
       
 
-      def method_missing(m, v = ConfigParser.config_hash, &b)
+      def method_missing(m, v = Parser.config_hash, &b)
         m = m.to_s.gsub(/=$/, '').to_sym
         unless self.keys.include?(m)
           order << m
@@ -120,12 +125,12 @@ module Ackro
 
 
       def self.config_hash
-        Hash.new{ |h,k| h[k] = config_hash }.extend(ConfigParser).cleanup
+        Hash.new{ |h,k| h[k] = config_hash }.extend(Parser).cleanup
       end
     end
 
 
-    class Configurations
+    class Configuration
       
       attr_reader :config
 
@@ -136,7 +141,7 @@ module Ackro
 
       def initialize(name)
         @name = name
-        @config = ConfigParser.config_hash
+        @config = Parser.config_hash
       end
 
 
@@ -168,6 +173,7 @@ module Ackro
       end
       
     end
+
 
   end
 end

@@ -8,7 +8,7 @@ module Ackro
   # Components is a place to hold the tumblog specific component files
   # (and load them if necessary).
   class Components < Array
-
+    
     module YAMLComponent
       def read ; raise "read not available in #{self}" end
       def reread! ; raise "reread! not available in #{self}" end
@@ -130,11 +130,16 @@ module Ackro
 
         @plugins
       end
-      
 
-      # def inspect
-      #   "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
-      # end
+
+      def to_post
+        post = Post.new(self)
+      end
+      
+      
+      def inspect
+        "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
+      end
 
 
       # returns true if +sym+ == <tt>self.name</tt>
@@ -161,10 +166,10 @@ module Ackro
       end
 
 
-      # Creates a Configurations instance, evalutes <tt>&blk</tt> and reformats
+      # Creates a Configuration instance, evalutes <tt>&blk</tt> and reformats
       # the fields.
       def read(&blk)
-        @config = Config::Configurations.new(@name)
+        @config = Config::Configuration.new(@name)
         @config.setup(&blk)
         reread!
         self

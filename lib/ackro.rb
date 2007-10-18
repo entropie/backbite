@@ -8,6 +8,7 @@ require 'pathname'
 require 'fileutils'
 require 'log4r'
 require 'log4r/outputter/syslogoutputter'
+require 'delegate'
 
 require 'yaml'
 require 'readline'

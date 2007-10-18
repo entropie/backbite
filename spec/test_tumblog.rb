@@ -24,8 +24,10 @@ describe Ackro::Tumblelog do
   end
 
   it "should list posts" do
-    posts = @target.posts
-    pp posts #.class
+    @target.posts do |po|
+      pp po
+    end
+
     #posts.class.should == Ackro::Components::Component
   end
   
