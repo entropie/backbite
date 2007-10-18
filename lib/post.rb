@@ -17,6 +17,20 @@ module Ackro
       @component
     end
 
+    def inspect
+      ret = "<Post::#{name.to_s.capitalize} [" <<
+        fields.inject([]) { |m, field|
+        m << field.to_s
+      }.join(', ') << "]>"
+    end
+
+    def to_s
+      prfx = "\n   "
+      ret = "#{name.to_s.capitalize} [#{prfx}" <<
+        fields.inject([]) { |m, field|
+        m << field.to_s(10)
+      }.join(",#{prfx}") << "\n]"
+    end
     
     
     # Every time we write a file to disk, we create a new Metadata
@@ -98,8 +112,8 @@ module Ackro
           self
         end
 
-        def to_s
-          "#{ name }='#{ @__text__}'"
+        def to_s(prfx_size = 0)
+          "%#{prfx_size}s:  '#{ value }'" % name.to_s[/_([a-zA-Z_]+)$/, 1]
         end
 
         def value

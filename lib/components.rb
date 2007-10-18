@@ -136,7 +136,7 @@ module Ackro
         post = Post.new(self)
       end
       
-      
+
       def inspect
         "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
       end

@@ -24,11 +24,11 @@ describe Ackro::Tumblelog do
   end
 
   it "should list posts" do
+    @target.posts.size.should == 1
     @target.posts do |po|
-      pp po
+      po.class.should == Ackro::Post
+      po.fields.map{ |f| f.value }.first.should == "Hello from rspec"
     end
-
-    #posts.class.should == Ackro::Components::Component
   end
   
 end
