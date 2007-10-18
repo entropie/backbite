@@ -16,15 +16,17 @@ describe Ackro::Tumblelog do
     end
   end
 
-  it "should accept a post" do
+  it "should accept a post via array" do
     post = @target.post(:test, :array => ['Hello from rspec', 'foo'])
     ps = post.save
-    ps.should
+    ps.should    
+    post.class.should == Ackro::Post::Ways::Array
   end
 
   it "should list posts" do
     posts = @target.posts
-    #pp posts
+    pp posts #.class
+    #posts.class.should == Ackro::Components::Component
   end
   
 end

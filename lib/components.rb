@@ -16,7 +16,7 @@ module Ackro
 
       def map(source)
         self.source = source
-        post_handler
+        fields
       end
 
     end
@@ -50,9 +50,7 @@ module Ackro
       attr_reader   :name
 
       attr_accessor :source
-      
-      include Post
-      
+
       # creates the component
       def self.define(name, &blk)
         Component.new(name).read(&blk)
@@ -64,21 +62,25 @@ module Ackro
         eval(what.to_s)
       end
 
-      def post_handler(force = true)
-        @post_handler = nil if true
-        @post_handler ||= @config[:fields].map do |field, defi|
-          result =
-            case field.to_s
-            when /^plugin_(.*)/
-              Post::Fields::InputPlugin.new(field, defi, self)
-            when /^input_(.*)/
-              Post::Fields::InputField.new(field, defi, self)
-            end
+      # Returns a list of fields attached to the current Component.
+      # The result is an array, containing a list of classes
+      # <tt>Post::Fields.select()</tt> selects for each Field
+      # definition in the component config file.
+      #
+      # A special case is if <tt>@source[fieldname]</tt> returns a
+      # value for the current name, then the value will be set.
+      #
+      # +force+ forces to not use cache.
+      def fields(force = true)
+        @fields = nil if force
+        @fields ||= @config[:fields].map do |field, defi|
+          result = Post::Fields.select(field, defi, self)
           if @source and value = @source[field]
             result.value = value
           end
           result
         end
+        @fields
       end
       
       
@@ -91,11 +93,9 @@ module Ackro
                    :to    => :optional,
                    :array => :optional)
 
-        post_handler
-        
-        post_way = Ways.dispatch(params[:way]) do |pw|
+        post_way = Post::Ways.dispatch(params[:way]) do |pw|
           pw.tlog    = @tlog
-          pw.handler = @post_handler
+          pw.fields  = fields
         end
         post_way.process(params, self)
         post_way
@@ -153,9 +153,9 @@ module Ackro
         @config.each do |ident, values|
           case ident
           when :fields
-            (@config[ident] = Fields.input_fields).merge!(values)
+            (@config[ident] = Post::Fields.input_fields).merge!(values)
           when :style
-            (@config[ident] = Fields.input_styles).merge!(values)
+            (@config[ident] = Post::Fields.input_styles).merge!(values)
           end
         end
       end
