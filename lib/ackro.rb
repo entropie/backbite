@@ -37,7 +37,7 @@ module Ackro
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
   
   def self.version
-    "ackro-version-#{Version.join('.')}"
+    "ackro-#{Version.join('.')}"
   end
 
   if $DEBUG

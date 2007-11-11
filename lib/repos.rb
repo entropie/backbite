@@ -25,7 +25,7 @@ module Ackro
     def inspect
       "#{@directory.to_s}"
     end
-
+    
     def posts(params = { })
       (par = join('spool')).entries.reject{ |e| e.to_s =~ /^\.+/ }.
         inject([]) do |ma, f|
@@ -33,11 +33,13 @@ module Ackro
           way.tlog = @tlog
           way.source = YAML::load(par.join(f).readlines.join)
         end.process(params, self)
-      end
+      end.map{ |po|
+        po.to_post
+      }
     end
     
     def components
-      #raise "not a valid repos yet" unless join(:components).exist?
+      raise "not a valid repos yet" unless join(:components).exist?
       @components ||= Components.load(join(:components), tlog)
     end
 
@@ -78,6 +80,7 @@ module Ackro
 
       source =
         if defined?(Spec)
+          Info << "!!! using testing skeleton"
           Ackro::Source.join('spec_skel')
         else
           Ackro::Source.join('skel')

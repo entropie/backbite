@@ -99,7 +99,7 @@ module Ackro
 
           @component.map(source)
           @component
-          #pp @component.
+          #pp @component
           # source.each do |hand|
           # end
           #p source

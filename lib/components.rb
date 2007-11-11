@@ -10,9 +10,9 @@ module Ackro
   class Components < Array
     
     module YAMLComponent
-      def read ; raise "read not available in #{self}" end
+      def read ;    raise "read not available in #{self}"    end
       def reread! ; raise "reread! not available in #{self}" end
-      def post ; raise "post not available in #{self}" end
+      def post ;    raise "post not available in #{self}"    end
 
       def map(source)
         self.source = source
@@ -22,7 +22,7 @@ module Ackro
     end
 
     
-    # loads every single component in +directory+, returns an
+    # Loads every single component in +directory+, returns an
     # Components instance.
     def self.load(directory, tlog)
       ret = self.new
@@ -55,20 +55,21 @@ module Ackro
       def self.define(name, &blk)
         Component.new(name).read(&blk)
       end
-
+      
       
       # eval +what+
       def self.read(what)
         eval(what.to_s)
       end
-
+      
       # Returns a list of fields attached to the current Component.
-      # The result is an array, containing a list of classes
+      # The result is an array, containing a list of classes which
       # <tt>Post::Fields.select()</tt> selects for each Field
       # definition in the component config file.
       #
       # A special case is if <tt>@source[fieldname]</tt> returns a
-      # value for the current name, then the value will be set.
+      # value for the current fieldnamename, then the value will be
+      # set.
       #
       # +force+ forces to not use cache.
       def fields(force = true)
@@ -109,7 +110,7 @@ module Ackro
       # Component. <tt>&blk</tt> is optional.
       def plugins(name = nil, force = false, &blk) # :yield: Plugin
         tld = @tlog.repository.join('plugins')
-        if not @plugins # or force
+        if not @plugins or force
           plugin_fields = @config[:fields].map{ |f|
             f.first
           }.compact
@@ -122,8 +123,11 @@ module Ackro
           end.compact
           @plugins = Plugins.new.push(*plugins)
         end
+
         if name
-          return @plugins[name]
+          ret = @plugins[name]
+          yield ret if block_given?
+          return ret
         elsif block_given?
           plugins.each(&blk)
         end
@@ -133,7 +137,7 @@ module Ackro
 
 
       def to_post
-        post = Post.new(self)
+        Post.new(self)
       end
       
 
@@ -165,7 +169,7 @@ module Ackro
         end
       end
 
-
+      
       # Creates a Configuration instance, evalutes <tt>&blk</tt> and reformats
       # the fields.
       def read(&blk)

@@ -17,7 +17,7 @@ module Ackro
     end
     alias :path :root
 
-
+    
     def author
       @config[:defaults][:author]
     end
@@ -43,11 +43,10 @@ module Ackro
 
 
     def posts(params = { }, &blk)
-      @repository.posts.map{ |co|
-        ret = co.to_post
-        yield ret if block_given?
-        ret
-      }
+      @repository.posts.each { |co|
+        yield co
+      } if block_given?
+      @repository.posts
     end
     
 

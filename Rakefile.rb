@@ -16,8 +16,9 @@ task :specdoc => [:spechtml] do
 end
 
 task :spechtml do
-  system("touch #{file = "/home/mit/public_html/doc/ackro.suc/spec.html"}")
-  system "spec spec -f h:#{file} -r spec/default_config"
+  system("rm #{file = "/home/mit/public_html/doc/ackro.suc/spec.html"}")
+  system("touch #{file}")
+  system "spec spec -f h:#{file} -r spec/default_config -r lib/ackro.rb"
 end
 
 task :rdoc do
