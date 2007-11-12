@@ -10,16 +10,21 @@ describe Ackro::Post do
   end
 
   it "should accept a post via array" do
-    post = @target.post(:test, :array => ['Hello from rspec', 'foo'])
+    post = @target.post(:test, :hash =>
+                        { :topic => 'Hello from rspec',
+                          :body  => 'foo',
+                          :tags  => 'batz, bar, bumm'
+                        })
     post.save.should
-    post.class.should == Ackro::Post::Ways::Array
+    post.class.should == Ackro::Post::Ways::Hash
   end
 
   it "should list posts" do
     @target.posts.size.should == 1
     @target.posts do |po|
       po.class.should == Ackro::Post
-      po.fields.first.value.should == "Hello from rspec"
+      po.fields[:topic].value.should == "Hello from rspec"
+      po.fields[:tags].value.should == "batz, bar, bumm"
     end
   end
 end

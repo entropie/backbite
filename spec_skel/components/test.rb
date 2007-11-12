@@ -12,12 +12,15 @@ define :test do
 
   fields do
 
-    plugin_date do
-      style do
-        foo 'bar'
-      end
-    end
+    # plugin_date do # optional
+    #   style do
+    #     foo 'bar'
+    #   end
+    # end
 
+    # plugin_tags do #optional
+    # end
+    
     input_topic do
       markup 'redcloth'
       before 'foo'

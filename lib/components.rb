@@ -74,13 +74,15 @@ module Ackro
       # +force+ forces to not use cache.
       def fields(force = true)
         @fields = nil if force
-        @fields ||= @config[:fields].map do |field, defi|
+        @fields ||= Post::Fields.new
+        fields = @config[:fields].map do |field, defi|
           result = Post::Fields.select(field, defi, self)
           if @source and value = @source[field]
             result.value = value
           end
           result
         end
+        @fields.push(*fields)
         @fields
       end
       
@@ -92,7 +94,7 @@ module Ackro
         params.extend(Helper::ParamHash).
           process!(:way   => :optional,
                    :to    => :optional,
-                   :array => :optional)
+                   :hash => :optional)
 
         post_way = Post::Ways.dispatch(params[:way]) do |pw|
           pw.tlog    = @tlog
@@ -159,6 +161,10 @@ module Ackro
 
       # Wraps the config values to somewhat we can understand better here.
       def reread!
+
+        @config[:fields][:plugin_tags] ||= { }
+        @config[:fields][:plugin_date] ||= { }
+        
         @config.each do |ident, values|
           case ident
           when :fields

@@ -52,8 +52,8 @@ module Ackro
 
     def post(component, params = { })
       params.extend(ParamHash).
-        process!(:way => :optional, :to => :optional, :array => :optional)
-      params[:way] ||= :array
+        process!(:way => :optional, :to => :optional, :hash => :optional)
+      params[:way] ||= :hash
       params[:to]  ||= @repository.join('spool')
       components[component.to_sym].post(params)
     end

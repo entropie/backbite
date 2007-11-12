@@ -25,9 +25,13 @@ module Ackro
         def initialize
           @result = { }
         end
+
+        # def run(field, params)
+        #   # InputField
+        # end
         
         def inspect
-          "<#{self.class.name} Values:(#{@result.values.to_a.join(', ')})>"
+          "<Way::#{self.class.name.to_s.capitalize} Values:(#{@result.values.to_a.join(', ')})>"
         end
         
         # Parses the fields hash, and decides which Post class is
@@ -40,10 +44,14 @@ module Ackro
           fields.each do |hand|
             @result[hand.name.to_sym] =
               if hand.is_a?(:field)
-                hand.run( value = run(hand, params), params, tlog )
+                value = run(hand, params)
+                hand.run( value, params, tlog )
               elsif hand.is_a?(:plugin)
                 # create plugin instance
-                hand.run(params, tlog).new(tlog).prepare
+                plugin = hand.run(params, tlog)
+                plugin.dispatch(self)
+                plugin.prepare
+                plugin
               end
           end
           @result
@@ -81,7 +89,7 @@ module Ackro
       class Hash < Way
 
         def run(field, params)
-          params[:array].shift
+          params[:hash][field.to_sym]
         end
       end
 
@@ -96,22 +104,11 @@ module Ackro
           meta = source.delete(:metadata)
           @component = tlog.components[meta[:component]].
             extend(Components::YAMLComponent)
-
           @component.map(source)
           @component
-          #pp @component
-          # source.each do |hand|
-          # end
-          #p source
-          #p comp.plugins #(meta[:component])
-          #p source
-          #p meta
         end
         
         def run(field, params)
-          #p 23
-          #p handler
-          #params[:array].shift
         end
 
         def save(*args)
@@ -120,11 +117,13 @@ module Ackro
         
       end
       
-      class Array < Way
-        def run(field, params)
-          params[:array].shift
-        end
-      end
+      # class Array < Way
+        
+      #   def run(field, params)
+      #     super
+      #     params[:array].shift
+      #   end
+      # end
 
       class Commandline < Way
         def run(field, params)

@@ -21,6 +21,19 @@ module Ackro
     
     attr_reader :tlog
 
+    attr_accessor :params
+    
+    def dispatch(way)
+      if respond_to?(:input)
+        @result = { }
+        fcontent = send(:input)
+        yield fcontent, self if block_given?
+        @result[:content] = way.run(name, params)
+      else
+        Info << "nothing to dispatch"
+      end
+    end
+    
     def prepare
       AutoFieldNames.each do |afn|
         if respond_to?(afn)
@@ -29,6 +42,7 @@ module Ackro
           @result[afn] = r
         end
       end
+      
       self
     end
     
@@ -37,7 +51,7 @@ module Ackro
     end
 
     def result
-      return @result.values.shift if @result.size == 1
+      return @result.values.shift if @result.to_s.size == 1
 
       AutoFieldNames.inject([]) do |m, afn|
         m << @result[afn]

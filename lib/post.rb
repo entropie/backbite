@@ -61,8 +61,12 @@ module Ackro
       end
     end
     
-    class Fields
+    class Fields < Array
 
+      def [](name)
+        select{ |f| f.to_sym == name.to_sym }.first
+      end
+      
       def self.select(field, defi, comp)
         target =
           case field.to_s
@@ -112,6 +116,10 @@ module Ackro
           self
         end
 
+        def to_sym
+          ret = @name.to_s.gsub(/^(input|plugin)_(\w+)$/, '\2').to_sym
+        end
+        
         def to_s(prfx_size = 0)
           "%#{prfx_size}s:  '#{ value }'" % name.to_s[/_([a-zA-Z_]+)$/, 1]
         end
@@ -131,7 +139,9 @@ module Ackro
       class InputPlugin < InputField
 
         def run(params, tlog)
-          @component.plugins[@name]
+          plugin = @component.plugins[@name].new(tlog)
+          plugin.params = params
+          plugin
         end
 
       end
