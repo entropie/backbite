@@ -59,6 +59,8 @@ module Ackro
         lvl = :info
       end
       Log4r::Logger['ackro'].send(lvl, msg)
+    rescue
+      puts $!
     end
     
   end

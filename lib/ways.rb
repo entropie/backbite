@@ -42,6 +42,7 @@ module Ackro
           @result = { }
         end
 
+        # Should be called via +super+ in the child.
         def run(field, value)
           Info << " - #{self.class}.#{field.to_sym}='#{value}'"
           value
@@ -51,8 +52,8 @@ module Ackro
           "<Way::#{self.class.name.to_s.capitalize} Values:(#{@result.values.to_a.join(', ')})>"
         end
         
-        # Parses the fields hash, and decides which Post class is
-        # qualified to handle the field.
+        # Parses the fields hash, and processes any field according to
+        # its class.
         #
         # If the field's a plugin, we're going to create an instance of
         # it (because we only want to work on a single plugin instance).
@@ -76,10 +77,14 @@ module Ackro
           self
         end
 
+        # the filename we'll write the result or where the result is
+        # stored, depending on the state.
         def filename
           @filename ||= "#{ @component.name }-#{(t=Time.now).to_i}-#{t.usec}.yaml"
         end
         
+        # Saves the result in +filename+ with method +how+, +to_yaml+
+        # is the only implemented method to save a nut yet.
         def save(how = :to_yaml)
           file = @tlog.repository.join('spool').join(filename)
           contents = send(how)
@@ -90,7 +95,8 @@ module Ackro
           Info << "#{component.name} Finished"
           true
         end
-        
+
+        # Save the nut the YAML way.
         def to_yaml
           result = ::Hash[*@result.map{ |h,k| [h,k.value] }.flatten]
           result[:metadata] =
@@ -100,6 +106,7 @@ module Ackro
         end
         private :to_yaml
 
+        # the name of the way.
         def self.name
           self.to_s.split('::').last.downcase.to_sym
         end
@@ -129,9 +136,9 @@ module Ackro
           @component.to_post
         end
         
-        def run(field, params); raise "no need to run a yaml Way"; end
+        def run(field, params); raise "no need to run a YAML Way"; end
 
-        def save(*args); raise "cannot save a yaml instance"; end
+        def save(*args); raise "cannot save a YAML instance"; end
         
       end
       

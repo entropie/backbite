@@ -16,9 +16,10 @@ task :specdoc => [:spechtml] do
 end
 
 task :spechtml do
-  system("rm #{file = "/home/mit/public_html/doc/ackro.suc/spec.html"}")
-  system("touch #{file}")
-  system "spec spec -f h:#{file} -r spec/default_config -r lib/ackro.rb"
+  ENV['DEBUG'] = '1'
+  sh("rm #{file = "/home/mit/public_html/doc/ackro.suc/spec.html"}")
+  sh("touch #{file}")
+  sh "spec spec -r spec/default_config -r lib/ackro.rb -f h:#{file}"
 end
 
 task :rdoc do

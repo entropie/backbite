@@ -7,7 +7,7 @@ module Ackro
 
 
   # A Repository may an (un)initiated directory structure, a place for plugins,
-  # data files and stuff like this. Each tumblog has excatly one repository.
+  # data files and stuff like this. Each tumblog has exactly one repository.
   class Repository
 
 
@@ -47,7 +47,7 @@ module Ackro
 
 
     # Returns a Pathname instance, the Repository path joined with
-    # +other_dir*.
+    # +other_dir+.
     def join(other_dir)
       dir = Pathname.new(::File.expand_path(@directory))
       dir.join(other_dir.to_s)

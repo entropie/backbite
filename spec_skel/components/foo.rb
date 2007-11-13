@@ -3,24 +3,21 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-define :test do
+define :foo do
 
   style do
-    margin_left 23.px
-    color :red
+    margin_right 23.px
+    color :black
   end
 
   fields do
 
-    # plugin_date do # optional
-    #   style do
-    #     foo 'bar'
-    #   end
-    # end
+    plugin_date do # optional
+      style do
+        foo 'bar'
+      end
+    end
 
-    # plugin_tags do #optional
-    # end
-    
     input_topic do
       markup 'redcloth'
       before 'foo'

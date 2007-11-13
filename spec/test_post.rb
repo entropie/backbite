@@ -33,8 +33,21 @@ describe Ackro::Post do
     post.class.should == Ackro::Post::Ways::File
   end
 
+  it "should accept a post via hash to another component" do
+    post = @target.post(:foo, :hash =>
+                        { :topic => 'Hello from rspec ahash',
+                          :body  => 'foo ahash',
+                          :tags  => 'batz, bar, bumm ahash'
+                        })
+    post.save.should
+    post.class.should == Ackro::Post::Ways::Hash
+  end
+
+  it "should have a corresponding size" do
+    @target.posts.size.should == 3
+  end
+  
   it "should list posts" do
-    @target.posts.size #.should == 2
     @target.posts do |po|
       po.class.should == Ackro::Post
       po.fields[:topic].value.should =~ /^Hello from rspec/
