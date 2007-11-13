@@ -26,11 +26,10 @@ module Ackro
     def dispatch(way)
       if respond_to?(:input)
         @result = { }
+        Info << " - Plugin[#{name}]#input"
         fcontent = send(:input)
         yield fcontent, self if block_given?
         @result[:content] = way.run(name, params)
-      else
-        Info << "nothing to dispatch"
       end
     end
     
@@ -38,7 +37,7 @@ module Ackro
       AutoFieldNames.each do |afn|
         if respond_to?(afn)
           r = send(afn)
-          Debug << "sending message `#{afn}` to plugin #{name}; result is %iBytes" % r.to_s.size
+          Debug << " - Plugin[#{name}]##{afn}='#{r}'"
           @result[afn] = r
         end
       end
