@@ -3,28 +3,42 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
+Target = Ackro::Tumblelog.new(:rspec, $default_config)
+Target.repository.setup!
+
 describe Ackro::Post do
   before(:each) do
-    @target = Ackro::Tumblelog.new(:rspec, $default_config)
-    @target.repository.setup!
+    @target = Target
   end
 
-  it "should accept a post via array" do
+  it "should accept a post via hash" do
     post = @target.post(:test, :hash =>
-                        { :topic => 'Hello from rspec',
-                          :body  => 'foo',
-                          :tags  => 'batz, bar, bumm'
+                        { :topic => 'Hello from rspec ahash',
+                          :body  => 'foo ahash',
+                          :tags  => 'batz, bar, bumm ahash'
                         })
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
   end
 
+  it "should accept a post via file" do
+    str = {
+      :topic => 'Hello from rspec file',
+      :body =>  'foo file',
+      :tags =>  'batz, bar, bumm file'
+    }
+    str = str.map{ |c, v| "[%s_start]%s[%s_end]" % [c,v,c]}
+    post = @target.post(:test, :way => :file, :string => str.join)
+    post.save.should
+    post.class.should == Ackro::Post::Ways::File
+  end
+
   it "should list posts" do
-    @target.posts.size.should == 1
+    @target.posts.size #.should == 2
     @target.posts do |po|
       po.class.should == Ackro::Post
-      po.fields[:topic].value.should == "Hello from rspec"
-      po.fields[:tags].value.should == "batz, bar, bumm"
+      po.fields[:topic].value.should =~ /^Hello from rspec/
+      po.fields[:tags].value.should =~ /^batz, bar, bumm/
     end
   end
 end

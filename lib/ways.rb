@@ -54,11 +54,12 @@ module Ackro
                 plugin
               end
           end
-          @result
+          #@result
+          self
         end
 
         def filename
-          "#{ @component.name }-#{Time.now.to_i}.yaml"
+          @filename ||= "#{ @component.name }-#{(t=Time.now).to_i}-#{t.usec}.yaml"
         end
         
         def save(how = :to_yaml)
@@ -100,12 +101,12 @@ module Ackro
           @source = src
         end
 
-        def process(params, component)
-          meta = source.delete(:metadata)
+        def process
+          meta = @source.delete(:metadata)
           @component = tlog.components[meta[:component]].
             extend(Components::YAMLComponent)
-          @component.map(source)
-          @component
+          @component.map(@source)
+          @component.to_post
         end
         
         def run(field, params)
@@ -117,13 +118,14 @@ module Ackro
         
       end
       
-      # class Array < Way
-        
-      #   def run(field, params)
-      #     super
-      #     params[:array].shift
-      #   end
-      # end
+      class File < Way
+        def run(field, params)
+          params[:string].
+            scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/).
+            flatten.
+            join
+        end
+      end
 
       class Commandline < Way
         def run(field, params)
@@ -137,12 +139,14 @@ module Ackro
       def self.dispatch(way) # :yield: Way.new
         ret = nil
         if const = const_get(way.to_s.capitalize)
-          yield ret = const.new
+          ret = const.new
+          yield ret
         else
           raise "Sorry, way '#{way}' is unknown."
         end
-        ret
+        return ret
       end
+      
     end
     
   end

@@ -94,7 +94,8 @@ module Ackro
         params.extend(Helper::ParamHash).
           process!(:way   => :optional,
                    :to    => :optional,
-                   :hash => :optional)
+                   :hash  => :optional,
+                   :string=> :optional)
 
         post_way = Post::Ways.dispatch(params[:way]) do |pw|
           pw.tlog    = @tlog
@@ -139,7 +140,7 @@ module Ackro
 
 
       def to_post
-        Post.new(self)
+        Post.new(self.dup)
       end
       
 

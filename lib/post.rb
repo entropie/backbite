@@ -4,6 +4,34 @@
 #
 
 module Ackro
+
+  class Posts < Array
+
+    def filter(params, &blk)
+      params.extend(Helper::ParamHash).
+        process!(
+                 :between => :optional,
+                 :ids     => :optional,
+                 :tags    => :optional
+                 )
+      self
+    end
+
+
+    def self.each(tlog)
+      postfiles = (par = tlog.repository.join('spool')).entries.
+        reject{ |e| e.to_s =~ /^\.+/ }
+      postfiles.inject(Posts.new) { |mem, f|
+        postway = Post::Ways.dispatch(:yaml) { |way|
+          way.tlog = tlog
+          way.source = YAML::load(par.join(f).readlines.join)
+        }.process
+        yield postway if block_given?
+        mem << postway
+      }
+    end
+
+  end
   
   class Post < Delegator
 

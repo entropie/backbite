@@ -10,44 +10,50 @@ module Ackro
   # data files and stuff like this. Each tumblog has excatly one repository.
   class Repository
 
+
     include Helper
     
+
     attr_reader :directory, :name
+
 
     attr_accessor :tlog
     
+
     BaseDirs = %w(plugins components htdocs tmp spool)
     
+
     def initialize(name, directory)
       @name, @directory = name.to_sym, Pathname.new(directory)
     end
 
+
     def inspect
-      "#{@directory.to_s}"
+      "<Repository:#{@directory.to_s}>"
     end
     
-    def posts(params = { })
-      (par = join('spool')).entries.reject{ |e| e.to_s =~ /^\.+/ }.
-        inject([]) do |ma, f|
-        ma << Post::Ways.dispatch(:yaml) do |way|
-          way.tlog = @tlog
-          way.source = YAML::load(par.join(f).readlines.join)
-        end.process(params, self)
-      end.map{ |po|
-        po.to_post
-      }
+
+    # Return a list of Posts
+    def posts(params = { }, &blk)
+      Posts.each(@tlog).filter(params, &blk)
     end
     
+
+    # Returns a list of every known Component
     def components
       raise "not a valid repos yet" unless join(:components).exist?
       @components ||= Components.load(join(:components), tlog)
     end
 
+
+    # Returns a Pathname instance, the Repository path joined with
+    # +other_dir*.
     def join(other_dir)
       dir = Pathname.new(::File.expand_path(@directory))
       dir.join(other_dir.to_s)
     end
     
+
     # unlinks everthing in our repos directory
     def remove!
       Info << "say bye to your repos in 5 seconds..."
@@ -56,6 +62,7 @@ module Ackro
       Info << "repos removed."
     end
     
+
     # Creates a directory structure for the repos.
     def setup!
       Info << "Creating directory structure for `#{name}`"
@@ -73,6 +80,7 @@ module Ackro
       end
       Info << "Done, `#{name}` should be valid repository now."
     end
+
 
     # Copy defaults to repos.
     def populate!
@@ -95,6 +103,7 @@ module Ackro
     end
     private :populate!
     
+
     # Checks wheter our actual repos is valid or not.
     def valid?
       @directory.exist? and
