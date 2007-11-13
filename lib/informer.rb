@@ -55,9 +55,7 @@ module Ackro
     end
     
     def self.do_log(lvl, msg)
-      if lvl == :debug
-        lvl = :info
-      end
+      lvl = :info if lvl == :debug
       Log4r::Logger['ackro'].send(lvl, msg)
     rescue
       puts $!

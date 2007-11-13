@@ -3,9 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-include Ackro
-
-describe Config do
+describe Ackro::Config do
 
   before(:each) do
     @config = Ackro::Config.read($default_config)

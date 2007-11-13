@@ -7,6 +7,13 @@ module Ackro
 
   class Posts < Array
 
+    attr_reader :tlog
+    
+    def initialize(tlog)
+      @tlog = tlog
+      each
+    end
+    
     def filter(params, &blk)
       params.extend(Helper::ParamHash).
         process!(
@@ -14,16 +21,22 @@ module Ackro
                  :ids     => :optional,
                  :tags    => :optional
                  )
+      each(&blk) if block_given?
       self
     end
 
-
-    def self.each(tlog)
+    def find
+      select do |post|
+        yield post
+      end
+    end
+    
+    def each
       postfiles = (par = tlog.repository.join('spool')).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
-      postfiles.inject(Posts.new) { |mem, f|
+      postfiles.inject(self) { |mem, f|
         postway = Post::Ways.dispatch(:yaml) { |way|
-          way.tlog = tlog
+          way.tlog = self.tlog
           way.source = YAML::load(par.join(f).readlines.join)
         }.process
         yield postway if block_given?
@@ -45,6 +58,14 @@ module Ackro
       @component
     end
 
+    def method_missing(m, *args, &blk)
+      if @component.fields.include?(m)
+        @component.send(:fields)[m].value
+      else
+        super
+      end
+    end
+    
     def inspect
       ret = "<Post::#{name.to_s.capitalize} [" <<
         fields.inject([]) { |m, field|
@@ -93,6 +114,10 @@ module Ackro
 
       def [](name)
         select{ |f| f.to_sym == name.to_sym }.first
+      end
+
+      def include?(name)
+        not self[name].nil?
       end
       
       def self.select(field, defi, comp)

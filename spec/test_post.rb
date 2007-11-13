@@ -6,6 +6,7 @@
 Target = Ackro::Tumblelog.new(:rspec, $default_config)
 Target.repository.setup!
 
+
 describe Ackro::Post do
   before(:each) do
     @target = Target
@@ -35,26 +36,37 @@ describe Ackro::Post do
 
   it "should accept a post via hash to another component" do
     post = @target.post(:foo, :hash =>
-                        { :topic => 'Hello from rspec ahash',
-                          :body  => 'foo ahash',
-                          :tags  => 'batz, bar, bumm ahash'
+                        { :topic => 'Hello from rspec another',
+                          :body  => 'foo another',
+                          :tags  => 'batz, bar, bumm another'
                         })
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
   end
 
+end
+
+describe Ackro::Posts do
+
   it "should have a corresponding size" do
-    @target.posts.size.should == 3
+    Target.posts.size.should == 3
   end
-  
+
+  it "should list a specific post" do
+    Target.posts.find{ |p| p.topic == 'Hello from rspec another' }.
+      size.should == 1
+  end
+
   it "should list posts" do
-    @target.posts do |po|
+    Target.posts do |po|
       po.class.should == Ackro::Post
       po.fields[:topic].value.should =~ /^Hello from rspec/
       po.fields[:tags].value.should =~ /^batz, bar, bumm/
     end
   end
+
 end
+
 
 =begin
 Local Variables:

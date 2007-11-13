@@ -29,13 +29,13 @@ module Ackro
 
 
     def inspect
-      "<Repository:#{@directory.to_s}>"
+      "<Repository: '#{@directory.to_s}'>"
     end
     
 
     # Return a list of Posts
     def posts(params = { }, &blk)
-      Posts.each(@tlog).filter(params, &blk)
+      Posts.new(@tlog).filter(params, &blk)
     end
     
 
