@@ -6,19 +6,6 @@
 module Ackro
 
   module Post::Export::HTML
-
-    def filter(field)
-      if field.respond_to?(:plugin)
-        plugin = field.plugin
-        plugin.field = field
-        if plugin.respond_to?(:html_filter) and res = plugin.html_filter
-          return res
-        elsif plugin.respond_to?(:filter) and res = plugin.filter
-          return res
-        end
-      end
-      field.value
-    end
     
     def to_html
       str = '{{{'

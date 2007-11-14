@@ -6,19 +6,6 @@
 module Ackro
 
   module Post::Export::TXT
-
-    def filter(field)
-      if field.respond_to?(:plugin)
-        plugin = field.plugin
-        plugin.field = field
-        if plugin.respond_to?(:txt_filter) and res = plugin.txt_filter
-          return res
-        elsif plugin.respond_to?(:filter) and res = plugin.filter
-          return res
-        end
-      end
-      field.value
-    end
     
     def to_txt
       str = '{{{'
@@ -28,7 +15,6 @@ module Ackro
         fields[fname]
       }
       ordered.inject(str) do |m, field|
-        #field.apply_filter
         f, filtered = field.to_sym, field.apply_filter(:txt)
         m << "\n %-10s %s " % [f, filtered]
       end

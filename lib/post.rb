@@ -202,12 +202,14 @@ module Ackro
         end
 
         def apply_filter(filter, def_filter = :filter)
-          filter = "#{filter}_filtler".to_sym
+          filter = "#{filter}_filter".to_sym
           if self.respond_to?(:plugin) and plugin
             plugin.field = self
-            if plugin.respond_to?(filter) && res = plugin.send(filter) or
-                plugin.respond_to?(def_filter) && res = plugin.send(def_filter)
-              Info << "f"
+            if plugin.respond_to?(filter) && res = plugin.send(filter)
+              Info << "Filter::#{ name }:#{filter}"
+              return res
+            elsif plugin.respond_to?(def_filter) && res = plugin.send(def_filter)
+              Info << "Filter::#{ name }:#{filter}"
               return res
             end
             value
