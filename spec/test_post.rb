@@ -16,17 +16,18 @@ describe Ackro::Post do
     post = @target.post(:test, :hash =>
                         { :topic => 'Hello from rspec ahash',
                           :body  => 'foo ahash',
-                          :tags  => 'batz, bar, bumm ahash'
+                          :tags  => 'batz, bar, bumm, ahash'
                         })
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
+    sleep 1
   end
 
   it "should accept a post via file" do
     str = {
       :topic => 'Hello from rspec file',
       :body =>  'foo file',
-      :tags =>  'batz, bar, bumm file'
+      :tags =>  'batz, bar, bumm, file'
     }
     str = str.map{ |c, v| "[%s_start]%s[%s_end]" % [c,v,c]}
     post = @target.post(:test, :way => :file, :string => str.join)
@@ -38,7 +39,7 @@ describe Ackro::Post do
     post = @target.post(:foo, :hash =>
                         { :topic => 'Hello from rspec another',
                           :body  => 'foo another',
-                          :tags  => 'batz, bar, bumm another'
+                          :tags  => 'batz, bar, bumm, another'
                         })
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
@@ -52,16 +53,29 @@ describe Ackro::Posts do
     Target.posts.size.should == 3
   end
 
-  it "should list a specific post" do
+  it "should list a specific post (==, =~)" do
     Target.posts.find{ |p| p.topic == 'Hello from rspec another' }.
+      size.should == 1
+    Target.posts.find{ |p| p.body =~ /^foo another$/ }.
       size.should == 1
   end
 
+  # it "should list a specific post (:between) " do
+  #   Target.posts.filter(:between => 2).size.should == 2
+  # end
+
+  it "should list a specific post (:tags) " do
+    Target.posts.filter(:tags => %w(batz)).size.should == 3
+    Target.posts.filter(:tags => %w(another)).size.should == 1
+    Target.posts.filter(:tags => %w(ahash another)).size.should == 2
+  end
+
+  
   it "should list posts" do
     Target.posts do |po|
       po.class.should == Ackro::Post
       po.fields[:topic].value.should =~ /^Hello from rspec/
-      po.fields[:tags].value.should =~ /^batz, bar, bumm/
+      po.fields[:tags].value[0..-2].should == ["batz", "bar", "bumm"]
     end
   end
 

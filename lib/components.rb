@@ -16,7 +16,7 @@ module Ackro
 
       def map(source)
         self.source = source
-        fields
+        fields(true)
       end
 
     end
@@ -51,6 +51,8 @@ module Ackro
 
       attr_accessor :source
 
+      attr_accessor :metadata
+      
       # creates the component
       def self.define(name, &blk)
         Component.new(name).read(&blk)
@@ -72,17 +74,19 @@ module Ackro
       # set.
       #
       # +force+ forces to not use cache.
-      def fields(force = true)
+      def fields(force = false)
         @fields = nil if force
-        @fields ||= Post::Fields.new
-        fields = @config[:fields].map do |field, defi|
-          result = Post::Fields.select(field, defi, self)
-          if @source and value = @source[field]
-            result.value = value
+        if not @fields
+          @fields ||= Post::Fields.new
+          fields = @config[:fields].map do |field, defi|
+            result = Post::Fields.select(field, defi, self)
+            if @source and value = @source[field]
+              result.value = value
+            end
+            result
           end
-          result
+          @fields.push(*fields)
         end
-        @fields.push(*fields)
         @fields
       end
       

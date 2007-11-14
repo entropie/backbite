@@ -7,6 +7,8 @@ class Fixnum
   def method_missing(m, *a, &blk)
     if m.to_s =~ /^(em|px)$/
       return "#{self}#{m}"
+    elsif m.to_s =~ /days/
+      self*24*60*60
     else
       super
     end

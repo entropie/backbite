@@ -25,14 +25,19 @@ module Ackro
     
     def dispatch(way)
       if respond_to?(:input)
-        @result = { }
+        @result ||= { }
         Info << " - Plugin[#{name}]#input"
         fcontent = send(:input)
         yield fcontent, self if block_given?
         @result[:content] = way.run(name, params)
       end
+
+      if respond_to?(:transform) and @result[:content]
+        @result[:content] = send(:transform, @result[:content])
+        Info << " - Plugin#transform='#{@result[:content].inspect}'"
+      end
     end
-    
+
     def prepare
       AutoFieldNames.each do |afn|
         if respond_to?(afn)
@@ -54,7 +59,7 @@ module Ackro
 
       AutoFieldNames.inject([]) do |m, afn|
         m << @result[afn]
-      end.join
+      end.compact
     end
 
     alias :value :result

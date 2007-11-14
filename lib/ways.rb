@@ -98,7 +98,13 @@ module Ackro
 
         # Save the nut the YAML way.
         def to_yaml
-          result = ::Hash[*@result.map{ |h,k| [h,k.value] }.flatten]
+          #result = ::Hash[*@result.map{ |h,k| [h,k.value] }.flatten]
+          result = { }
+          @result.each{ |nam, infi|
+            value = infi.value
+            value = value.shift if value.kind_of?(Array) and value.size == 1
+            result[nam] = value
+          }
           result[:metadata] =
             Post::Metadata.new(:component => @component.name,
                                :way => self.class.to_s)
@@ -127,13 +133,17 @@ module Ackro
 
         attr_accessor :source
 
+        attr_reader   :metadata
+        
         # Reformats to be a valid Post instance.
         def process
-          meta = source.delete(:metadata)
-          @component = tlog.components[meta[:component]].
+          @metadata  = source.delete(:metadata)
+          @component = tlog.components[@metadata[:component]].
             extend(Components::YAMLComponent)
           @component.map(source)
-          @component.to_post
+          @component.metadata = @metadata
+          ret = @component.to_post
+          ret
         end
         
         def run(field, params); raise "no need to run a YAML Way"; end

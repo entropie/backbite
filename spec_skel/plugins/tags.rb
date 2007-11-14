@@ -12,6 +12,10 @@ class Tags < Plugin
     'Tags:'
   end
 
+  def transform(inp)
+    inp.to_s.scan(/(\w+),?\s?/).flatten
+  end
+  
   # def content
   #   []
   # end

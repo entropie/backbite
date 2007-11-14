@@ -21,8 +21,22 @@ module Ackro
                  :ids     => :optional,
                  :tags    => :optional
                  )
-      each(&blk) if block_given?
-      self
+      ret = self.dup
+
+      # select Posts by metadata[:date
+      if bet = params[:between]
+        ret.reject!{ |p|
+          Time.now.to_i-bet >= p.metadata[:date].to_i
+        }
+      end
+      # select Posts by Tags
+      if tags = params[:tags]
+        ret = ret.find{ |post|
+          not tags.map{ |t| true if post.tags.include?(t) }.compact.empty?
+        }
+      end
+      ret.each(&blk) if block_given?
+      ret
     end
 
     def find
@@ -58,16 +72,20 @@ module Ackro
       @component
     end
 
+
     def method_missing(m, *args, &blk)
       if @component.fields.include?(m)
-        @component.send(:fields)[m].value
+        val = @component.send(:fields)[m].value
+        Info << "Post#method_missing: #{m} => '#{val}'"
+        val
       else
         super
       end
     end
+
     
     def inspect
-      ret = "<Post::#{name.to_s.capitalize} [" <<
+      ret = "<Post::#{name.to_s.capitalize} #{metadata.inspect} [" <<
         fields.inject([]) { |m, field|
         m << field.to_s
       }.join(', ') << "]>"
@@ -101,12 +119,12 @@ module Ackro
       end
 
       def inspect
-        "<#{self[:component]}: #{keys.join(',')}>"
+        "(Meta: [#{keys.join(',')}])"
       end
 
       private
       def add_defaults
-        self[:date] = Time.now
+        self[:date] ||= Time.now
       end
     end
     
@@ -171,6 +189,12 @@ module Ackro
 
         def to_sym
           ret = @name.to_s.gsub(/^(input|plugin)_(\w+)$/, '\2').to_sym
+        end
+
+        def ==(name)
+          name = name.to_s
+          name.gsub!(/^(input|plugin)_(\w+)$/, '\2')
+          to_sym == name.to_sym
         end
         
         def to_s(prfx_size = 0)
