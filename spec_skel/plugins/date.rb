@@ -16,12 +16,10 @@ class Date < Plugin
   #  html_filter    - specific filter for output module
 
   ## Following keywords are evaluated before the components writes the
-  ## output
+  ## output (to a file)
   
   #  before         - content_before
-
   #  content        - content
-
   #  after          - content_after
 
 end

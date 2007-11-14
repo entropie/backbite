@@ -15,14 +15,27 @@ module Ackro
     end
   end
   
+
+  # Each user-defined plugin is a subclass of Plugin.
+  #
+  # In the plugin various attributes are available:
+  # * +field+ -- the Field instance
+  # * +tree+  -- the response stream
+  #
+  # Following methods are known (and will be called if necessary)
+  # * content  -- The value of the plugin; no interaction is needed
+  # * before   -- value *before* content
+  # * after    -- value *after*  content
+  # * filter   -- overall filter to modify contents during export
+  # * *_filter -- filter which will be only applied for corresponding export variant, for example +html_filter+
   class Plugin
 
     AutoFieldNames = [:before, :content, :after]
     
     attr_reader :tlog
 
-    attr_accessor :params, :field
-    
+    attr_accessor :params
+    attr_accessor :field, :tree, :component, :tlog
 
     def dispatch(way)
       if respond_to?(:input)

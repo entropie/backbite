@@ -14,10 +14,13 @@ module Ackro
       each
     end
 
-    def with_export(type)
+    def with_export(type, params)
       const = Post::Export.const_get(type.to_s.upcase)
       map{ |post|
-        yield post.extend(const)
+        npost = post.extend(const)
+        npost.setup!(params)
+        yield npost
+        npost
       }
     end
     
@@ -91,11 +94,26 @@ module Ackro
     end
 
 
+    # +setup!+ sets various attributes on our Plugin instance.
+    def setup!(params)
+      params.extend(Helper::ParamHash).
+        process!(:tree => :required)
+      self.fields.each do |fld|
+        if fld.respond_to?(:plugin)
+          fld.plugin.field = fld
+          fld.plugin.component = @component
+          fld.plugin.tlog = @component.tlog
+          params.each_pair do |pnam, pval|
+            fld.plugin.send("#{pnam}=", pval)
+          end
+        end
+      end
+    end
+    
+
     def method_missing(m, *args, &blk)
       if @component.fields.include?(m)
-        val = @component.send(:fields)[m].value
-        #Debug << "Post#method_missing: #{m} => '#{val}'"
-        val
+        @component.send(:fields)[m].value
       else
         super
       end
@@ -204,7 +222,6 @@ module Ackro
         def apply_filter(filter, def_filter = :filter)
           filter = "#{filter}_filter".to_sym
           if self.respond_to?(:plugin) and plugin
-            plugin.field = self
             if plugin.respond_to?(filter) && res = plugin.send(filter)
               Info << "Filter::#{ name }:#{filter}"
               return res

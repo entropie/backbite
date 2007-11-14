@@ -46,11 +46,11 @@ describe Ackro::Repository::Export::TXT do
       /### ''foobar`` at '.+'/
   end
 
-  it "" do
-    puts
-    puts "-"*60
-    puts result
-  end
+  # it "" do
+  #   puts
+  #   puts "-"*60
+  #   puts result
+  # end
   
 end
 

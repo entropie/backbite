@@ -165,13 +165,9 @@ module Ackro
       end
 
       attr_reader :order
-      
 
       # Wraps the config values to somewhat we can understand better here.
       def reread!
-        #pp @config[:fields].sort
-
-        # @order = @config[:fields].sort.dup
         @config.each do |ident, values|
           case ident
           when :fields

@@ -22,6 +22,10 @@ class Tags < Plugin
   end
 
   def txt_filter   # - specific filter for output module
+    p tree.class
+    p field.class
+    p component.class
+    p tlog.class
     field.value.join(' ')
   end
 
