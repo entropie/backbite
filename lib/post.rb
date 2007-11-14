@@ -201,6 +201,20 @@ module Ackro
           end
         end
 
+        def apply_filter(filter, def_filter = :filter)
+          filter = "#{filter}_filtler".to_sym
+          if self.respond_to?(:plugin) and plugin
+            plugin.field = self
+            if plugin.respond_to?(filter) && res = plugin.send(filter) or
+                plugin.respond_to?(def_filter) && res = plugin.send(def_filter)
+              Info << "f"
+              return res
+            end
+            value
+          end
+          value
+        end
+        
         def initialize(name = nil, defi = nil, comp = nil)
           @name, @definitions, @component = name, defi, comp
         end

@@ -28,7 +28,8 @@ module Ackro
         fields[fname]
       }
       ordered.inject(str) do |m, field|
-        f, filtered = field.to_sym, filter(field)
+        #field.apply_filter
+        f, filtered = field.to_sym, field.apply_filter(:txt)
         m << "\n %-10s %s " % [f, filtered]
       end
     end

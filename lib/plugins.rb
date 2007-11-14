@@ -23,6 +23,7 @@ module Ackro
 
     attr_accessor :params, :field
     
+
     def dispatch(way)
       if respond_to?(:input)
         @result ||= { }
