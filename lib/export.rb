@@ -8,6 +8,7 @@ module Ackro
   module Repository::Export
 
     require 'lib/export/html.rb'
+    require 'lib/export/txt.rb'
 
     def export(way, params = { })
       way = way.to_s.upcase

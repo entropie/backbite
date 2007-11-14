@@ -37,6 +37,16 @@ describe Ackro::Repository::Export::HTML do
   
 end
 
+describe Ackro::Repository::Export::TXT do
+
+  result = target.repository.export(:txt, :title => :foobar).to_s
+  
+  it "result should have a doctype" do
+    puts result
+  end
+
+end
+
 
 =begin
 Local Variables:

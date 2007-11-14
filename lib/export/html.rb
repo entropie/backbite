@@ -7,17 +7,21 @@ module Ackro
 
   module Repository::Export::HTML
 
+    # mount point
     def self.export(tlog, params)
-      tree = Tree.new(tlog, params)
-      tree
+      Tree.new(tlog, params)
     end
     
+    # Tree makes the basic (and valid) HTML frame and handles
+    # the hpricot access.
     class Tree
 
-      attr_reader :tlog, :hpricot
+      attr_reader :tlog, :hpricot, :timestamp
       
+
       def initialize(tlog, params)
         @tlog, @params = tlog, params
+        @timestamp = Time.new
         @hpricot = Hpricot(make_tree)
         title!
         meta!
@@ -25,6 +29,17 @@ module Ackro
         files!
         body!
       end
+      
+
+      # returns the html tree
+      def to_html
+        @hpricot.to_html
+      end
+      alias :to_s :to_html
+      
+
+      private
+
 
       def body!
         tl = tlog
@@ -38,12 +53,7 @@ module Ackro
           end
         end
       end
-      
-      def to_html
-        @hpricot.to_html
-      end
-      alias :to_s :to_html
-      
+
       def make_tree
         ret = ''
         ret << doctype << "\n"
@@ -64,7 +74,7 @@ module Ackro
           h << "\n"
         end
       end
-      
+
       def meta!
         (r=(@hpricot/:head)).append do |h|
           h << " "*4          
@@ -73,8 +83,6 @@ module Ackro
           h << "\n"
         end
       end
-
-      # <link rel="alternate" type="application/atom+XML" href="atom.xml"/>
 
       def styles!
         tl = tlog
@@ -105,6 +113,7 @@ module Ackro
     end
     
   end
+
 end
 
 =begin
