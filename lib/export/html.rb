@@ -7,8 +7,8 @@ module Ackro
 
   module Repository::Export::HTML
 
-    def self.export(tlog)
-      tree = Tree.new(tlog)
+    def self.export(tlog, params)
+      tree = Tree.new(tlog, params)
       tree
     end
     
@@ -16,14 +16,29 @@ module Ackro
 
       attr_reader :tlog, :hpricot
       
-      def initialize(tlog)
-        @tlog = tlog
+      def initialize(tlog, params)
+        @tlog, @params = tlog, params
         @hpricot = Hpricot(make_tree)
+        title!
         meta!
         styles!
         files!
+        body!
       end
 
+      def body!
+        tl = tlog
+         (@hpricot/:body).append do |h|
+          tl.config[:html][:body].each_pair do |n, v|
+            h << " "*4
+            tag = v[:tag]
+            tag = :div if tag.empty?
+            h.send(tag, :id => n){|ha| ha << "\n\n    "}
+            h << "\n\n"
+          end
+        end
+      end
+      
       def to_html
         @hpricot.to_html
       end
@@ -38,7 +53,16 @@ module Ackro
       end
 
       def doctype
-        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\"DTD/xhtml1-transitional.dtd\">"
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"DTD/xhtml1-transitional.dtd\">\n"
+      end
+
+      def title!
+        t = @params[:title].to_s
+        (@hpricot/:head).append do |h|
+          h << " "*4
+          h.title(t)
+          h << "\n"
+        end
       end
       
       def meta!

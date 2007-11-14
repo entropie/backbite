@@ -72,6 +72,7 @@ $default_config = <<EOF
           end
           
           bdy.black do
+            tag 'p'
             items.min = 10
             style do
               margin_left 424.px

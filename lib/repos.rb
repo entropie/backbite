@@ -27,8 +27,11 @@ module Ackro
     end
 
 
-    def export(way)
-      dup.extend(Export).export(way)
+    def export(way, params = { })
+      params.extend(Helper::ParamHash).
+        process!(:title => :optional)
+      params[:title] ||= '[no title]'
+      dup.extend(Export).export(way, params)
     end
 
 
