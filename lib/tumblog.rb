@@ -48,14 +48,14 @@ module Ackro
       } if block_given?
       @repository.posts
     end
-    
 
     def post(component, params = { })
       params.extend(ParamHash).
         process!(:way => :optional,
                  :to => :optional,
                  :hash => :optional,
-                 :string => :optional)
+                 :string => :optional,
+                 :meta   => :optional)
       params[:way] ||= :hash
       params[:to]  ||= @repository.join('spool')
       components[component.to_sym].post(params)

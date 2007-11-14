@@ -42,7 +42,7 @@ module Ackro
     def find
       select do |post|
         yield post
-      end
+      end.sort_by{ |po| po.metadata[:date] }
     end
     
     def each

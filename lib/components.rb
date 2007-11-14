@@ -99,7 +99,8 @@ module Ackro
           process!(:way   => :optional,
                    :to    => :optional,
                    :hash  => :optional,
-                   :string=> :optional)
+                   :string=> :optional,
+                   :meta  => :optional)
         Info << "Tumblog: posting via `#{params[:way]}` to (#{params[:to]})"
         post_way = Post::Ways.dispatch(params[:way]) do |pw|
           pw.tlog    = @tlog
