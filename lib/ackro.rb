@@ -8,7 +8,9 @@ require 'pathname'
 require 'fileutils'
 require 'log4r'
 require 'log4r/outputter/syslogoutputter'
+require 'hpricot'
 require 'delegate'
+require 'uri'
 
 require 'yaml'
 require 'readline'
@@ -21,6 +23,7 @@ require 'lib/components'
 require 'lib/informer'
 require 'lib/plugins'
 require 'lib/repos'
+require 'lib/export'
 require 'lib/tumblog'
 
 

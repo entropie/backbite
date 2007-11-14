@@ -17,6 +17,9 @@ module Ackro
     end
     alias :path :root
 
+    def http_path(path = '')
+      URI.join(@config[:defaults][:base_href], path)
+    end
     
     def author
       @config[:defaults][:author]

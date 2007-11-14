@@ -84,7 +84,7 @@ module Ackro
     def method_missing(m, *args, &blk)
       if @component.fields.include?(m)
         val = @component.send(:fields)[m].value
-        Debug << "Post#method_missing: #{m} => '#{val}'"
+        #Debug << "Post#method_missing: #{m} => '#{val}'"
         val
       else
         super

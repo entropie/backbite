@@ -51,6 +51,12 @@ $default_config = <<EOF
         files[:extended].media = :screen
       end
 
+      javascript do
+        files[:jquery]
+        files[:foo]
+      end
+
+
       html do
         body do |bdy|
           bdy.red do

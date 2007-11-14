@@ -10,7 +10,6 @@ module Ackro
   # data files and stuff like this. Each tumblog has exactly one repository.
   class Repository
 
-
     include Helper
     
 
@@ -25,6 +24,11 @@ module Ackro
 
     def initialize(name, directory)
       @name, @directory = name.to_sym, Pathname.new(directory)
+    end
+
+
+    def export(way)
+      dup.extend(Export).export(way)
     end
 
 
@@ -52,7 +56,7 @@ module Ackro
       dir = Pathname.new(::File.expand_path(@directory))
       dir.join(other_dir.to_s)
     end
-    
+
 
     # unlinks everthing in our repos directory
     def remove!
