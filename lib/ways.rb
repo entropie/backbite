@@ -60,6 +60,7 @@ module Ackro
         def process(params, component)
           Info << " #{component.name} -> #{self.class}.proccess"
           @component = component
+          @meta = params[:meta]
           fields.each do |hand|
             @result[hand.name.to_sym] =
               if hand.is_a?(:field)
@@ -106,7 +107,7 @@ module Ackro
             result[nam] = value
           }
           result[:metadata] =
-            Post::Metadata.new(:component => @component.name,
+            Post::Metadata.new(@meta, :component => @component.name,
                                :way => self.class.to_s)
           result.to_yaml
         end

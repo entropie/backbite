@@ -26,7 +26,15 @@ module Ackro
       # select Posts by metadata[:date
       if bet = params[:between]
         ret.reject!{ |p|
-          Time.now.to_i-bet >= p.metadata[:date].to_i
+          if bet.kind_of?(Range)
+            if bet.include?(p.metadata[:date])
+              false
+            else
+              true
+            end
+          else
+            Time.now.to_i-bet >= p.metadata[:date].to_i
+          end
         }
       end
       # select Posts by Tags
@@ -76,7 +84,7 @@ module Ackro
     def method_missing(m, *args, &blk)
       if @component.fields.include?(m)
         val = @component.send(:fields)[m].value
-        Info << "Post#method_missing: #{m} => '#{val}'"
+        Debug << "Post#method_missing: #{m} => '#{val}'"
         val
       else
         super
@@ -111,7 +119,8 @@ module Ackro
       include Helper
 
       # +params+ must include <tt>:component</tt> and <tt>:way</tt>
-      def initialize(params = { })
+      def initialize(meta, params = { })
+        @meta = meta
         params.extend(ParamHash).
           process!(:component => :required, :way => :required)
         replace(params)
@@ -124,6 +133,10 @@ module Ackro
 
       private
       def add_defaults
+        if @meta
+          Info << "Meta: merging #{ @meta.map{ |k,v| "#{k}=#{v}"}}"
+          merge!(@meta)
+        end
         self[:date] ||= Time.now
       end
     end

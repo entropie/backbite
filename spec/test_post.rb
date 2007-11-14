@@ -39,8 +39,9 @@ describe Ackro::Post do
     post = @target.post(:foo, :hash =>
                         { :topic => 'Hello from rspec another',
                           :body  => 'foo another',
-                          :tags  => 'batz, bar, bumm, another'
-                        })
+                          :tags  => 'batz, bar, bumm, another',
+                        },
+                        :meta  => { :date => Time.now-(3*24*60*60) })
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
   end
@@ -60,9 +61,9 @@ describe Ackro::Posts do
       size.should == 1
   end
 
-  # it "should list a specific post (:between) " do
-  #   Target.posts.filter(:between => 2).size.should == 2
-  # end
+  it "should list a specific post (:between) " do
+    Target.posts.filter(:between => 4.days..3.days).size.should == 1
+  end
 
   it "should list a specific post (:tags) " do
     Target.posts.filter(:tags => %w(batz)).size.should == 3
