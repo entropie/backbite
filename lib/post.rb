@@ -13,6 +13,13 @@ module Ackro
       @tlog = tlog
       each
     end
+
+    def with_export(type)
+      const = Post::Export.const_get(type.to_s.upcase)
+      map{ |post|
+        yield post.extend(const)
+      }
+    end
     
     def filter(params, &blk)
       params.extend(Helper::ParamHash).
@@ -70,6 +77,9 @@ module Ackro
   
   class Post < Delegator
 
+    class Export
+    end
+    
     attr_reader :component
     
     def initialize(component)
@@ -98,6 +108,7 @@ module Ackro
         m << field.to_s
       }.join(', ') << "]>"
     end
+
 
     def to_s
       prfx = "\n   "
@@ -228,10 +239,16 @@ module Ackro
       # InputField represents a plugin connected to the field.
       class InputPlugin < InputField
 
+        attr_reader :plugin
+
+        def plugin
+          @plugin ||= @component.plugins[@name].new(@component.tlog)
+          @plugin
+        end
+        
         def run(params, tlog)
-          plugin = @component.plugins[@name].new(tlog)
           plugin.params = params
-          plugin
+          self
         end
 
       end

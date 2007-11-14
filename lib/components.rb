@@ -47,7 +47,7 @@ module Ackro
       
       attr_accessor :tlog
 
-      attr_reader   :name
+      attr_reader   :name, :config, :config_save
 
       attr_accessor :source
 
@@ -99,7 +99,7 @@ module Ackro
           process!(:way   => :optional,
                    :to    => :optional,
                    :hash  => :optional,
-                   :string=> :optional,
+                   :file  => :optional,
                    :meta  => :optional)
         Info << "Tumblog: posting via `#{params[:way]}` to (#{params[:to]})"
         post_way = Post::Ways.dispatch(params[:way]) do |pw|
@@ -164,13 +164,14 @@ module Ackro
         @name = name
       end
 
+      attr_reader :order
+      
 
       # Wraps the config values to somewhat we can understand better here.
       def reread!
+        #pp @config[:fields].sort
 
-        @config[:fields][:plugin_tags] ||= { }
-        @config[:fields][:plugin_date] ||= { }
-        
+        # @order = @config[:fields].sort.dup
         @config.each do |ident, values|
           case ident
           when :fields
@@ -185,8 +186,12 @@ module Ackro
       # Creates a Configuration instance, evalutes <tt>&blk</tt> and reformats
       # the fields.
       def read(&blk)
-        @config = Config::Configuration.new(@name)
-        @config.setup(&blk)
+        config = Config::Configuration.new(@name)
+        config.setup(&blk)
+        config[:fields].plugin_tags { }
+        config[:fields].plugin_date { }
+        @order = config[:fields].sort.dup.map{ |a| a.first}
+        @config = config
         reread!
         self
       end

@@ -30,7 +30,7 @@ describe Ackro::Post do
       :tags =>  'batz, bar, bumm, file'
     }
     str = str.map{ |c, v| "[%s_start]%s[%s_end]" % [c,v,c]}
-    post = @target.post(:test, :way => :file, :string => str.join)
+    post = @target.post(:test, :way => :file, :file => str.join)
     post.save.should
     post.class.should == Ackro::Post::Ways::File
   end

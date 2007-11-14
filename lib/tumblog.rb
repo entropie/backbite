@@ -46,10 +46,10 @@ module Ackro
 
 
     def posts(params = { }, &blk)
-      @repository.posts.each { |co|
+      @repository.posts(params).each { |co|
         yield co
       } if block_given?
-      @repository.posts
+      @repository.posts(params)
     end
 
     def post(component, params = { })
@@ -57,7 +57,7 @@ module Ackro
         process!(:way => :optional,
                  :to => :optional,
                  :hash => :optional,
-                 :string => :optional,
+                 :file => :optional,
                  :meta   => :optional)
       params[:way] ||= :hash
       params[:to]  ||= @repository.join('spool')

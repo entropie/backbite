@@ -41,10 +41,17 @@ describe Ackro::Repository::Export::TXT do
 
   result = target.repository.export(:txt, :title => :foobar).to_s
   
-  it "result should have a doctype" do
-    puts result
+  it "result should have a title" do
+    result.split("\n")[1].should =~
+      /### ''foobar`` at '.+'/
   end
 
+  # it "" do
+  #   puts
+  #   puts "-"*60
+  #   puts result
+  # end
+  
 end
 
 

@@ -5,6 +5,8 @@
 
 define :foo do
 
+  target :red
+  
   style do
     margin_right 23.px
     color :black

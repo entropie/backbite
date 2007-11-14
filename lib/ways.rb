@@ -68,13 +68,12 @@ module Ackro
                 hand.run( value, params, tlog )
               elsif hand.is_a?(:plugin)
                 # create plugin instance
-                plugin = hand.run(params, tlog)
-                plugin.dispatch(self)
-                plugin.prepare
-                plugin
+                field = hand.run(params, tlog)
+                field.plugin.dispatch(self)
+                field.plugin.prepare
+                field.plugin
               end
           end
-          #@result
           self
         end
 
@@ -155,7 +154,7 @@ module Ackro
       
       class File < Way
         def run(field, params)
-          result = params[:string].
+          result = params[:file].
             scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/).
             flatten.join
           super(field, result)

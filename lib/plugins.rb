@@ -21,7 +21,7 @@ module Ackro
     
     attr_reader :tlog
 
-    attr_accessor :params
+    attr_accessor :params, :field
     
     def dispatch(way)
       if respond_to?(:input)
@@ -46,7 +46,6 @@ module Ackro
           @result[afn] = r
         end
       end
-      
       self
     end
     

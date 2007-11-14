@@ -5,9 +5,6 @@
 
 class Tags < Plugin
 
-  def __internal__(tlog)
-  end
-  
   def input
     'Tags:'
   end
@@ -20,18 +17,13 @@ class Tags < Plugin
   #   []
   # end
 
-  #  filter         - filter applied for every output module
+  def filter        #  - filter applied for every output module
+    field.value.join(', ')
+  end
 
-  #  html_filter    - specific filter for output module
-
-  ## Following keywords are evaluated before the components writes the
-  ## output
-  
-  #  before         - content_before
-
-  #  content        - content
-
-  #  after          - content_after
+  def txt_filter   # - specific filter for output module
+    field.value.join(' ')
+  end
 
 end
 

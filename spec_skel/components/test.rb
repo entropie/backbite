@@ -5,6 +5,8 @@
 
 define :test do
 
+  target :black
+
   style do
     margin_left 23.px
     color :red
