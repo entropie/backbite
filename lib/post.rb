@@ -29,7 +29,8 @@ module Ackro
         process!(
                  :between => :optional,
                  :ids     => :optional,
-                 :tags    => :optional
+                 :tags    => :optional,
+                 :target  => :optional
                  )
       ret = self.dup
 
@@ -47,6 +48,14 @@ module Ackro
           end
         }
       end
+
+      # select Posts by Target
+      if target = params[:target]
+        ret.reject!{ |p|
+          target !=  p.config[:target]
+        }
+      end
+      
       # select Posts by Tags
       if tags = params[:tags]
         ret = ret.find{ |post|
@@ -66,11 +75,13 @@ module Ackro
     def each
       postfiles = (par = tlog.repository.join('spool')).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
+      i = -1
       postfiles.inject(self) { |mem, f|
         postway = Post::Ways.dispatch(:yaml) { |way|
           way.tlog = self.tlog
           way.source = YAML::load(par.join(f).readlines.join)
         }.process
+        postway.pid = i+=1
         yield postway if block_given?
         mem << postway
       }
@@ -84,6 +95,7 @@ module Ackro
     end
     
     attr_reader :component
+    attr_accessor :pid
     
     def initialize(component)
       @component = component
@@ -233,12 +245,11 @@ module Ackro
           end
           value
         end
-        
+
         def initialize(name = nil, defi = nil, comp = nil)
           @name, @definitions, @component = name, defi, comp
         end
 
-        # 
         def run(value, params, tlog)
           @__text__ = value
           self

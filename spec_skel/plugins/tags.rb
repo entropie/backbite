@@ -5,27 +5,23 @@
 
 class Tags < Plugin
 
-  def input
+  def input                     # undocumented
     'Tags:'
   end
 
-  def transform(inp)
+  def transform!(inp)           # *really* modifies the input
     inp.to_s.scan(/(\w+),?\s?/).flatten
   end
   
-  # def content
-  #   []
-  # end
-
-  def filter        #  - filter applied for every output module
+  def filter                    # filter applied for every output module
     field.value.join(', ')
   end
 
-  def txt_filter   # - specific filter for output module
-    p tree.class
-    p field.class
-    p component.class
-    p tlog.class
+  def txt_filter                # specific filter for output module
+    # p tree.class
+    # p field.class
+    # p component.class
+    # p tlog.class
     field.value.join(' ')
   end
 

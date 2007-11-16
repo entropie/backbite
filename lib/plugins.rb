@@ -19,10 +19,14 @@ module Ackro
   # Each user-defined plugin is a subclass of Plugin.
   #
   # In the plugin various attributes are available:
-  # * +field+ -- the Field instance
   # * +tree+  -- the response stream
+  # * +field+ -- the Field instance
+  # * +component+ -- the Component instance
+  # * +tlog+ -- the Tumblog instance
   #
   # Following methods are known (and will be called if necessary)
+  # * input -- undocumented
+  # * transform!(str) -- modifies the input string (no attributes available)
   # * content  -- The value of the plugin; no interaction is needed
   # * before   -- value *before* content
   # * after    -- value *after*  content
@@ -46,8 +50,8 @@ module Ackro
         @result[:content] = way.run(name, params)
       end
 
-      if respond_to?(:transform) and @result[:content]
-        @result[:content] = send(:transform, @result[:content])
+      if respond_to?(:transform!) and @result[:content]
+        @result[:content] = send(:transform!, @result[:content])
         Info << " - Plugin#transform='#{@result[:content].inspect}'"
       end
     end

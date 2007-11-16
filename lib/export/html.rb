@@ -6,18 +6,37 @@
 module Ackro
 
   module Post::Export::HTML
+
+    def fid
+      "#{name}#{pid}"
+    end
     
-    def to_html
-      str = '{{{'
+    def to_html(hpricot_node, name)
       ordered = tlog.components[self.metadata[:component]].order.dup
       ordered.map!{ |o|
         fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
         fields[fname]
       }
-      ordered.inject(str) do |m, field|
-        f, filtered = field.to_sym, filter(field)
-        m << "\n %-10s %s " % [f, filtered]
+      target = hpricot_node.to_a.first
+
+      res = Hpricot("<div id=\"#{fid}\">\n</div>" + "\n")
+      t = (res/:div)
+      t.append{ |h| h << "#{" "*8}"}
+      ordered.each do |field|
+        f, filtered = field.to_sym, field.apply_filter(:html)
+        opts = { }
+        opts[:tag] = field.definitions[:tag] unless field.definitions[:tag].empty?
+        opts[:tag] ||= :div
+        tag = opts[:tag]
+        t.append{ |h|
+          h << "#{" "*8}"          
+          h.send(tag, filtered, :class => field.to_sym)
+          h << "\n#{" "*8}"
+        }
       end
+      target << "\n#{" "*8}"
+      target << t.to_html
+      t
     end
     
   end
@@ -45,7 +64,7 @@ module Ackro
         meta!
         styles!
         files!
-        body!
+        body_nodes(params)
       end
       
 
@@ -58,18 +77,38 @@ module Ackro
 
       private
 
+      def body_nodes(params)
+        body do |name, hpe|
+          @tlog.posts(params[:postopts].merge(:target => name)).
+            with_export(:html, :tree => self) { |post|
+            # p hpe
+            # hpe << 'adf'
+            post.to_html(hpe, name)
 
-      def body!
+            #hpe.append 
+          }
+        end
+      end
+      
+
+      def body # :yield: hpricot_body_node
         tl = tlog
-         (@hpricot/:body).append do |h|
+        (hp=(@hpricot/:body)).append do |h|
           tl.config[:html][:body].each_pair do |n, v|
             h << " "*4
             tag = v[:tag]
             tag = :div if tag.empty?
-            h.send(tag, :id => n){|ha| ha << "\n\n    "}
+            h.send(tag, :id => n){|ha|
+              ha << "\n#{" "*4}"
+            }
             h << "\n\n"
           end
         end
+        tl.config[:html][:body].each_pair { |n, v|
+          tag = v[:tag]
+          tag = :div if tag.empty?
+          yield(n, (hp/tag))
+        }
       end
 
       def make_tree

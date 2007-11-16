@@ -9,19 +9,10 @@ class Date < Plugin
     Time.now
   end
 
-  def filter        # - filter applied for every output module
+  def filter                    # filter applied for every output module
     field.value.strftime("%Y %B, %M at %H:%M  %Z")
   end
   
-  #  html_filter    - specific filter for output module
-
-  ## Following keywords are evaluated before the components writes the
-  ## output (to a file)
-  
-  #  before         - content_before
-  #  content        - content
-  #  after          - content_after
-
 end
 
 

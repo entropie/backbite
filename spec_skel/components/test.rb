@@ -24,6 +24,7 @@ define :test do
     # end
     
     input_topic do
+      tag 'p'
       markup 'redcloth'
       before 'foo'
     end
