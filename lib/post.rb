@@ -244,10 +244,10 @@ module Ackro
           filter = "#{filter}_filter".to_sym
           if self.respond_to?(:plugin) and plugin
             if plugin.respond_to?(filter) && res = plugin.send(filter)
-              Info << "Filter::#{ name }:#{filter}"
+              #Info << "Filter::#{ name }:#{filter}"
               return res
             elsif plugin.respond_to?(def_filter) && res = plugin.send(def_filter)
-              Info << "Filter::#{ name }:#{filter}"
+              #Info << "Filter::#{ name }:#{filter}"
               return res
             end
             value

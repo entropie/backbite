@@ -10,7 +10,7 @@ describe Ackro::Repository::Export::CSS do
 
   result = target.repository.export(:css).to_s
 
-  it "should include basic tlog style definition" do
+  it "should include basic tlog style definitions" do
     result.should =~ /CSS file:.*\/base\.css/
     result.should =~ /^body \{/
     result.should =~ /^  #red \{/
@@ -50,7 +50,7 @@ describe Ackro::Repository::Export::HTML do
     ((result/:head/:title).html).should == 'foobar'
   end
 
-  it "result should have some linke tags" do
+  it "result should have some (meta)link tags" do
     ((result/:head/:link).to_a.map{ |l| l.to_s }.grep(/\.css/).size).
       should == 2
   end
@@ -61,14 +61,10 @@ describe Ackro::Repository::Export::HTML do
   end
 
   it "result should have a body tag with (node) contents" do
-    t = (result/:body/:div/:/)
-    # p t.size
-    # t.each { |at|
-    #   puts at
-    # }
-    
-
-    #((t/:p).html).should == "\n\n    "
+    (result/:body/:div/'> *').size.should == 5
+    (result/:body/:p).size.should == 1
+    (result/:body/'> p').size.should == 1
+    (result/:body/'> div'/'> *').size.should == 5
   end
 
 

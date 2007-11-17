@@ -11,8 +11,9 @@ describe Ackro::Tumblelog do
   end
 
   it "should respond with non nil on various attributes" do
-    [:repository, :config, :name, :root, :author, :url].each do |attr|
-      @target.send(attr).should
+    [:repository, :config, :name, :root, :path,
+     :author, :url, :components, :posts, :post].each do |attr|
+      @target.should.respond_to(attr)
     end
   end
   

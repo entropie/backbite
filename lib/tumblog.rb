@@ -7,7 +7,9 @@ module Ackro
 
   class Tumblelog
 
+
     include Helper
+
 
     attr_reader :repository, :config, :name
     
@@ -17,10 +19,12 @@ module Ackro
     end
     alias :path :root
 
+
     def http_path(path = '')
       URI.join(@config[:defaults][:base_href], path)
     end
     
+
     def author
       @config[:defaults][:author]
     end
@@ -52,6 +56,7 @@ module Ackro
       @repository.posts(params)
     end
 
+
     def post(component, params = { })
       params.extend(ParamHash).
         process!(:way => :optional,
@@ -69,6 +74,7 @@ module Ackro
       config = @config.with_replacer
     end
     
+
   end
   
 end
