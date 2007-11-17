@@ -20,7 +20,7 @@ module Ackro
     
 
     BaseDirs = %w(plugins components htdocs tmp spool)
-    SubDirs  = { :htdocs => [:include] }    
+    SubDirs  = { :htdocs => [:include], :tmp => ['.work'] }
 
     def initialize(name, directory)
       @name, @directory = name.to_sym, Pathname.new(directory)
@@ -29,7 +29,9 @@ module Ackro
 
     def export(way, params = { })
       params.extend(Helper::ParamHash).
-        process!(:title => :optional, :postopts => :optional)
+        process!(:title => :optional,
+                 :postopts => :optional,
+                 :nowrite => :optional)
       params[:postopts] ||= { }
       params[:title] ||= '[no title]'
       dup.extend(Export).export(way, params)
@@ -53,6 +55,11 @@ module Ackro
       @components ||= Components.load(join(:components), tlog)
     end
 
+    def working_dir(*other_dirs)
+      res = join('tmp', '.work', *other_dirs)
+      res
+    end
+    
 
     # Returns a Pathname instance, the Repository path joined with
     # +other_dirs+.

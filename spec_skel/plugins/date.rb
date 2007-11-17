@@ -14,8 +14,6 @@ class Date < Plugin
   end
 
   def html_filter
-    p("##{identifier}")
-    p((tree.hpricot.at("##{identifier}")))
     filter
   end
   

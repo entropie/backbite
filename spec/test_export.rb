@@ -93,6 +93,20 @@ describe Ackro::Repository::Export::TXT do
   
 end
 
+describe Ackro::Repository::Export::TAGS do
+
+  result = target.repository.export(:tags).to_s
+  
+  it "result should be big" do
+    result.size.should > 5000
+  end
+
+  it "result titles should include tag titles" do
+    result.scan(/title>(.+)<\/title>/).flatten.map{ |r| r[/: (\w+)/, 1] }.
+      should == ["batz", "bar", "bumm", "ahash", "file", "another", "keke"]
+  end
+
+end
 
 
 

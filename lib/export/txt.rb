@@ -32,18 +32,22 @@ module Ackro
         # mount point
         def self.export(tlog, params)
           @tree = Tree.new(tlog, params)
+          @tree.write
+          @tree
         end
         
         class Tree < Repository::ExportTree
 
           def initialize(tlog, params)
             super
+            @file = 'plain.txt'
             @str = "###\n### ''#{params[:title]}`` at '#{timestamp}'\n###\n\n"
             @tlog.posts(params[:postopts]).
               with_export(:txt, :tree => self){ |post|
               @str << "### " << post.metadata[:date].to_s << "\n"
               @str << post.to_txt << "\n"
             }
+            @__result__ = @str
           end
 
           def to_s

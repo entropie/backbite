@@ -58,7 +58,7 @@ module Ackro
         # If the field's a plugin, we're going to create an instance of
         # it (because we only want to work on a single plugin instance).
         def process(params, component)
-          Info << " #{component.name} -> #{self.class}.proccess"
+          Info << " - #{component.name} -> #{self.class}"
           @component = component
           @meta = params[:meta]
           fields.each do |hand|

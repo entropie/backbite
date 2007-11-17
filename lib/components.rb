@@ -102,7 +102,7 @@ module Ackro
                    :file  => :optional,
                    :meta  => :optional
                    )
-        Info << "Tumblog: posting via `#{params[:way]}` to (#{params[:to]})"
+        Info << "Post[#{name}]: posting via `#{params[:way]}` to (#{params[:to]})"
         post_way = Post::Ways.dispatch(params[:way]) do |pw|
           pw.tlog    = @tlog
           pw.fields  = fields
