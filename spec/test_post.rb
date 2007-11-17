@@ -72,6 +72,14 @@ describe Ackro::Posts do
       size.should == 1
   end
 
+  it "should list specific posts (:target)" do
+    Target.posts.find{ |p| p.config[:target] == :black }.
+      size.should == 2
+    Target.posts.find{ |p| p.config[:target] == :red }.
+      size.should == 2
+  end
+
+  
   it "should list a specific post (:between) " do
     Target.posts.filter(:between => 4.days..3.days).size.should == 1
     Target.posts.filter(:between => 11.days..9.days).size.should == 1
