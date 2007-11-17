@@ -13,7 +13,7 @@ module Ackro
       @tlog = tlog
       each
     end
-
+    
     def with_export(type, params)
       const = Post::Export.const_get(type.to_s.upcase)
       map{ |post|
@@ -90,7 +90,13 @@ module Ackro
   end
   
   class Post < Delegator
-
+    
+    # Export contains a list of Modules to extend the Post class. E.g.
+    # to use the +:html+ way to export the Repository, you first need
+    # to define a Repository::Export sublcass, named HTML, which
+    # responds to :export, therein your ExportTree will be evaluated
+    # and uses via +with_export+ the +to_foo+ method of the extend
+    # Post instance.
     class Export
     end
     
