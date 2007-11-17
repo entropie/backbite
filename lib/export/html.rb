@@ -23,7 +23,7 @@ module Ackro
           }
           target = hpricot_node.to_a.first
 
-          res = Hpricot("<div id=\"#{fid}\">\n</div>" + "\n")
+          res = Hpricot("<div class=\"#{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
           t = (res/:div)
           t.append{ |h| h << "#{" "*8}"}
           ordered.each do |field|
@@ -82,14 +82,13 @@ module Ackro
 
 
           def body_nodes(params)
+            interval = @tlog.config[:defaults][:export][:ways][:html][:interval]
+            interval = ((Time.now-interval)/24/60/60).to_i
             body do |name, hpe|
-              @tlog.posts(params[:postopts].merge(:target => name)).
+              @tlog.posts(params[:postopts].
+                          merge(:target => name)).
                 with_export(:html, :tree => self) { |post|
-                # p hpe
-                # hpe << 'adf'
                 post.to_html(hpe, name)
-
-                #hpe.append 
               }
             end
           end

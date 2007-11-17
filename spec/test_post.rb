@@ -35,7 +35,7 @@ describe Ackro::Post do
     post.class.should == Ackro::Post::Ways::File
   end
 
-  it "should accept a post via hash to another component" do
+  it "should accept a post via hash to another component, metadata #0" do
     post = @target.post(:foo, :hash =>
                         { :topic => 'Hello from rspec another',
                           :body  => 'foo another',
@@ -45,13 +45,24 @@ describe Ackro::Post do
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
   end
+  it "should accept a post via hash to another component, metadate #1" do
+    post = @target.post(:foo, :hash =>
+                        { :topic => 'Hello from rspec keke',
+                          :body  => 'foo keke',
+                          :tags  => 'batz, bar, bumm, keke',
+                        },
+                        :meta  => { :date => Time.now-(10*24*60*60) })
+    post.save.should
+    post.class.should == Ackro::Post::Ways::Hash
+  end
 
+  
 end
 
 describe Ackro::Posts do
 
   it "should have a corresponding size" do
-    Target.posts.size.should == 3
+    Target.posts.size.should == 4
   end
 
   it "should list a specific post (==, =~)" do
@@ -63,10 +74,11 @@ describe Ackro::Posts do
 
   it "should list a specific post (:between) " do
     Target.posts.filter(:between => 4.days..3.days).size.should == 1
+    Target.posts.filter(:between => 11.days..9.days).size.should == 1
   end
 
   it "should list a specific post (:tags) " do
-    Target.posts.filter(:tags => %w(batz)).size.should == 3
+    Target.posts.filter(:tags => %w(batz)).size.should == 4
     Target.posts.filter(:tags => %w(another)).size.should == 1
     Target.posts.filter(:tags => %w(ahash another)).size.should == 2
   end

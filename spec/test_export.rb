@@ -6,6 +6,17 @@
 target = Ackro::Tumblelog.new(:rspec, $default_config)
 target.repository.setup!
 
+describe Ackro::Repository::Export::CSS do
+
+  result = target.repository.export(:css).to_s
+  
+  # it "" do
+  #   puts
+  #   puts "-"*60
+  #   puts result
+  # end
+  
+end
 
 describe Ackro::Repository::Export::HTML do
 
@@ -36,6 +47,7 @@ describe Ackro::Repository::Export::HTML do
     #   puts at
     # }
     
+
     #((t/:p).html).should == "\n\n    "
   end
 
@@ -64,6 +76,8 @@ describe Ackro::Repository::Export::TXT do
   # end
   
 end
+
+
 
 
 =begin

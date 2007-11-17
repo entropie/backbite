@@ -5,6 +5,7 @@
 
 module Ackro
 
+  # Posts handles access to the different Posts in our Repository.
   class Posts < Array
 
     attr_reader :tlog
@@ -97,6 +98,8 @@ module Ackro
     # responds to :export, therein your ExportTree will be evaluated
     # and uses via +with_export+ the +to_foo+ method of the extend
     # Post instance.
+    # 
+    # Got it? nope? see lib/export/*.rb for examples.
     class Export
     end
     
@@ -106,13 +109,13 @@ module Ackro
     def initialize(component)
       @component = component
     end
-
+    
     def __getobj__
       @component
     end
 
 
-    # +setup!+ sets various attributes on our Plugin instance.
+    # +setup!+ sets various attributes on our Plugin instances.
     def setup!(params)
       params.extend(Helper::ParamHash).
         process!(:tree => :required)

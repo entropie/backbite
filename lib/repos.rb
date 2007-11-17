@@ -20,7 +20,7 @@ module Ackro
     
 
     BaseDirs = %w(plugins components htdocs tmp spool)
-    
+    SubDirs  = { :htdocs => [:include] }    
 
     def initialize(name, directory)
       @name, @directory = name.to_sym, Pathname.new(directory)
@@ -55,10 +55,10 @@ module Ackro
 
 
     # Returns a Pathname instance, the Repository path joined with
-    # +other_dir+.
-    def join(other_dir)
+    # +other_dirs+.
+    def join(*other_dirs)
       dir = Pathname.new(::File.expand_path(@directory))
-      dir.join(other_dir.to_s)
+      dir.join(*other_dirs.map{ |o| o.to_s})
     end
 
 
@@ -83,8 +83,13 @@ module Ackro
           Info << " Subdirectory `#{name}/#{bdir}` is existing."
           next
         end
-        ndir.mkdir and
-          Info << " Created subdirectory `#{name}/#{bdir}`."
+        ndir.mkdir and Info << " Created subdirectory `#{name}/#{bdir}`."
+        if sdirs = SubDirs[bdir.to_sym]
+          sdirs.each do |sdir|
+            (s = ndir.join(sdir.to_s)).mkdir
+            Info << " Created subdirectory `#{name}/#{bdir}/#{s.basename.to_s}`."
+          end
+        end
       end
       Info << "Done, `#{name}` should be valid repository now."
     end

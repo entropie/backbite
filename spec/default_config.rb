@@ -37,7 +37,9 @@ $default_config = <<EOF
 
         export do
           ways do
-            html
+            html {
+              interval 1.days
+            }
             plain
             xml
             atom
@@ -48,7 +50,7 @@ $default_config = <<EOF
 
       stylesheets do
         files[:base].media = :screen
-        files[:extended].media = :screen
+        files[:generated].media = :screen
       end
 
       javascript do

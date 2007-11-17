@@ -27,6 +27,7 @@ module Ackro
     module Export
 
       # FIXME: use variables defined in config
+      require 'lib/export/css.rb'
       require 'lib/export/html.rb'
       require 'lib/export/txt.rb'
 
