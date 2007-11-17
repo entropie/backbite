@@ -35,7 +35,7 @@ describe Ackro::Post do
     post.class.should == Ackro::Post::Ways::File
   end
 
-  it "should accept a post via hash to another component, metadata #0" do
+  it "should accept a post via hash to another component, metadate #0" do
     post = @target.post(:foo, :hash =>
                         { :topic => 'Hello from rspec another',
                           :body  => 'foo another',

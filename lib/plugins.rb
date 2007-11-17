@@ -23,6 +23,8 @@ module Ackro
   # * +field+ -- the Field instance
   # * +component+ -- the Component instance
   # * +tlog+ -- the Tumblog instance
+  # * +identifier+ -- a uniq name of the post
+  # * +pid+ -- the post_id
   #
   # Following methods are known (and will be called if necessary)
   # * input -- undocumented
@@ -35,12 +37,26 @@ module Ackro
   class Plugin
 
     AutoFieldNames = [:before, :content, :after]
-    
-    attr_reader :tlog
 
+    # The params
     attr_accessor :params
-    attr_accessor :field, :tree, :component, :tlog
 
+    # The instance of the current field
+    attr_accessor :field
+    # The entire result parse-tree
+    attr_accessor :tree
+    # The component instance
+    attr_accessor :component
+    # The tlog instance
+    attr_accessor :tlog
+    # A uniq name, consisting of (component.name+pid)
+    attr_accessor :identifier
+    # The post id
+    attr_accessor :pid
+
+    # dispatch runs +input+ on the plugin during component evaluation,
+    # so its basically used to hard set the result value and.
+    #
     def dispatch(way)
       if respond_to?(:input)
         @result ||= { }
@@ -70,7 +86,7 @@ module Ackro
     def name
       self.class.name.split('::').last.downcase
     end
-
+    
     def result
       return @result.values.shift if @result.to_s.size == 1
 

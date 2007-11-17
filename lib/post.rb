@@ -115,7 +115,7 @@ module Ackro
     end
 
 
-    # +setup!+ sets various attributes on our Plugin instances.
+    # setup! sets various attributes on our Plugin instances.
     def setup!(params)
       params.extend(Helper::ParamHash).
         process!(:tree => :required)
@@ -124,6 +124,8 @@ module Ackro
           fld.plugin.field = fld
           fld.plugin.component = @component
           fld.plugin.tlog = @component.tlog
+          fld.plugin.pid = self.pid
+          fld.plugin.identifier = "#{component.name}#{pid}"
           params.each_pair do |pnam, pval|
             fld.plugin.send("#{pnam}=", pval)
           end

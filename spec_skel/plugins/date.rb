@@ -12,6 +12,13 @@ class Date < Plugin
   def filter                    # filter applied for every output module
     field.value.strftime("%Y %B, %M at %H:%M  %Z")
   end
+
+  def html_filter
+    p("##{identifier}")
+    p((tree.hpricot.at("##{identifier}")))
+    filter
+  end
+  
   
 end
 
