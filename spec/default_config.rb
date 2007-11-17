@@ -8,6 +8,9 @@ $default_config = <<EOF
 
       defaults do
 
+        style do
+        end
+
         root         '~/Tmp/rspec'
 
         title        "rspec - %title%"
@@ -61,6 +64,13 @@ $default_config = <<EOF
 
       html do
         body do |bdy|
+
+          bdy.style do
+            color :black
+            background_color :white
+            font_family 'verdena courier arial'
+          end
+
           bdy.red do
             items.max = 100
             items.min = 10

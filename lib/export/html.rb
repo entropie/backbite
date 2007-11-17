@@ -97,6 +97,7 @@ module Ackro
             tl = tlog
             (hp=(@hpricot/:body)).append do |h|
               tl.config[:html][:body].each_pair do |n, v|
+                next if n == :style
                 h << " "*4
                 tag = v[:tag]
                 tag = :div if tag.empty?

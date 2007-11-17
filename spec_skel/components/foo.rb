@@ -16,7 +16,7 @@ define :foo do
 
     plugin_date do # optional
       style do
-        foo 'bar'
+        color :yellow
       end
     end
 

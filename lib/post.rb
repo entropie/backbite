@@ -35,6 +35,13 @@ module Ackro
                  )
       ret = self.dup
 
+      # select Posts by Target
+      if target = params[:target]
+        ret.reject!{ |p|
+          true if target != p.config[:target]
+        }
+      end
+
       # select Posts by metadata[:date
       if bet = params[:between]
         ret.reject!{ |p|
@@ -47,13 +54,6 @@ module Ackro
           else
             Time.now.to_i-bet >= p.metadata[:date].to_i
           end
-        }
-      end
-
-      # select Posts by Target
-      if target = params[:target]
-        ret.reject!{ |p|
-          target !=  p.config[:target]
         }
       end
       
