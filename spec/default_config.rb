@@ -69,7 +69,7 @@ $default_config = <<EOF
             margin 0.px
             padding 0.px
             color :navy
-            background_color '#fab444'
+            background_color "#105099"
             font_family 'verdena courier arial'
           end
 

@@ -3,19 +3,19 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-define :test do
+define :bar do
 
   target :black
 
   style do
     margin_left '48%'
-    margin_bottom 20.px    
-    border_top '20px solid yellow'
+    border_top '20px solid orange'
     color '#FFD700'
-    border_left '3px solid yellow'
-    border_bottom '3px solid yellow'
-    border_right '3px solid yellow'
+    border_left '3px solid orange'
+    border_right '3px solid orange'
+    border_bottom '3px solid orange'
     padding_left 10.px
+    margin_bottom 20.px
   end
 
   fields do
@@ -27,8 +27,8 @@ define :test do
 
     input_body do
       style do
-        color '#fab444'
-        font_family 'verdana'
+        color '#fab666'
+        font_family 'arial'
         font_size 18.px
         padding_bottom 20.px
         margin_bottom 10.px
@@ -56,6 +56,8 @@ define :test do
   end
 
 end
+
+
 
 =begin
 Local Variables:

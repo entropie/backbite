@@ -11,16 +11,16 @@ define :foo do
     color :navy
     border_left '2px solid blue;'
     padding_left 10.px
-    margin_bottom 10.px
+    margin_bottom 20.px
   end
 
   fields do
 
     plugin_date do
       style do
-        color '#fab444'
+        color '#3030EF'
         float :right
-        padding 5.px        
+        padding 8.px      
       end
     end
     
@@ -33,7 +33,7 @@ define :foo do
         font_size '20px'
         background_color '#E79E27'
         padding 5.px
-        pargin_bottom 0.px
+        margin_bottom 0.px
       end
     end
 

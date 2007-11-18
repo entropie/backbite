@@ -61,8 +61,8 @@ describe Ackro::Repository::Export::HTML do
   end
 
   it "result should have a body tag with (node) contents" do
-    (result/:body/:div/'> *').size.should == 12
-    (result/:body/'> div'/'> *').size.should == 12
+    (result/:body/:div/'> *').size.should == 14
+    (result/:body/'> div'/'> *').size.should == 14
   end
 
 end
@@ -77,9 +77,9 @@ describe Ackro::Repository::Export::TXT do
   end
 
   it "should have some posts" do
-    result.scan(/^###/).flatten.size.should == 8
-    result.scan(/^\{\{\{/).flatten.size.should == 5
-    result.scan(/^\}\}\}/).flatten.size.should == 5
+    result.scan(/^###/).flatten.size.should == 9
+    result.scan(/^\{\{\{/).flatten.size.should == 6
+    result.scan(/^\}\}\}/).flatten.size.should == 6
   end
   
 end

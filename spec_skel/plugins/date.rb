@@ -10,14 +10,12 @@ class Date < Plugin
   end
 
   def filter                    # filter applied for every output module
-    field.value.strftime("%Y %B, %M at %H:%M  %Z")
+    field.value.strftime("%Y %B, %d at %H:%M  %Z")
   end
 
   def html_filter
     filter
   end
-  
-  
 end
 
 

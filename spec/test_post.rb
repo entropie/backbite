@@ -20,9 +20,19 @@ describe Ackro::Post do
                         })
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
-    sleep 1
   end
 
+  it "should accept a post via hash" do
+    post = @target.post(:bar, :hash =>
+                        { :topic => 'Hello from rspec ahash',
+                          :body  => 'foo ahash',
+                          :tags  => 'bar'
+                        })
+    post.save.should
+    post.class.should == Ackro::Post::Ways::Hash
+  end
+
+  
   it "should accept a post via hash" do
     post = @target.post(:foo, :hash =>
                         { :topic => 'Hello from rspec nana',
@@ -31,7 +41,6 @@ describe Ackro::Post do
                         })
     post.save.should
     post.class.should == Ackro::Post::Ways::Hash
-    sleep 1
   end
 
   
@@ -74,7 +83,7 @@ end
 describe Ackro::Posts do
 
   it "should have a corresponding size" do
-    Target.posts.size.should == 5
+    Target.posts.size.should == 6
   end
 
   it "should list a specific post (==, =~)" do
@@ -86,7 +95,7 @@ describe Ackro::Posts do
 
   it "should list specific posts (:target)" do
     Target.posts.find{ |p| p.config[:target] == :black }.
-      size.should == 2
+      size.should == 3
     Target.posts.find{ |p| p.config[:target] == :red }.
       size.should == 3
   end
@@ -108,7 +117,7 @@ describe Ackro::Posts do
     Target.posts do |po|
       po.class.should == Ackro::Post
       po.fields[:topic].value.should =~ /^Hello from rspec/
-      po.fields[:tags].value[0..-2].should == ["batz", "bar", "bumm"]
+      po.fields[:tags].value[0..-2].should == ["batz", "bar", "bumm"] if po.component.name != :bar
     end
   end
 
