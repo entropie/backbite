@@ -32,7 +32,6 @@ module Ackro
         file = wdir.join(@file)
         Info << " #{class_name}: writing #{@__result__.size} Bytes to #{file}"
         file.dirname.mkdir unless file.dirname.exist?
-        p file
         file.open('w+'){ |f| f.write(@__result__)}
         @written = true
         @__result__

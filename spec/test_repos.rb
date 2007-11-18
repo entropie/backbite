@@ -19,6 +19,10 @@ describe Ackro::Repository do
   end
 
   it "should able to remove a directory structure" do
+
+    system("mkdir -p /home/mit/public_html/ackrosuc/")
+    system("cp -R #{ @target.directory }/* /home/mit/public_html/ackrosuc/")
+    
     @target.remove!
     @target.valid?.should_not
   end

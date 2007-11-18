@@ -49,7 +49,8 @@ module Ackro
           repository.export(:html,
                             :title => "Tag: #{@tag}",
                             :postopts => { :tags => [@tag]},
-                            :nowrite => true).to_s
+                            :nowrite => true,
+                            :path_deep => '../').to_s
       end
       
     end

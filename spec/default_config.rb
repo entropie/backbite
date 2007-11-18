@@ -66,8 +66,8 @@ $default_config = <<EOF
         body do |bdy|
 
           bdy.style do
-            color :black
-            background_color :white
+            color :navy
+            background_color '#234223'
             font_family 'verdena courier arial'
           end
 
@@ -75,8 +75,8 @@ $default_config = <<EOF
             items.max = 100
             items.min = 10
             style do
-              width 424.px
-              float :left
+              width '50%'
+              float :right
               margin 0.px
               padding 0.px
               background 'url(../images/left_bg.jpg) repeat-y'  
@@ -84,7 +84,6 @@ $default_config = <<EOF
           end
           
           bdy.black do
-            tag 'p'
             items.min = 10
             style do
               margin_left 424.px

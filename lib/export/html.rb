@@ -21,8 +21,8 @@ module Ackro
             fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
             fields[fname]
           }
-          target = hpricot_node.to_a.first
-
+          target = hpricot_node
+          return '' unless target.attributes[:id].to_sym == self.config[:target]
           res = Hpricot("<div class=\"#{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
           t = (res/:div)
           t.append{ |h| h << "#{" "*8}"}
@@ -65,6 +65,7 @@ module Ackro
         def initialize(tlog, params)
           super
           @hpricot = Hpricot(make_tree)
+          @params = params
           title!
           meta!
           styles!
@@ -88,9 +89,10 @@ module Ackro
         def body_nodes(params)
           interval = @tlog.config[:defaults][:export][:ways][:html][:interval]
           interval = ((Time.now-interval)/24/60/60).to_i
+
           body do |name, hpe|
-            @tlog.posts(params[:postopts].
-                        merge(:target => name)).
+            (pos = @tlog.
+             posts.filter(params[:postopts].merge(:target => name))).
               with_export(:html, :tree => self) { |post|
               post.to_html(hpe, name)
             }
@@ -99,29 +101,34 @@ module Ackro
 
         def body # :yield: hpricot_body_node
           tl = tlog
+          ord = tl.config[:html][:body].order
           (hp=(@hpricot/:body)).append do |h|
-            tl.config[:html][:body].each_pair do |n, v|
+            ord.each do |n|
+              v = tl.config[:html][:body][n]
               next if n == :style
               h << " "*4
               tag = v[:tag]
               tag = :div if tag.empty?
-              h.send(tag, :id => n){|ha|
+              h.send(tag, :id => n) { |ha|
                 ha << "\n#{" "*4}"
               }
               h << "\n\n"
             end
           end
-          tl.config[:html][:body].each_pair { |n, v|
-            tag = v[:tag]
-            tag = :div if tag.empty?
-            yield(n, (hp/tag))
-          }
+
+          ord.each do |o|
+            (hp.first).containers.each do |co|
+              next if o == :style
+              next if co.attributes[:id] =! o
+              yield(o, co)
+            end
+          end
         end
 
         def make_tree
           ret = ''
           ret << doctype << "\n"
-          ret << "<html>\n\n"
+          ret << "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n\n"
           ret << "<head>\n</head>" << "\n"
           ret << "<body>\n\n</body>\n\n</html>"
         end
@@ -150,10 +157,11 @@ module Ackro
 
         def styles!
           tl = tlog
+          p = @params
           (@hpricot/:head).append do |h|
             tl.config[:stylesheets][:files].each_pair{ |n, v|
               h << " "*4            
-              link(:src => tl.http_path("include/#{n}.css"),
+              link(:href => "#{p[:path_deep]}include/#{n}.css",
                    :media => v[:media],
                    :type => "text/css",
                    :rel => "stylesheet")
@@ -164,10 +172,11 @@ module Ackro
 
         def files!
           tl = tlog
+          p = @params          
           (@hpricot/:head).append do |h|
             tl.config[:javascript][:files].each{ |n|
               h << " "*4
-              script(:src => tl.http_path("include/#{n.first}.js"),
+              script(:src => "#{p[:path_deep]}include/#{n.first}.js",
                      :type => "text/javascript" )
               h << "\n"
             }

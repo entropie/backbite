@@ -61,10 +61,8 @@ describe Ackro::Repository::Export::HTML do
   end
 
   it "result should have a body tag with (node) contents" do
-    (result/:body/:div/'> *').size.should == 5
-    (result/:body/:p).size.should == 1
-    (result/:body/'> p').size.should == 1
-    (result/:body/'> div'/'> *').size.should == 5
+    (result/:body/:div/'> *').size.should == 12
+    (result/:body/'> div'/'> *').size.should == 12
   end
 
 
@@ -85,11 +83,11 @@ describe Ackro::Repository::Export::TXT do
       /### ''foobar`` at '.+'/
   end
 
-  # it "" do
-  #   puts
-  #   puts "-"*60
-  #   puts result
-  # end
+  it "should have some posts" do
+    result.scan(/^###/).flatten.size.should == 8
+    result.scan(/^\{\{\{/).flatten.size.should == 5
+    result.scan(/^\}\}\}/).flatten.size.should == 5
+  end
   
 end
 
@@ -103,7 +101,7 @@ describe Ackro::Repository::Export::TAGS do
 
   it "result titles should include tag titles" do
     result.scan(/title>(.+)<\/title>/).flatten.map{ |r| r[/: (\w+)/, 1] }.
-      should == ["batz", "bar", "bumm", "ahash", "file", "another", "keke"]
+      should == ["batz", "bar", "bumm", "ahash", "nana", "file", "another", "keke"]
   end
 
 end

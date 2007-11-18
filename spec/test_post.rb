@@ -23,6 +23,18 @@ describe Ackro::Post do
     sleep 1
   end
 
+  it "should accept a post via hash" do
+    post = @target.post(:foo, :hash =>
+                        { :topic => 'Hello from rspec nana',
+                          :body  => 'foo nana',
+                          :tags  => 'batz, bar, bumm, nana'
+                        })
+    post.save.should
+    post.class.should == Ackro::Post::Ways::Hash
+    sleep 1
+  end
+
+  
   it "should accept a post via file" do
     str = {
       :topic => 'Hello from rspec file',
@@ -62,7 +74,7 @@ end
 describe Ackro::Posts do
 
   it "should have a corresponding size" do
-    Target.posts.size.should == 4
+    Target.posts.size.should == 5
   end
 
   it "should list a specific post (==, =~)" do
@@ -76,7 +88,7 @@ describe Ackro::Posts do
     Target.posts.find{ |p| p.config[:target] == :black }.
       size.should == 2
     Target.posts.find{ |p| p.config[:target] == :red }.
-      size.should == 2
+      size.should == 3
   end
 
   
@@ -86,7 +98,7 @@ describe Ackro::Posts do
   end
 
   it "should list a specific post (:tags) " do
-    Target.posts.filter(:tags => %w(batz)).size.should == 4
+    Target.posts.filter(:tags => %w(batz)).size.should == 5
     Target.posts.filter(:tags => %w(another)).size.should == 1
     Target.posts.filter(:tags => %w(ahash another)).size.should == 2
   end

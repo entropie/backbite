@@ -31,8 +31,10 @@ module Ackro
       params.extend(Helper::ParamHash).
         process!(:title => :optional,
                  :postopts => :optional,
-                 :nowrite => :optional)
-      params[:postopts] ||= { }
+                 :nowrite => :optional,
+                 :path_deep => :optional)
+      params[:postopts]  ||= { }
+      params[:path_deep] ||= './'
       params[:title] ||= '[no title]'
       dup.extend(Export).export(way, params)
     end

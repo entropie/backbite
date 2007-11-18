@@ -22,6 +22,7 @@ module Ackro
             f, filtered = field.to_sym, field.apply_filter(:txt)
             m << "\n %-10s %s " % [f, filtered]
           end
+          str << "\n}}}\n"
         end
 
       end

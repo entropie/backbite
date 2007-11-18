@@ -34,7 +34,6 @@ module Ackro
                  :target  => :optional
                  )
       ret = self.dup
-
       # select Posts by Target
       if target = params[:target]
         ret.reject!{ |p|
@@ -42,6 +41,14 @@ module Ackro
         }
       end
 
+      # select Posts by Tags
+      if tags = params[:tags]
+        ret.reject!{ |post|
+          tags.map{ |t| true if post.tags.include?(t) }.compact.empty?
+        }
+      end
+
+      
       # select Posts by metadata[:date
       if bet = params[:between]
         ret.reject!{ |p|
@@ -57,12 +64,6 @@ module Ackro
         }
       end
       
-      # select Posts by Tags
-      if tags = params[:tags]
-        ret.reject!{ |post|
-          tags.map{ |t| true if post.tags.include?(t) }.compact.empty?
-        }
-      end
       #ret = Posts.new(tlog).push(*ret)
       ret.each(&blk) if block_given?
       ret
