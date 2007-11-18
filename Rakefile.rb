@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-require 'lib/ackro.rb'
+require 'lib/backbite'
 
 task :spec do
   ENV['DEBUG'] = '1'
@@ -12,14 +12,14 @@ end
 
 task :specdoc => [:spechtml] do
   ENV['DEBUG'] = '1'
-  sh 'spec spec -d --format specdoc -r spec/default_config -r lib/ackro.rb'
+  sh 'spec spec -d --format specdoc -r spec/default_config -r lib/backbite'
 end
 
 task :spechtml do
   ENV['DEBUG'] = '1'
   sh("rm #{file = "/home/mit/public_html/doc/ackro.suc/spec.html"}")
   sh("touch #{file}")
-  sh "spec spec -r spec/default_config -r lib/ackro.rb -f h:#{file}"
+  sh "spec spec -r spec/default_config -r lib/backbite -f h:#{file}"
 end
 
 task :rdoc do
