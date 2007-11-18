@@ -8,33 +8,49 @@ define :test do
   target :black
 
   style do
-    margin_left 23.px
-    color :red
+    margin_left '48%'
+    border_top '20px solid yellow'
+    color 'gold'
+    border_left '3px solid yellow'
+    border_right '3px solid yellow'
+    padding_left 10.px
   end
 
   fields do
-
-    # plugin_date do # optional
-    #   style do
-    #     foo 'bar'
-    #   end
-    # end
-
-    # plugin_tags do #optional
-    # end
-    
+  
     input_topic do
-      tag 'p'
+      tag 'h1'
       markup 'redcloth'
-      before 'foo'
     end
 
     input_body do
       style do
-        color 'red'
+        color '#fab444'
+        font_family 'verdana'
+        font_size 18.px
+        padding_bottom 20.px
+        margin_bottom 10.px
       end
     end
 
+    plugin_tags do #optional
+      style do
+        text_align :left
+        float :left
+        padding 3.px        
+      end
+    end
+
+    plugin_date do # optional
+      style do
+        background_color '#3076C8'
+        padding 3.px
+        text_align :right
+        margin_left -10.px
+      end
+    end
+
+    
   end
 
 end

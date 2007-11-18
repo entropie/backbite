@@ -8,26 +8,46 @@ define :foo do
   target :red
   
   style do
-    margin_right 23.px
-    color :black
+    color :navy
+    border_left '2px solid blue;'
+    padding_left 10.px
+    margin_bottom 10.px
   end
 
   fields do
 
-    plugin_date do # optional
+    plugin_date do
       style do
-        color :yellow
+        color '#fab444'
+        float :right
+        padding 5.px        
       end
     end
-
+    
     input_topic do
       markup 'redcloth'
       before 'foo'
+      tag    :h1
+      style do
+        color :blue
+        font_size '20px'
+        background_color '#E79E27'
+        padding 5.px
+        pargin_bottom 0.px
+      end
     end
 
     input_body do
       style do
-        color 'red'
+        background_color '#A6BED7'
+        padding 15.px
+      end
+    end
+
+    plugin_tags do
+      style do
+        background_color '#A6BED7'
+        text_align :right
       end
     end
 

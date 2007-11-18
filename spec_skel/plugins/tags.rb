@@ -21,6 +21,10 @@ class Tags < Plugin
     field.value.join(' ')
   end
 
+  def html_filter
+    fs = field.value.map{ |v| "<a href=\"tags/#{v}.html\">#{v}</a>" }
+    "<strong>Tags</strong>: #{fs.join(', ')}"
+  end
 end
 
 

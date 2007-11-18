@@ -65,13 +65,6 @@ describe Ackro::Repository::Export::HTML do
     (result/:body/'> div'/'> *').size.should == 12
   end
 
-
-  # it "" do
-  #   puts
-  #   puts "-"*60
-  #   puts result
-  # end
-  
 end
 
 describe Ackro::Repository::Export::TXT do
