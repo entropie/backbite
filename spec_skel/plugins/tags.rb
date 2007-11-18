@@ -5,25 +5,30 @@
 
 class Tags < Plugin
 
-  def input                      # undocumented
+  def input
     'Tags:'
   end
 
-  def transform!(inp)            # *really* modifies the input
+  def transform!(inp)
     inp.to_s.scan(/(\w+),?\s?/).flatten
   end
   
-  def filter                     # filter applied for every output module
+  def filter
     field.value.join(', ')
   end
 
-  def txt_filter                  # specific filter for output module
+  def txt_filter
     field.value.join(' ')
   end
 
   def html_filter
-    fs = field.value.map{ |v| "<a href=\"tags/#{v}.html\">#{v}</a>" }
-    "<strong>Tags</strong>: #{fs.join(', ')}"
+    fs = field.value.map{ |v| "<a class=\"tag\" href=\"/tags/#{v}.html\">#{v}</a>" }
+    tgs = if fs.size > 1
+            "#{fs[0..-2].join(', ')} and #{fs.last}"
+          else
+            "#{fs.join(', ')}"
+          end
+    "<strong>Filed in</strong>: #{tgs}"
   end
 end
 

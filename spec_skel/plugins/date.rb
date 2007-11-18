@@ -9,7 +9,7 @@ class Date < Plugin
     Time.now
   end
 
-  def filter                    # filter applied for every output module
+  def filter
     field.value.strftime("%Y %B, %d at %H:%M  %Z")
   end
 
