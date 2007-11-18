@@ -3,10 +3,10 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-target = Ackro::Tumblelog.new(:rspec, $default_config)
+target = Backbite::Tumblelog.new(:rspec, $default_config)
 target.repository.setup!
 
-describe Ackro::Repository::Export::CSS do
+describe Backbite::Repository::Export::CSS do
 
   result = target.repository.export(:css).to_s
 
@@ -38,7 +38,7 @@ describe Ackro::Repository::Export::CSS do
 
 end
 
-describe Ackro::Repository::Export::HTML do
+describe Backbite::Repository::Export::HTML do
 
   result = target.repository.export(:html, :title => :foobar).hpricot
   
@@ -67,7 +67,7 @@ describe Ackro::Repository::Export::HTML do
 
 end
 
-describe Ackro::Repository::Export::TXT do
+describe Backbite::Repository::Export::TXT do
 
   result = target.repository.export(:txt, :title => :foobar).to_s
   
@@ -84,7 +84,7 @@ describe Ackro::Repository::Export::TXT do
   
 end
 
-describe Ackro::Repository::Export::TAGS do
+describe Backbite::Repository::Export::TAGS do
 
   result = target.repository.export(:tags).to_s
   

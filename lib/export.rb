@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-module Ackro
+module Backbite
 
   class Repository
 

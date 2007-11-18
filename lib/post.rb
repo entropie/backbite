@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-module Ackro
+module Backbite
 
   # Posts handles access to the different Posts in our Repository.
   class Posts < Array

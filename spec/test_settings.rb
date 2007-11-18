@@ -3,10 +3,10 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-describe Ackro::Config do
+describe Backbite::Config do
 
   before(:each) do
-    @config = Ackro::Config.read($default_config)
+    @config = Backbite::Config.read($default_config)
   end
   
   it "should parse the config string to a hash" do

@@ -3,10 +3,10 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-describe Ackro::Tumblelog do
+describe Backbite::Tumblelog do
 
   before(:each) do
-    @target = Ackro::Tumblelog.new(:rspec, $default_config)
+    @target = Backbite::Tumblelog.new(:rspec, $default_config)
     @target.repository.setup!
   end
 

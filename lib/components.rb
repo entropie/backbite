@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-module Ackro
+module Backbite
 
   # Components is a place to hold the tumblog specific component files
   # (and load them if necessary).

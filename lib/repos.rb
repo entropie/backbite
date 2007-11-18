@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-module Ackro
+module Backbite
 
 
   # A Repository may an (un)initiated directory structure, a place for plugins,
@@ -111,9 +111,9 @@ module Ackro
       source =
         if defined?(Spec)
           Info << "!!! using testing skeleton"
-          Ackro::Source.join('spec_skel')
+          Backbite::Source.join('spec_skel')
         else
-          Ackro::Source.join('skel')
+          Backbite::Source.join('skel')
         end
       %w'plugins components'.each do |w|
         (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|

@@ -102,7 +102,7 @@ $default_config = <<EOF
 EOF
 
 require 'lib/ackro.rb'
-@a = Ackro::Tumblelog.new(:rspec, $default_config)
+@a = Backbite::Tumblelog.new(:rspec, $default_config)
 
 
 =begin

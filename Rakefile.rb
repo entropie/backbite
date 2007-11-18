@@ -24,7 +24,7 @@ end
 
 task :rdoc do
   system('rm ~/public_html/doc/ackro.suc/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Ackro -o ~/public_html/doc/ackro.suc/rdoc -x "spec"')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/ackro.suc/rdoc -x "spec"')
 end
 
 task :console do

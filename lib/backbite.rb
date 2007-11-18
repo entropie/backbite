@@ -33,18 +33,18 @@ end
 
 $DEBUG = true if ENV['DEBUG']
 
-module Ackro
+module Backbite
 
   Version = %w'0 1 1'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
   
   def self.version
-    "ackro-#{Version.join('.')}"
+    "backbite-#{Version.join('.')}"
   end
 
   if $DEBUG
-    Informer.create << "starting logger for ackro.succ, #{version.to_s}."
+    Informer.create << "starting logger for backbite, #{version.to_s}."
     Debug << "debugmode is on."
   end
 end

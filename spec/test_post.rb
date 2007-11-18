@@ -3,11 +3,11 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-Target = Ackro::Tumblelog.new(:rspec, $default_config)
+Target = Backbite::Tumblelog.new(:rspec, $default_config)
 Target.repository.setup!
 
 
-describe Ackro::Post do
+describe Backbite::Post do
   before(:each) do
     @target = Target
   end
@@ -19,7 +19,7 @@ describe Ackro::Post do
                           :tags  => 'batz, bar, bumm, ahash'
                         })
     post.save.should
-    post.class.should == Ackro::Post::Ways::Hash
+    post.class.should == Backbite::Post::Ways::Hash
   end
 
   it "should accept a post via hash" do
@@ -29,7 +29,7 @@ describe Ackro::Post do
                           :tags  => 'bar'
                         })
     post.save.should
-    post.class.should == Ackro::Post::Ways::Hash
+    post.class.should == Backbite::Post::Ways::Hash
   end
 
   
@@ -40,7 +40,7 @@ describe Ackro::Post do
                           :tags  => 'batz, bar, bumm, nana'
                         })
     post.save.should
-    post.class.should == Ackro::Post::Ways::Hash
+    post.class.should == Backbite::Post::Ways::Hash
   end
 
   
@@ -53,7 +53,7 @@ describe Ackro::Post do
     str = str.map{ |c, v| "[%s_start]%s[%s_end]" % [c,v,c]}
     post = @target.post(:test, :way => :file, :file => str.join)
     post.save.should
-    post.class.should == Ackro::Post::Ways::File
+    post.class.should == Backbite::Post::Ways::File
   end
 
   it "should accept a post via hash to another component, metadate #0" do
@@ -64,7 +64,7 @@ describe Ackro::Post do
                         },
                         :meta  => { :date => Time.now-(3*24*60*60) })
     post.save.should
-    post.class.should == Ackro::Post::Ways::Hash
+    post.class.should == Backbite::Post::Ways::Hash
   end
   it "should accept a post via hash to another component, metadate #1" do
     post = @target.post(:foo, :hash =>
@@ -74,13 +74,13 @@ describe Ackro::Post do
                         },
                         :meta  => { :date => Time.now-(10*24*60*60) })
     post.save.should
-    post.class.should == Ackro::Post::Ways::Hash
+    post.class.should == Backbite::Post::Ways::Hash
   end
 
   
 end
 
-describe Ackro::Posts do
+describe Backbite::Posts do
 
   it "should have a corresponding size" do
     Target.posts.size.should == 6
@@ -115,7 +115,7 @@ describe Ackro::Posts do
   
   it "should list posts" do
     Target.posts do |po|
-      po.class.should == Ackro::Post
+      po.class.should == Backbite::Post
       po.fields[:topic].value.should =~ /^Hello from rspec/
       po.fields[:tags].value[0..-2].should == ["batz", "bar", "bumm"] if po.component.name != :bar
     end

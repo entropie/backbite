@@ -3,10 +3,10 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-describe Ackro::Repository do
+describe Backbite::Repository do
 
   before(:each) do
-    @target = Ackro::Repository.new(:rspec, '~/Tmp/rspec')
+    @target = Backbite::Repository.new(:rspec, '~/Tmp/rspec')
   end
 
   it "should able to target a nonexistant directory" do

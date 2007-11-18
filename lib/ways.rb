@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-module Ackro
+module Backbite
 
   # Responsible for re-mapping the fields, calling plugin stuff and
   # saving the nut in the right place.
