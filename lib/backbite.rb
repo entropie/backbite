@@ -3,6 +3,9 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
+$:.unshift(File.dirname(__FILE__))
+
+
 require 'pp'
 require 'pathname'
 require 'fileutils'
@@ -11,20 +14,20 @@ require 'log4r/outputter/syslogoutputter'
 require 'hpricot'
 require 'delegate'
 require 'uri'
-
 require 'yaml'
 require 'readline'
 
-require 'lib/helper'
-require 'lib/settings'
-require 'lib/ways'
-require 'lib/post'
-require 'lib/components'
-require 'lib/informer'
-require 'lib/plugins'
-require 'lib/repos'
-require 'lib/export'
-require 'lib/tumblog'
+require 'backbite/ruby_ext'
+require 'backbite/helper'
+require 'backbite/settings'
+require 'backbite/ways'
+require 'backbite/post'
+require 'backbite/components'
+require 'backbite/informer'
+require 'backbite/plugins'
+require 'backbite/repos'
+require 'backbite/export'
+require 'backbite/tumblog'
 
 
 Dir['lib/ruby_ext/*.rb'].each do |re|
@@ -38,7 +41,7 @@ module Backbite
   Version = %w'0 1 1'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
-  
+
   def self.version
     "backbite-#{Version.join('.')}"
   end

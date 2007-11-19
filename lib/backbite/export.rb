@@ -50,10 +50,10 @@ module Backbite
     module Export
 
       # FIXME: use variables defined in config
-      require 'lib/export/css.rb'
-      require 'lib/export/html.rb'
-      require 'lib/export/txt.rb'
-      require 'lib/export/tags.rb'
+      require 'backbite/export/css.rb'
+      require 'backbite/export/html.rb'
+      require 'backbite/export/txt.rb'
+      require 'backbite/export/tags.rb'
 
       # Selects module +way+ and runs ::export
       def export(way, params = { })

@@ -3,8 +3,8 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-Dir['lib/helper/*.rb'].each do |l|
-  require l
+%w(fixnum).each do |l|
+  require "backbite/ruby_ext/#{l}"
 end
 
 
