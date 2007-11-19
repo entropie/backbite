@@ -8,7 +8,10 @@ module Backbite
   # Components is a place to hold the tumblog specific component files
   # (and load them if necessary).
   class Components < Array
-    
+
+
+    # YAMLComponent is uesed to extend the component class to set the values for
+    # we're getting from the YAML source.
     module YAMLComponent
       def read ;    raise "read not available in #{self}"    end
       def reread! ; raise "reread! not available in #{self}" end

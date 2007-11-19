@@ -111,7 +111,7 @@ module Backbite
       source =
         if defined?(Spec)
           Info << "!!! using testing skeleton"
-          Backbite::Source.join('spec_skel')
+          Backbite::Source.join('spec/.spec_skel')
         else
           Backbite::Source.join('skel')
         end
