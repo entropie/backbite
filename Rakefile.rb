@@ -16,6 +16,8 @@ include FileUtils
 REV = `hg head`[/changeset: +(\d+)/, 1].to_i
 PKG = VERS = Backbite::version + ".#{REV}"
 RDOC_OPTS = ['-I', 'png', '--quiet', '--title', 'The Backbite RDoc Reference', '--main', 'README', '--inline-source', '-x', 'spec']
+SPATH = Backbite::Source
+
 
 PKG_FILES = %w(LICENSE README Rakefile.rb) +
   Dir.glob("{bin,doc,spec,lib,spec_skel}/**/*") +
@@ -35,9 +37,8 @@ SPEC =
   s.email = '<mictro@gmail.com>'
   s.homepage = 'http://code.ackro.org/Backbite'
   s.files = PKG_FILES
-  #s.require_paths = [ARCHLIB, "lib"]
-  #s.extensions = FileList["ext/**/extconf.rb"].to_a
   s.bindir = "bin"
+  s.executables = %w(backbite)
 end
 
 task :spec do
@@ -46,18 +47,28 @@ task :spec do
   sh 'spec spec -r spec/default_config'
 end
 
-task :gem do
-  path = Backbite::Source.join('pkg')
-  path.mkdir unless path.exist?
+task :gem => [:make_gem, :mvpkg, :install]
+
+task :make_gem do
   builder = Gem::Builder.new(SPEC)
   builder.build
-  path.dirname.entries.grep(/.gem$/).each do |gem|
-    FileUtils.mv(gem, path)
+  SPATH.dirname.entries.grep(/.gem$/).each do |gem|
+    FileUtils.mv(gem, path, :verbose => true)
   end
 end
 
-task :install => :gem do
+task :mvpkg do
+  path = SPATH.join('pkg')
+  path.mkdir unless path.exist?
+  path.dirname.entries.grep(/.gem$/).each do |gem|
+    FileUtils.mv(gem, path, :verbose => true)
+  end
 end
+
+task :install do
+  puts `gem install pkg/Backbite-#{VERS[/\w+\-(.*)/, 1]}`
+end
+
 
 
 task :specdoc => [:spechtml] do
@@ -67,14 +78,14 @@ end
 
 task :spechtml do
   ENV['DEBUG'] = '1'
-  sh("rm #{file = "/home/mit/public_html/doc/ackro.suc/spec.html"}")
+  sh("rm #{file = "/home/mit/public_html/doc/backbite/spec.html"}")
   sh("touch #{file}")
   sh "spec spec -r spec/default_config -r lib/backbite -f h:#{file}"
 end
 
 task :rdoc do
   system('rm ~/public_html/doc/ackro.suc/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/ackro.suc/rdoc -x "spec"')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "spec"')
 end
 
 task :console do
