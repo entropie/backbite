@@ -51,6 +51,12 @@ module Backbite
         def inspect
           "<Way::#{self.class.name.to_s.capitalize} Values:(#{@result.values.to_a.join(', ')})>"
         end
+
+        def metadata
+          @metadata ||= Post::Metadata.new(@meta,
+                                           :component => component.name,
+                                           :way => self.class.to_s)
+        end
         
         # Parses the fields hash, and processes any field according to
         # its class.
@@ -98,16 +104,13 @@ module Backbite
 
         # Save the nut the YAML way.
         def to_yaml
-          #result = ::Hash[*@result.map{ |h,k| [h,k.value] }.flatten]
           result = { }
           @result.each{ |nam, infi|
             value = infi.value
             value = value.shift if value.kind_of?(Array) and value.size == 1
             result[nam] = value
           }
-          result[:metadata] =
-            Post::Metadata.new(@meta, :component => @component.name,
-                               :way => self.class.to_s)
+          result[:metadata] = metadata
           result.to_yaml
         end
         private :to_yaml
@@ -134,14 +137,17 @@ module Backbite
         attr_accessor :source
 
         attr_reader   :metadata
+
+        def metadata
+          source[:metadata]
+        end
         
         # Reformats to be a valid Post instance.
         def process
-          @metadata  = source.delete(:metadata)
-          @component = tlog.components[@metadata[:component]].
+          @component = tlog.components[metadata[:component]].
             extend(Components::YAMLComponent)
           @component.map(source)
-          @component.metadata = @metadata
+          @component.metadata = metadata
           ret = @component.to_post
           ret
         end

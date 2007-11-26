@@ -117,6 +117,7 @@ module Backbite
     attr_accessor :pid
     attr_accessor :neighbors
     
+
     def initialize(component)
       @component = component
     end
@@ -137,6 +138,7 @@ module Backbite
       self.neighbors = [tlog.posts.filter( :ids => [pid-1] ),
                         tlog.posts.filter( :ids => [pid+1] )].
         map{ |n| n.first }
+      component.metadata = metadata
       self.fields.each do |fld|
         if fld.respond_to?(:plugin)
           fld.plugin.field = fld

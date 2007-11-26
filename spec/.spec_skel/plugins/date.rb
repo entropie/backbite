@@ -5,6 +5,10 @@
 
 class Date < Plugin
 
+  def metadata_inject
+    :date
+  end
+
   def content
     Time.now
   end

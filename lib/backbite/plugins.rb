@@ -60,11 +60,16 @@ module Backbite
     attr_accessor :neighbors
     
     # dispatch runs +input+ on the plugin during component evaluation,
-    # so its basically used to hard set the result value and.
+    # so its basically used to hard-set the result values.
     #
     def dispatch(way)
-      if respond_to?(:input)
-        @result ||= { }
+      @result ||= { }      
+      if respond_to?(:metadata_inject)
+        nam = send(:metadata_inject)
+        Info << " - Plugin[#{name}]#metadata_inject: value from #{nam}"
+        md = way.metadata[nam]
+        @result[:content] = md
+      elsif respond_to?(:input)
         Info << " - Plugin[#{name}]#input"
         fcontent = send(:input)
         yield fcontent, self if block_given?
@@ -79,7 +84,7 @@ module Backbite
 
     def prepare
       AutoFieldNames.each do |afn|
-        if respond_to?(afn)
+        if respond_to?(afn) and not respond_to?(:metadata_inject)
           r = send(afn)
           Debug << " - Plugin[#{name}]##{afn}='#{r}'"
           @result[afn] = r
