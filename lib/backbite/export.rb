@@ -12,7 +12,6 @@ module Backbite
       attr_reader :tlog, :timestamp, :written
       
       def initialize(tlog, params)
-        @params = params
         @tlog, @params = tlog, params
         @timestamp = Time.new
         @__result__ = ''
@@ -54,6 +53,7 @@ module Backbite
       require 'backbite/export/html.rb'
       require 'backbite/export/txt.rb'
       require 'backbite/export/tags.rb'
+      require 'backbite/export/archive.rb'
 
       # Selects module +way+ and runs ::export
       def export(way, params = { })

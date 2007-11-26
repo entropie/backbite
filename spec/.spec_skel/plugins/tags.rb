@@ -22,7 +22,7 @@ class Tags < Plugin
   end
 
   def html_filter
-    fs = field.value.map{ |v| "<a class=\"tag\" href=\"/tags/#{v}.html\">#{v}</a>" }
+    fs = field.value.map{ |v| "<a class=\"tag\" href=\"#{path_deep}tags/#{v}.html\">#{v}</a>" }
     tgs = if fs.size > 1
             "#{fs[0..-2].join(', ')} and #{fs.last}"
           else

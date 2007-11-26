@@ -33,7 +33,7 @@ module Backbite
       result
     end
     
-    class Tree < Repository::ExportTree
+    class Tree < Repository::ExportTree # :nodoc: All
 
       attr_reader :result, :tag
 

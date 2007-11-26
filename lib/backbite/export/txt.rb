@@ -20,7 +20,7 @@ module Backbite
           }
           ordered.inject(str) do |m, field|
             f, filtered = field.to_sym, field.apply_filter(:txt)
-            m << "\n %-10s %s " % [f, filtered]
+            m << "\n %-10s %s" % [f.to_s+':', filtered]
           end
           str << "\n}}}\n"
         end
@@ -28,7 +28,7 @@ module Backbite
       end
       
 
-      module Repository::Export::TXT
+      module Repository::Export::TXT # :nodoc: All
 
         # mount point
         def self.export(tlog, params)

@@ -99,6 +99,21 @@ describe Backbite::Repository::Export::TAGS do
 
 end
 
+describe Backbite::Repository::Export::ARCHIVE do
+
+  result = target.repository.export(:archive).to_s
+  
+  it "result should be big" do
+    result.should
+  end
+
+  # it "result titles should include tag titles" do
+  #   result.scan(/title>(.+)<\/title>/).flatten.map{ |r| r[/: (\w+)/, 1] }.
+  #     should == ["batz", "bar", "bumm", "ahash", "nana", "file", "another", "keke"]
+  # end
+
+end
+
 
 
 =begin

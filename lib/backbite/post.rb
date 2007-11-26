@@ -37,10 +37,18 @@ module Backbite
       # select Posts by Target
       if target = params[:target]
         ret.reject!{ |p|
-          true if target != p.config[:target]
+          target != p.config[:target]
         }
       end
 
+      # select Posts by IDs
+      if ids = params[:ids]
+        ids = [ids] unless ids.kind_of?(Array)
+        ret.reject!{ |post|
+          not ids.include?(post.pid)
+        }
+      end
+      
       # select Posts by Tags
       if tags = params[:tags]
         ret.reject!{ |post|
@@ -107,6 +115,7 @@ module Backbite
     
     attr_reader :component
     attr_accessor :pid
+    attr_accessor :neighbors
     
     def initialize(component)
       @component = component
@@ -116,18 +125,26 @@ module Backbite
       @component
     end
 
+    def identifier
+      @identifier ||= "#{component.name}#{pid}"
+    end
+    
 
     # setup! sets various attributes on our Plugin instances.
     def setup!(params)
       params.extend(Helper::ParamHash).
-        process!(:tree => :required)
+        process!(:tree => :required, :path_deep => :optional)
+      self.neighbors = [tlog.posts.filter( :ids => [pid-1] ),
+                        tlog.posts.filter( :ids => [pid+1] )].
+        map{ |n| n.first }
       self.fields.each do |fld|
         if fld.respond_to?(:plugin)
           fld.plugin.field = fld
+          fld.plugin.neighbors = self.neighbors
           fld.plugin.component = @component
           fld.plugin.tlog = @component.tlog
           fld.plugin.pid = self.pid
-          fld.plugin.identifier = "#{component.name}#{pid}"
+          fld.plugin.identifier = identifier
           params.each_pair do |pnam, pval|
             fld.plugin.send("#{pnam}=", pval)
           end

@@ -84,9 +84,15 @@ task :spechtml do
 end
 
 task :rdoc do
-  system('rm ~/public_html/doc/ackro.suc/rdoc -rf')
+  system('rm ~/public_html/doc/backbite/rdoc -rf')
   system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "spec"')
 end
+
+task :rdia do
+  system('rm ~/public_html/doc/backbite/rdoc -rf')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "spec" -d')
+end
+
 
 task :console do
   puts "You may want to to @a an ready to use tumblog object"

@@ -20,8 +20,8 @@ describe Backbite::Repository do
 
   it "should able to remove a directory structure" do
 
-    system("mkdir -p /home/mit/public_html/ackrosuc/")
-    system("cp -R #{ @target.directory }/* /home/mit/public_html/ackrosuc/")
+    system("mkdir -p /home/mit/public_html/backbite/")
+    system("cp -R #{ @target.directory }/* /home/mit/public_html/backbite/")
     
     @target.remove!
     @target.valid?.should_not

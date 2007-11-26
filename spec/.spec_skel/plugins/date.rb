@@ -14,7 +14,13 @@ class Date < Plugin
   end
 
   def html_filter
-    filter
+    f = []
+    nbs = neighbors.each_with_index{ |po, i|
+      unless po then f << ''; next end
+      t = if i.zero? then 'back in time' else 'walk in time' end
+      f << %(<a style="rellink" title="#{t}" href="##{po.identifier}">&nbsp;#{i == 0 ? '&lt;' : '&gt;'}&nbsp;</a>)
+    }
+    f.first + filter + f.last
   end
 end
 

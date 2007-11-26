@@ -14,7 +14,6 @@ module Backbite
       r
     end
   end
-  
 
   # Each user-defined plugin is a subclass of Plugin.
   #
@@ -25,6 +24,8 @@ module Backbite
   # * +tlog+ -- the Tumblog instance
   # * +identifier+ -- a uniq name of the post
   # * +pid+ -- the post_id
+  # * +path_deep+ -- the prefix path
+  # * +neighbors+ -- an array consisting of the neighbor posts
   #
   # Following methods are known (and will be called if necessary)
   # * input -- undocumented
@@ -54,6 +55,10 @@ module Backbite
     # The post id
     attr_accessor :pid
 
+    attr_accessor :path_deep
+    
+    attr_accessor :neighbors
+    
     # dispatch runs +input+ on the plugin during component evaluation,
     # so its basically used to hard set the result value and.
     #

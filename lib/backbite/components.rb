@@ -188,9 +188,11 @@ module Backbite
       def read(&blk)
         config = Config::Configuration.new(@name)
         config.setup(&blk)
+        
         config[:fields].plugin_tags { }
         config[:fields].plugin_date { }
-        @order = config[:fields].sort.dup.map{ |a| a.first}
+
+        @order = config[:fields].sort.dup.map{ |a| a.first }
         @config = config
         reread!
         self
