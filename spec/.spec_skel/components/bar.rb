@@ -37,6 +37,7 @@ define :bar do
 
     plugin_tags do #optional
       style do
+        color 'silver'
         text_align :left
         float :left
         padding 3.px        
@@ -46,6 +47,7 @@ define :bar do
     plugin_date do # optional
       style do
         background_color '#3076C8'
+        color            '#0F59B8'
         padding 3.px
         text_align :right
         margin_left -10.px

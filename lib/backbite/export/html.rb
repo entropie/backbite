@@ -85,9 +85,10 @@ module Backbite
         interval = @tlog.config[:defaults][:export][:ways][:html][:interval]
         interval = ((Time.now-interval)/24/60/60).to_i
 
+        posts = @tlog.posts.sort.reverse
+        
         body do |name, hpe|
-          (pos = @tlog.
-           posts.filter(params[:postopts].merge(:target => name))).
+          (pos = posts.filter(params[:postopts].merge(:target => name))).
             with_export(:html, @params.merge(:tree => self)) { |post|
             post.to_html(hpe, name)
           }

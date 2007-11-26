@@ -27,7 +27,8 @@ describe Backbite::Post do
                         { :topic => 'Hello from rspec ahash',
                           :body  => 'foo ahash',
                           :tags  => 'bar'
-                        })
+                        },
+                        :meta  => { :date => Time.now-((3*24*60*60)+(23**5)) })
     post.save.should
     post.class.should == Backbite::Post::Ways::Hash
   end

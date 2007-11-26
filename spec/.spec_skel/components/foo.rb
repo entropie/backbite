@@ -18,11 +18,13 @@ define :foo do
 
     plugin_date do
       style do
-        color '#3030EF'
+        color '#BF7F17'
         float :right
-        padding 8.px      
+        padding 8.px
+        right 0.px
       end
     end
+
     
     input_topic do
       markup 'redcloth'
@@ -33,6 +35,7 @@ define :foo do
         font_size '20px'
         background_color '#E79E27'
         padding 5.px
+        margin 0.px
         margin_bottom 0.px
       end
     end
@@ -46,6 +49,7 @@ define :foo do
 
     plugin_tags do
       style do
+        color 'grey'
         background_color '#A6BED7'
         text_align :right
       end

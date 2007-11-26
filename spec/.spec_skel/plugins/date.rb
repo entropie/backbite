@@ -14,17 +14,18 @@ class Date < Plugin
   end
 
   def filter
-    field.value.strftime("%Y %B, %d at %H:%M  %Z")
+    field.value.strftime("%Y %B, %d &mdash; %H:%M  %Z")
   end
 
   def html_filter
     f = []
     nbs = neighbors.each_with_index{ |po, i|
       unless po then f << ''; next end
-      t = if i.zero? then 'back in time' else 'walk in time' end
+      t = if i.zero? then 'previous entry' else 'next entry' end
       f << %(<a style="rellink" title="#{t}" href="##{po.identifier}">&nbsp;#{i == 0 ? '&lt;' : '&gt;'}&nbsp;</a>)
     }
-    f.first + filter + f.last
+    #f.first + filter + f.last
+    filter
   end
 end
 

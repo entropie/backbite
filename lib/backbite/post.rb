@@ -71,16 +71,16 @@ module Backbite
           end
         }
       end
-      
-      #ret = Posts.new(tlog).push(*ret)
+
       ret.each(&blk) if block_given?
       ret
     end
 
-    def find
-      select do |post|
-        yield post
-      end.sort_by{ |po| po.metadata[:date] }
+
+    def find(&blk)
+      ret = select(&blk) if block_given?
+      ret ||= self
+      ret.sort_by{ |po| po.metadata[:date] }
     end
     
     def each
@@ -118,6 +118,10 @@ module Backbite
     attr_accessor :neighbors
     
 
+    def <=>(o)
+      date <=> o.date
+    end
+    
     def initialize(component)
       @component = component
     end

@@ -28,7 +28,7 @@ class Tags < Plugin
           else
             "#{fs.join(', ')}"
           end
-    "<strong>Filed in</strong>: #{tgs}"
+    "Filed in #{tgs}."
   end
 end
 
