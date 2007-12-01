@@ -3,8 +3,8 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-%w(paramhash  path).each do |l|
-  require "backbite/helper/#{l}"
+%w(paramhash path cache).each do |l|
+  require "backbite/helper/"+ l
 end
 
 =begin

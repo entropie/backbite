@@ -20,7 +20,7 @@ $default_config = <<EOF
 
         editor       "e"
 
-        base_href  'http://particle.enti.ty/~mit/backbite'
+        base_href    'http://particle.enti.ty/~mit/backbite'
 
         upload do
           shell "ftpsync --user %ftpuser% --password %password% %localdir% %target%"

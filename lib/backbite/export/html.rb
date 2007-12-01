@@ -7,39 +7,42 @@ module Backbite
 
   module Post::Export::HTML
 
+    include Helper::CacheAble
+
     def fid
       "#{name}#{pid}"
     end
     
     def to_html(hpricot_node, name)
-      ordered = tlog.components[self.metadata[:component]].order.dup
-      ordered.map!{ |o|
-        fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
-        fields[fname]
-      }
-      target = hpricot_node
-      return '' unless target.attributes[:id].to_sym == self.config[:target]
-      res = Hpricot("<div class=\"post #{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
-      t = (res/:div)
-      t.append{ |h| h << "#{" "*8}"}
-      ordered.each do |field|
-        f, filtered = field.to_sym, field.apply_filter(:html)
-        opts = { }
-        opts[:tag] = field.definitions[:tag] unless
-          field.definitions[:tag].to_s.empty?
-        opts[:tag] ||= :div
-        tag = opts[:tag]
-        t.append{ |h|
-          h << "#{" "*8}"          
-          h.send(tag, :class => field.to_sym) { |f| f.text(filtered)}
-          h << "\n#{" "*8}"
+      Cache(fid) do
+        ordered = tlog.components[self.metadata[:component]].order.dup
+        ordered.map!{ |o|
+          fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
+          fields[fname]
         }
+        target = hpricot_node
+        return '' unless target.attributes[:id].to_sym == self.config[:target]
+        res = Hpricot("<div class=\"post #{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
+        t = (res/:div)
+        t.append{ |h| h << "#{" "*8}"}
+        ordered.each do |field|
+          f, filtered = field.to_sym, field.apply_filter(:html)
+          opts = { }
+          opts[:tag] = field.definitions[:tag] unless
+            field.definitions[:tag].to_s.empty?
+          opts[:tag] ||= :div
+          tag = opts[:tag]
+          t.append{ |h|
+            h << "#{" "*8}"          
+            h.send(tag, :class => field.to_sym) { |f| f.text(filtered)}
+            h << "\n#{" "*8}"
+          }
+        end
+        target << "\n#{" "*8}"
+        target << t.to_html
+        t
       end
-      target << "\n#{" "*8}"
-      target << t.to_html
-      t
     end
-    
   end
 
   module Repository::Export::HTML # :nodoc: All
