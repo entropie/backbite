@@ -16,6 +16,8 @@ require 'delegate'
 require 'uri'
 require 'yaml'
 require 'readline'
+require 'haml'
+
 
 require 'backbite/ruby_ext'
 require 'backbite/helper'
@@ -29,6 +31,7 @@ require 'backbite/repos'
 require 'backbite/export'
 require 'backbite/tumblog'
 
+system('cp ~/rspec.haml ~/Tmp/rspec/rspec.haml')
 
 Dir['lib/ruby_ext/*.rb'].each do |re|
   require re

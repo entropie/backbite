@@ -37,6 +37,7 @@ define :foo do
         padding 5.px
         margin 0.px
         margin_bottom 0.px
+        z_index 10
       end
     end
 

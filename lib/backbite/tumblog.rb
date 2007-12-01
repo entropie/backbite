@@ -15,7 +15,9 @@ module Backbite
     
 
     def root
-      @config[:defaults][:root]
+      path = @config[:defaults][:root]
+      path = ::File.expand_path(path) if path =~ /^\~/
+      Pathname.new(path)
     end
     alias :path :root
 

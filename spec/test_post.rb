@@ -12,7 +12,7 @@ describe Backbite::Post do
     @target = Target
   end
 
-  it "should accept a post via hash" do
+  it "should accept a post via hash " do
     post = @target.post(:test, :hash =>
                         { :topic => 'Hello from rspec ahash',
                           :body  => 'foo ahash',
@@ -20,6 +20,18 @@ describe Backbite::Post do
                         })
     post.save.should
     post.class.should == Backbite::Post::Ways::Hash
+  end
+
+  it "should accept a post via hash (20x)" do
+    0.upto(5) do |i|
+      post = @target.post(:test, :hash =>
+                          { :topic => 'Hello from rspec ahash',
+                            :body  => 'foo ahash',
+                            :tags  => 'batz, bar, bumm, ahash'
+                          })
+      post.save.should
+      post.class.should == Backbite::Post::Ways::Hash
+    end
   end
 
   it "should accept a post via hash" do
@@ -84,7 +96,7 @@ end
 describe Backbite::Posts do
 
   it "should have a corresponding size" do
-    Target.posts.size.should == 6
+    Target.posts.size.should == 12
   end
 
   it "should list a specific post (==, =~)" do
@@ -96,7 +108,7 @@ describe Backbite::Posts do
 
   it "should list specific posts (:target)" do
     Target.posts.find{ |p| p.config[:target] == :black }.
-      size.should == 3
+      size.should == 9
     Target.posts.find{ |p| p.config[:target] == :red }.
       size.should == 3
   end
@@ -108,9 +120,9 @@ describe Backbite::Posts do
   end
 
   it "should list a specific post (:tags) " do
-    Target.posts.filter(:tags => %w(batz)).size.should == 5
+    Target.posts.filter(:tags => %w(batz)).size.should == 11
     Target.posts.filter(:tags => %w(another)).size.should == 1
-    Target.posts.filter(:tags => %w(ahash another)).size.should == 2
+    Target.posts.filter(:tags => %w(ahash another)).size.should == 8
   end
 
   

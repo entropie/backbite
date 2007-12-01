@@ -22,7 +22,7 @@ describe Backbite::Repository do
 
     system("mkdir -p /home/mit/public_html/backbite/")
     system("cp -R #{ @target.directory }/* /home/mit/public_html/backbite/")
-    
+
     @target.remove!
     @target.valid?.should_not
   end

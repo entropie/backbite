@@ -7,12 +7,14 @@ module Backbite
 
   module Repository::Export::ARCHIVE
 
+    DateFormat = '%Y%m%d'
+    
     def self.export(tlog, params)
 
       all_posts = tlog.posts
       ds = { }
       all_posts.each do |post|
-        filename = post.metadata[:date].strftime('%Y%m%d')
+        filename = post.metadata[:date].strftime(DateFormat)
         (ds[filename] ||= []) << post
       end
 

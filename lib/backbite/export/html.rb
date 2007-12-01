@@ -19,7 +19,7 @@ module Backbite
       }
       target = hpricot_node
       return '' unless target.attributes[:id].to_sym == self.config[:target]
-      res = Hpricot("<div class=\"#{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
+      res = Hpricot("<div class=\"post #{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
       t = (res/:div)
       t.append{ |h| h << "#{" "*8}"}
       ordered.each do |field|
@@ -155,7 +155,8 @@ module Backbite
         tl = tlog
         p = @params
         (@hpricot/:head).append do |h|
-          tl.config[:stylesheets][:files].each_pair{ |n, v|
+          dfs = { :generated => { :media => :screen }, :base => { :media => :screen}}
+          dfs.merge(tl.config[:stylesheets][:files]).each_pair{ |n, v|
             h << " "*4            
             link(:href => "#{p[:path_deep]}include/#{n}.css",
                  :media => v[:media],

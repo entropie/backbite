@@ -52,7 +52,7 @@ describe Backbite::Repository::Export::HTML do
 
   it "result should have some (meta)link tags" do
     ((result/:head/:link).to_a.map{ |l| l.to_s }.grep(/\.css/).size).
-      should == 2
+      should == 3
   end
 
   it "result should have some javascript tags" do
@@ -61,8 +61,8 @@ describe Backbite::Repository::Export::HTML do
   end
 
   it "result should have a body tag with (node) contents" do
-    (result/:body/:div/'> *').size.should == 14
-    (result/:body/'> div'/'> *').size.should == 14
+    (result/:body/:div/'> *').size.should == 26
+    (result/:body/'> div'/'> *').size.should == 26
   end
 
 end
@@ -77,9 +77,9 @@ describe Backbite::Repository::Export::TXT do
   end
 
   it "should have some posts" do
-    result.scan(/^###/).flatten.size.should == 9
-    result.scan(/^\{\{\{/).flatten.size.should == 6
-    result.scan(/^\}\}\}/).flatten.size.should == 6
+    result.scan(/^###/).flatten.size.should == 15
+    result.scan(/^\{\{\{/).flatten.size.should == 12
+    result.scan(/^\}\}\}/).flatten.size.should == 12
   end
   
 end

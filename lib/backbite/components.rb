@@ -191,7 +191,8 @@ module Backbite
         
         config[:fields].plugin_tags { }
         config[:fields].plugin_date { }
-
+        config[:fields].plugin_permalink { }
+        
         @order = config[:fields].sort.dup.map{ |a| a.first }
         @config = config
         reread!

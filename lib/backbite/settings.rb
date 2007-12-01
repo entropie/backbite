@@ -45,7 +45,7 @@ module Backbite
           else
             ret[a] = b = b.call if b.kind_of?(Proc)
             vlrg = Regexp.new("(#{rpfr.join('|')})")
-            while vlrg =~ b.to_s and str = $1
+            while vlrg =~ b.to_s and str = $1 and !str.empty?
               value = rpo[str.gsub(/%/, '').to_sym].to_s
               ret[a].gsub!(/#{str}/, value)
               b = ret[a]

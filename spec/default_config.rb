@@ -8,9 +8,6 @@ $default_config = <<EOF
 
       defaults do
 
-        style do
-        end
-
         root         '~/Tmp/rspec'
 
         title        "rspec - %title%"
@@ -33,9 +30,14 @@ $default_config = <<EOF
           author      'Michael Trommer'
           title       'foobar title'
           description
-          password     'foobarbatz'
+          password    'foobarbatz'
           ftpuser     'ftp27676'
           target      'ftp://ftp.ackro.com/www.ackro.de/tlog'
+
+          colors_bg_body     '#105099'
+          colors_bg_red      '#fab444'
+          colors_bg_black    '#105099'
+
         end
 
         export do
@@ -52,8 +54,7 @@ $default_config = <<EOF
       end
 
       stylesheets do
-        files[:base].media = :screen
-        files[:generated].media = :screen
+        files['rspec.haml'].media = :screen
       end
 
       javascript do
@@ -65,19 +66,19 @@ $default_config = <<EOF
       html do
         body do |bdy|
 
-          bdy.style do
+          style do
             margin 0.px
             padding 0.px
             color :navy
-            background_color "#105099"
+            background_color '%colors_bg_body%'
             font_family 'verdena courier arial'
           end
 
-          bdy.red do
+          red do
             items.max = 100
             items.min = 10
             style do
-              background_color "#fab444"
+              background_color '%colors_bg_red%'
               width '42%'
               float :left
               margin 40.px
@@ -87,13 +88,13 @@ $default_config = <<EOF
             end
           end
           
-          bdy.black do
+          black do
            items.min = 10
             style do
               padding_right 40.px
               padding_top 42.px
               padding_left 20.px
-              background_color "#105099"
+              background_color '%colors_bg_black%'
             end
           end         
         end

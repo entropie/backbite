@@ -36,8 +36,8 @@ module Backbite
     end
 
     def initialize
-      @logger = Log4r::Logger.new 'ackro' #, :formatter=> DefaultLogFormatter
-      @logger.outputters = Log4r::SyslogOutputter.new('ackro')
+      @logger = Log4r::Logger.new 'backbite' #, :formatter=> DefaultLogFormatter
+      @logger.outputters = Log4r::SyslogOutputter.new('backbite')
     end
 
     def self.log(msg)
@@ -56,7 +56,7 @@ module Backbite
     
     def self.do_log(lvl, msg)
       lvl = :info if lvl == :debug
-      Log4r::Logger['ackro'].send(lvl, msg)
+      Log4r::Logger['backbite'].send(lvl, msg)
     rescue
       puts $!
     end
