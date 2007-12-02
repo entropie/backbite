@@ -5,7 +5,6 @@
 
 $:.unshift(File.dirname(__FILE__))
 
-
 require 'pp'
 require 'pathname'
 require 'fileutils'

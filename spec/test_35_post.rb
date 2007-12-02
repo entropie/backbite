@@ -3,13 +3,10 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-Target = Backbite::Tumblelog.new(:rspec, $default_config)
-Target.repository.setup!
-
-
 describe Backbite::Post do
-  before(:each) do
-    @target = Target
+
+  before(:all) do
+    @target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
   end
 
   it "should accept a post via hash " do
@@ -93,48 +90,6 @@ describe Backbite::Post do
   
 end
 
-describe Backbite::Posts do
-
-  it "should have a corresponding size" do
-    Target.posts.size.should == 12
-  end
-
-  it "should list a specific post (==, =~)" do
-    Target.posts.find{ |p| p.topic == 'Hello from rspec another' }.
-      size.should == 1
-    Target.posts.find{ |p| p.body =~ /^foo another$/ }.
-      size.should == 1
-  end
-
-  it "should list specific posts (:target)" do
-    Target.posts.find{ |p| p.config[:target] == :black }.
-      size.should == 9
-    Target.posts.find{ |p| p.config[:target] == :red }.
-      size.should == 3
-  end
-
-  
-  it "should list a specific post (:between) " do
-    Target.posts.filter(:between => 4.days..3.days).size.should == 1
-    Target.posts.filter(:between => 11.days..9.days).size.should == 1
-  end
-
-  it "should list a specific post (:tags) " do
-    Target.posts.filter(:tags => %w(batz)).size.should == 11
-    Target.posts.filter(:tags => %w(another)).size.should == 1
-    Target.posts.filter(:tags => %w(ahash another)).size.should == 8
-  end
-
-  
-  it "should list posts" do
-    Target.posts do |po|
-      po.class.should == Backbite::Post
-      po.fields[:topic].value.should =~ /^Hello from rspec/
-      po.fields[:tags].value[0..-2].should == ["batz", "bar", "bumm"] if po.component.name != :bar
-    end
-  end
-
-end
 
 
 =begin

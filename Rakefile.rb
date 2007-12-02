@@ -41,10 +41,14 @@ SPEC =
   s.executables = %w(backbite)
 end
 
+sp=Dir['spec/*.rb'].sort.each do |f|
+  FileUtils.touch(f)
+  sleep 0.1
+end
+
 task :spec do
-  
   ENV['DEBUG'] = '1'
-  sh 'spec spec -r spec/default_config'
+  sh "spec -r lib/backbite #{sp.join(' ')}"
 end
 
 task :gem => [:make_gem, :mvpkg, :install]
@@ -73,7 +77,7 @@ end
 
 task :specdoc => [:spechtml] do
   ENV['DEBUG'] = '1'
-  sh 'spec spec -d --format specdoc -r spec/default_config -r lib/backbite'
+  sh 'spec spec -d --format specdoc -r lib/backbite'
 end
 
 task :spechtml do

@@ -58,7 +58,7 @@ module Backbite
       lvl = :info if lvl == :debug
       Log4r::Logger['backbite'].send(lvl, msg)
     rescue
-      puts $!
+      #bputs $!
     end
     
   end

@@ -5,7 +5,7 @@
 
 describe Backbite::Repository do
 
-  before(:each) do
+  before(:all) do
     @target = Backbite::Repository.new(:rspec, '~/Tmp/rspec')
   end
 
@@ -18,14 +18,6 @@ describe Backbite::Repository do
     @target.valid?.should
   end
 
-  it "should able to remove a directory structure" do
-
-    system("mkdir -p /home/mit/public_html/backbite/")
-    system("cp -R #{ @target.directory }/* /home/mit/public_html/backbite/")
-
-    @target.remove!
-    @target.valid?.should_not
-  end
 end
 
 

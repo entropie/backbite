@@ -5,8 +5,8 @@
 
 describe Backbite::Config do
 
-  before(:each) do
-    @config = Backbite::Config.read($default_config)
+  before(:all) do
+    @config = Backbite::Config.read('spec/.spec_skel/default_config.rb')
   end
   
   it "should parse the config string to a hash" do

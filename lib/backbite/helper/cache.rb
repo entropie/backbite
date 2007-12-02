@@ -7,7 +7,7 @@ module Backbite
 
   module Helper
 
-    # CacheAble is a helper to cache results for faster reusing.
+    # CacheAble is a helper to cache results for faster reuse.
     #
     # == Example
     #  class Foo
@@ -33,7 +33,6 @@ module Backbite
         cache(self).cache_key(key, &blk)
       end
 
-      
       def self.cachefile=(file)
         const_set(:CacheFile, file) unless const_defined?(:CacheFile)
       end
@@ -52,10 +51,6 @@ module Backbite
         
         def initialize(cls)
           @klaz = cls
-          if $DEBUG
-            Info << "Truncating cache: #{cachefile}"
-            system('rm -rf #{cachefile}')
-          end
           @cache = PStore.new(cachefile.to_s)
         end
 
@@ -66,8 +61,10 @@ module Backbite
         def cache_key(key, &blk)
           @cache.transaction do
             if @cache[key].nil?
-              self[key] = blk.call
+              Debug << "CCache << #{key}"
+              self[key] = blk.call              
             else
+              Debug << "UCache << #{key}"
               self[key]
             end
           end

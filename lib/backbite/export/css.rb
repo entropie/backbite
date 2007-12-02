@@ -49,8 +49,12 @@ module Backbite
           when :base
             generated_base << "\n/* EOF: #{@filename} */\n\n\n"
           when /\.haml/
-            Sass::Engine.new(tlog.repository.join(@ofile).readlines.join).
-              render
+            file = tlog.repository.join(@ofile)
+            if file.exist?
+              Sass::Engine.new(file.readlines.join).render
+            else
+              ''
+            end
           else
             Info << " Ingoring #{self.class}#definition: #{file}"
             ''

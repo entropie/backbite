@@ -13,9 +13,9 @@ module Backbite
     # YAMLComponent is uesed to extend the component class to set the values for
     # we're getting from the YAML source.
     module YAMLComponent
-      def read ;    raise "read not available in #{self}"    end
-      def reread! ; raise "reread! not available in #{self}" end
-      def post ;    raise "post not available in #{self}"    end
+      def read(*a);    raise "read not available in YAML"    end
+      def reread!(*a) ; raise "reread! not available in YAML" end
+      def post(*a);    raise "post not available in YAML"    end
 
       def map(source)
         self.source = source

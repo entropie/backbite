@@ -21,7 +21,6 @@ module Backbite
 
     module Replacer
       
-      
       attr_reader :root
 
       def root=(obj)
@@ -135,6 +134,10 @@ module Backbite
       attr_reader :config
 
       def self.read(str)
+        path = Pathname.new(str)
+        if path.exist?
+          str = path.readlines.join
+        end
         instance_eval(str)
       end
       

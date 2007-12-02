@@ -25,7 +25,6 @@ module Backbite
       def write
         raise "#{class_name}: need @file to write contents" unless @file
         raise "#{class_name}: need @__result__ to be set to write contents" unless @__result__
-        
         wdir = tlog.repository.working_dir
         wdir.mkdir unless wdir.exist?
         file = wdir.join(@file)

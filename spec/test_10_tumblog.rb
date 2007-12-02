@@ -5,18 +5,22 @@
 
 describe Backbite::Tumblelog do
 
-  before(:each) do
-    @target = Backbite::Tumblelog.new(:rspec, $default_config)
-    @target.repository.setup!
+  before(:all) do
+    @target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
   end
 
+  it "should be createable" do
+    @target.repository.setup!
+  end
+  
   it "should respond with non nil on various attributes" do
     [:repository, :config, :name, :root, :path,
      :author, :url, :components, :posts, :post].each do |attr|
       @target.should.respond_to(attr)
     end
   end
-  
+
+ 
 end
 
 =begin
