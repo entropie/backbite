@@ -17,7 +17,7 @@ require 'uri'
 require 'yaml'
 require 'readline'
 require 'haml'
-
+require 'pstore'
 
 require 'backbite/ruby_ext'
 require 'backbite/helper'

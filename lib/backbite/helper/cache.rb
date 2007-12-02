@@ -7,54 +7,96 @@ module Backbite
 
   module Helper
 
+    # CacheAble is a helper to cache results for faster reusing.
+    #
+    # == Example
+    #  class Foo
+    #
+    #    include Helper::CacheAble
+    #
+    #    attr_reader :name
+    #
+    #    def initialize
+    #      @name = :uniq
+    #    end
+    #
+    #    def do_something
+    #      Cache(name) do
+    #        ...
+    #      end
+    #    end
+    #
+    #  end
     module CacheAble
 
-      class Cache
+      def Cache(key, &blk)
+        cache(self).cache_key(key, &blk)
+      end
 
-        def initialize
-          @cache = { }
+      
+      def self.cachefile=(file)
+        const_set(:CacheFile, file) unless const_defined?(:CacheFile)
+      end
+
+      def self.cachefile
+        if const_defined?(:CacheFile)
+          const_get(:CacheFile)
+        else
+          '/tmp/backbite.pstore'
+        end
+      end
+
+      
+      class Cache # :nodoc: All
+        attr_reader :cachefile
+        
+        def initialize(cls)
+          @klaz = cls
+          if $DEBUG
+            Info << "Truncating cache: #{cachefile}"
+            system('rm -rf #{cachefile}')
+          end
+          @cache = PStore.new(cachefile.to_s)
+        end
+
+        def cachefile
+          @cachefile ||= CacheAble.cachefile
         end
         
         def cache_key(key, &blk)
-          rkey = key.to_sym
-          Info << " Cache: reciving cache request for `#{rkey}"          
-          unless @cache[rkey]
-            Info << " Cache: creating cache for `#{rkey}"
-            @cache[rkey] = blk.call
-          else
-            Info << " Cache: usic cached obj: `#{rkey}"
+          @cache.transaction do
+            if @cache[key].nil?
+              self[key] = blk.call
+            else
+              self[key]
+            end
           end
-          @cache[rkey]
         end
 
         def [](key)
-          key = key.to_sym
-          @cache.select{ |hkey, hval| hkey == key }.first.last
+          return nil unless key
+          @cache[key]
+        end
+
+        def []=(key,value)
+          @cache[key] = value
         end
         
       end
-
-
-      def Cache(key, &blk)
-        ccache = cache(self.class)
-        ccache.cache_key(key, &blk)
-      end
-
-
+      
       def __mk_cache(cls)
-        unless cls.const_defined?(:CacheData)
-          p 1
-          cls.const_set(:CacheData, Cache.new)
+        unless cls.class.const_defined?(:CacheData)
+          cls.class.const_set(:CacheData, Cache.new(cls))
         end
-        cls.const_get(:CacheData)
+        cls.class.const_get(:CacheData)
       end
       private :__mk_cache
+
 
       def cache(cls)
         __mk_cache(cls)
       end
       private :cache
-
       
     end
     
@@ -71,3 +113,4 @@ Local Variables:
   ruby-indent-level:2
 End:
 =end
+

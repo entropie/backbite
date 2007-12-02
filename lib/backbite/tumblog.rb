@@ -42,6 +42,7 @@ module Backbite
       @config = Config.read(fdata)
       @repository =
         Repository.new(@name, @config[:defaults][:root])
+      Helper::CacheAble.cachefile = @repository.join("#{ @name }.pstore")
       @repository.tlog = self
     end
     

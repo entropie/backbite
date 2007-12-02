@@ -7,46 +7,40 @@ module Backbite
 
   module Post::Export::HTML
 
-    include Helper::CacheAble
-
     def fid
       "#{name}#{pid}"
     end
     
-    def to_html(hpricot_node, name)
-      Cache(fid) do
-        ordered = tlog.components[self.metadata[:component]].order.dup
-        ordered.map!{ |o|
-          fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
-          fields[fname]
+    def to_html(name)
+      ordered = tlog.components[self.metadata[:component]].order.dup
+      ordered.map!{ |o|
+        fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
+        fields[fname]
+      }
+
+      res = Hpricot("<div class=\"post #{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
+      t = (res/:div)
+      t.append{ |h| h << "#{" "*8}"}
+      ordered.each do |field|
+        f, filtered = field.to_sym, field.apply_filter(:html)
+        opts = { }
+        opts[:tag] = field.definitions[:tag] unless
+          field.definitions[:tag].to_s.empty?
+        opts[:tag] ||= :div
+        tag = opts[:tag]
+        t.append{ |h|
+          h << "#{" "*8}"          
+          h.send(tag, :class => field.to_sym) { |f| f.text(filtered)}
+          h << "\n#{" "*8}"
         }
-        target = hpricot_node
-        return '' unless target.attributes[:id].to_sym == self.config[:target]
-        res = Hpricot("<div class=\"post #{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
-        t = (res/:div)
-        t.append{ |h| h << "#{" "*8}"}
-        ordered.each do |field|
-          f, filtered = field.to_sym, field.apply_filter(:html)
-          opts = { }
-          opts[:tag] = field.definitions[:tag] unless
-            field.definitions[:tag].to_s.empty?
-          opts[:tag] ||= :div
-          tag = opts[:tag]
-          t.append{ |h|
-            h << "#{" "*8}"          
-            h.send(tag, :class => field.to_sym) { |f| f.text(filtered)}
-            h << "\n#{" "*8}"
-          }
-        end
-        target << "\n#{" "*8}"
-        target << t.to_html
-        t
       end
+      t.append{ |h| h << "\n#{" "*8}"}
+      t
     end
   end
 
   module Repository::Export::HTML # :nodoc: All
-
+    
     # mount point
     def self.export(tlog, params)
       @tree = Tree.new(tlog, params)
@@ -58,6 +52,8 @@ module Backbite
     # the hpricot access.
     class Tree < Repository::ExportTree
 
+      include Helper::CacheAble
+      
       attr_reader :hpricot
       
       def initialize(tlog, params)
@@ -85,15 +81,15 @@ module Backbite
 
 
       def body_nodes(params)
-        interval = @tlog.config[:defaults][:export][:ways][:html][:interval]
-        interval = ((Time.now-interval)/24/60/60).to_i
-
         posts = @tlog.posts.sort.reverse
-        
+
         body do |name, hpe|
-          (pos = posts.filter(params[:postopts].merge(:target => name))).
-            with_export(:html, @params.merge(:tree => self)) { |post|
-            post.to_html(hpe, name)
+          pexp = posts.filter(params[:postopts].merge(:target => name))
+          pexp.with_export(:html, @params.merge(:tree => self)) { |post|
+            identifier = "%s%s" % [params[:path_deep], post.fid]
+            hpe << Cache(identifier) { 
+              r = post.to_html(name)
+            }.to_s if hpe.attributes[:id].to_sym == post.config[:target]
           }
         end
       end
@@ -132,9 +128,11 @@ module Backbite
         ret << "<body>\n\n</body>\n\n</html>"
       end
 
+
       def doctype
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"DTD/xhtml1-transitional.dtd\">\n"
       end
+
 
       def title!
         t = @params[:title].to_s

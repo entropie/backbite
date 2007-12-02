@@ -61,8 +61,8 @@ describe Backbite::Repository::Export::HTML do
   end
 
   it "result should have a body tag with (node) contents" do
-    (result/:body/:div/'> *').size.should == 26
-    (result/:body/'> div'/'> *').size.should == 26
+    (result/:body/:div/'> *').size.should == 14
+    (result/:body/'> div'/'> *').size.should == 14
   end
 
 end
