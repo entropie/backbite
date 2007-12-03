@@ -6,7 +6,7 @@
 describe Backbite::Repository do
 
   before(:all) do
-    @target = Backbite::Repository.new(:rspec, '~/Tmp/rspec')
+    @target = Backbite::Repository.new(:rspec, '/tmp/rspec')
   end
 
   it "should able to target a nonexistant directory" do

@@ -7,7 +7,7 @@ Config[:rspec].setup do
 
   defaults do
 
-    root         '~/Tmp/rspec'
+    root         '/tmp/rspec'
 
     title        "rspec - %title%"
 

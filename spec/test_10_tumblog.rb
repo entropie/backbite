@@ -6,6 +6,7 @@
 describe Backbite::Tumblelog do
 
   before(:all) do
+    system('rm -rf /tmp/rspec')
     @target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
   end
 

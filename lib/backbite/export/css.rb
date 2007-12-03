@@ -49,10 +49,14 @@ module Backbite
           when :base
             generated_base << "\n/* EOF: #{@filename} */\n\n\n"
           when /\.haml/
+            if $DEBUG # FIXME
+              system('mkdir -p /tmp/rspec && cp ~/rspec.haml /tmp/rspec/rspec.haml')
+            end
             file = tlog.repository.join(@ofile)
             if file.exist?
               Sass::Engine.new(file.readlines.join).render
             else
+              p 1
               ''
             end
           else
