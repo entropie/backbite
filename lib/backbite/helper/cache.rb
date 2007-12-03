@@ -61,10 +61,10 @@ module Backbite
         def cache_key(key, &blk)
           @cache.transaction do
             if @cache[key].nil?
-              Debug << "CCache << #{key}"
+              #Debug << "CCache << #{key}"
               self[key] = blk.call              
             else
-              Debug << "UCache << #{key}"
+              #Debug << "UCache << #{key}"
               self[key]
             end
           end

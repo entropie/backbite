@@ -122,6 +122,7 @@ module Backbite
           system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
         end
       end
+      system('cp ~/rspec.haml /tmp/rspec/rspec.haml') if $DEBUG
     end
     private :populate!
     
