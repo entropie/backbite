@@ -43,15 +43,15 @@ end
 
 sp=Dir['spec/*.rb'].sort.each do |f|
   FileUtils.touch(f)
-  sleep 0.1
 end
 
 task :spec do
   ENV['DEBUG'] = '1'
-  sh "spec -r lib/backbite #{sp.join(' ')}"
+  system "spec -r lib/backbite #{sp.join(' ')}"
 end
 
-task :gem => [:make_gem, :mvpkg, :install]
+
+task :gem => [:mvpkg]
 
 task :make_gem do
   builder = Gem::Builder.new(SPEC)
@@ -61,7 +61,7 @@ task :make_gem do
   end
 end
 
-task :mvpkg do
+task :mvpkg => :make_gem do
   path = SPATH.join('pkg')
   path.mkdir unless path.exist?
   path.dirname.entries.grep(/.gem$/).each do |gem|
@@ -69,7 +69,7 @@ task :mvpkg do
   end
 end
 
-task :install do
+task :install => :gem do
   puts `gem install pkg/Backbite-#{VERS[/\w+\-(.*)/, 1]}`
 end
 
@@ -77,14 +77,14 @@ end
 
 task :specdoc => [:spechtml] do
   ENV['DEBUG'] = '1'
-  sh 'spec spec -d --format specdoc -r lib/backbite'
+  sh "spec -r lib/backbite #{sp.join(' ')} -d --format specdoc"
 end
 
 task :spechtml do
   ENV['DEBUG'] = '1'
-  sh("rm #{file = "/home/mit/public_html/doc/backbite/spec.html"}")
-  sh("touch #{file}")
-  sh "spec spec -r spec/default_config -r lib/backbite -f h:#{file}"
+  system("rm #{file = "/home/mit/public_html/doc/backbite/spec.html"}")
+  system("touch #{file}")
+  system "spec #{sp.join(' ')} -r lib/backbite -f h:#{file}"
 end
 
 task :rdoc do

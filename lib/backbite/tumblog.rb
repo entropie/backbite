@@ -11,8 +11,8 @@ module Backbite
     include Helper
 
 
-    attr_reader :repository, :config, :name
-    
+    attr_reader :repository, :config, :name, :options
+    attr_accessor :options, :optionparser
 
     def root
       path = @config[:defaults][:root]

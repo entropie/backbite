@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+# -*- mode:ruby -*-
+
+require 'pathname'
+
+ROOT = Pathname.new(File.expand_path(__FILE__)).dirname.dirname
+
+require 'lib/backbite'
+
+
+tlog = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+#p tlog.options
+
+
+Backbite.optionparser(tlog) do |op|
+  op.keyword(:post, tlog.posts) do |op, handler|
+
+    op.declare(:ls) {|a, b, c|
+      #p a
+      #p a,b,c
+      # handler.each{ |post|
+      #   puts a
+      # }
+      
+    }
+
+    op.declare(:foo){ |b|
+      #p b
+    }
+
+    op.declare(:baz){
+      puts 1
+    }
+
+    # op.declare(:bum){ |b|
+    #   p b
+    # }
+
+    
+  end
+end
+
+#Backbite.run_options(tlog, *['post', 'ls', 'a', 'b', 'c', 'foo', 'b', 'baz'])
+Backbite.run_options(tlog, *['foo', 'ls', 'a', 'b', 'c'])
+

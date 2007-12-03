@@ -29,7 +29,7 @@ require 'backbite/plugins'
 require 'backbite/repos'
 require 'backbite/export'
 require 'backbite/tumblog'
-
+require 'backbite/arguments'
 
 Dir['lib/ruby_ext/*.rb'].each do |re|
   require re

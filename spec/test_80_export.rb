@@ -36,6 +36,10 @@ describe "Backbite::Repository::Export::CSS" do
     @result.should =~ /    #red > \.foo > \.date/
   end
 
+  it "should include haml style definitions" do
+    @result.should =~ /\.permalink \.pl \{/
+    @result.should =~ /#red \.permalink \.pl \{/
+  end
 end
 
 describe "Backbite::Repository::Export::HTML" do

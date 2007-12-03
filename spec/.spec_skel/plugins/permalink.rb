@@ -4,9 +4,17 @@
 #
 
 class Permalink < Plugin
+
   def filter
-    adate = component.metadata[:date].strftime(Repository::Export::ARCHIVE::DateFormat)
-    '<a class="pl" href="%s%s/%s/#%s">#</a>' % [path_deep, 'archive', adate, identifier]
+    component.metadata[:date].strftime(Repository::Export::ARCHIVE::DateFormat)
+  end
+
+  def txt_filter
+    "#{filter}##{identifier}"
+  end
+  
+  def html_filter
+    '<a class="pl" href="%s%s/%s/#%s">#</a>' % [path_deep, 'archive', filter, identifier]
   end
 end
 

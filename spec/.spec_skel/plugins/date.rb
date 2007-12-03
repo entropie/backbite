@@ -14,7 +14,7 @@ class Date < Plugin
   end
 
   def filter
-    field.value.strftime("%Y %B, %d &mdash; %H:%M  %Z")
+    field.value.strftime("%Y %B, %d - %H:%M  %Z")
   end
 
   def html_filter
@@ -25,7 +25,7 @@ class Date < Plugin
       f << %(<a style="rellink" title="#{t}" href="##{po.identifier}">&nbsp;#{i == 0 ? '&lt;' : '&gt;'}&nbsp;</a>)
     }
     #f.first + filter + f.last
-    filter
+    filter.gsub(/\-/, '&mdash;')
   end
 end
 
