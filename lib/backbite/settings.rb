@@ -133,6 +133,10 @@ module Backbite
       
       attr_reader :config
 
+      def keys
+        @config.keys
+      end
+      
       def self.read(str)
         path = Pathname.new(str)
         if path.exist?

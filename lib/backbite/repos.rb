@@ -43,7 +43,16 @@ module Backbite
     def inspect
       "<Repository: '#{@directory.to_s}'>"
     end
-    
+
+    def to_s
+      r=''
+      r << inspect
+      require 'find'
+      Find.find(@directory) do |pa|
+        r << "\n"+pa
+      end
+      r
+    end
 
     # Return a list of Posts
     def posts(params = { }, &blk)

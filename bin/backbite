@@ -9,37 +9,35 @@ require 'lib/backbite'
 
 
 tlog = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
-#p tlog.options
-
 
 Backbite.optionparser(tlog) do |op|
+
+
+  op.keyword(:components, tlog.components) do |op, handler|
+    op.declare(:ls) {
+      puts handler
+    }
+  end
+
+  
+  op.keyword(:tlog, tlog) do |op, handler|
+    op.declare(:ls) {
+      puts handler.repository
+    }
+    op.declare(:url) {
+      puts handler.url
+    }
+  end
+  
   op.keyword(:post, tlog.posts) do |op, handler|
-
-    op.declare(:ls) {|a, b, c|
-      #p a
-      #p a,b,c
-      # handler.each{ |post|
-      #   puts a
-      # }
-      
+    op.declare(:ls) {
+      handler.each{ |post|
+        puts post
+        puts
+      }
     }
-
-    op.declare(:foo){ |b|
-      #p b
-    }
-
-    op.declare(:baz){
-      puts 1
-    }
-
-    # op.declare(:bum){ |b|
-    #   p b
-    # }
-
-    
   end
 end
 
-#Backbite.run_options(tlog, *['post', 'ls', 'a', 'b', 'c', 'foo', 'b', 'baz'])
-Backbite.run_options(tlog, *['foo', 'ls', 'a', 'b', 'c'])
+Backbite.run_options(tlog, *ARGV.dup)
 

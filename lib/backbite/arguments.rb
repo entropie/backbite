@@ -5,16 +5,16 @@
 
 module Backbite
 
-  class Options < Hash
+  class Options < Hash # :nodoc: All
   end
   
   def self.optionparser(tlog)
     tlog.options      ||= Options.new
-    tlog.optionparser ||= OptionParser.new(tlog)
+    tlog.optionparser ||= Optionparser.new(tlog)
     yield tlog.optionparser if block_given?
   end
 
-  def self.run_options(tlog, which, *args)
+  def self.run_options(tlog, which = nil, *args)
     ret, target, skip = [], tlog.optionparser[which], 0
 
     return nil unless target
@@ -36,9 +36,10 @@ module Backbite
     ret.flatten
   end
 
-  class OptionParser
+  class Optionparser
 
     def [](obj)
+      return nil unless obj
       @responder[obj.to_sym]
     end
     

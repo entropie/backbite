@@ -92,7 +92,7 @@ module Backbite
         end
         @fields
       end
-      
+
       
       # Maps the <tt>@config[:fields]</tt> declarations to find the
       # right class for the Field, runs the <tt>Ways.dispatcher</tt> to
@@ -166,6 +166,10 @@ module Backbite
 
       def initialize(name)
         @name = name
+      end
+
+      def to_s
+        "Component: #{@name.to_s} (#{config[:fields].keys.join(', ')})"
       end
 
       attr_reader :order

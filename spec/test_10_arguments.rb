@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-describe Backbite::OptionParser do
+describe Backbite::Optionparser do
 
   before(:all) do
     @tlog = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
