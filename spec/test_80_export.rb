@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-describe Backbite::Repository::Export::CSS do
+describe "Backbite::Repository::Export::CSS" do
 
   before(:all) do
     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
@@ -38,7 +38,7 @@ describe Backbite::Repository::Export::CSS do
 
 end
 
-describe Backbite::Repository::Export::HTML do
+describe "Backbite::Repository::Export::HTML" do
 
   before(:all) do
     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
@@ -70,7 +70,7 @@ describe Backbite::Repository::Export::HTML do
 
 end
 
-describe Backbite::Repository::Export::TXT do
+describe "Backbite::Repository::Export::TXT" do
 
   before(:all) do
     target = Backbite::Tumblelog.new(:txt, 'spec/.spec_skel/default_config.rb')
@@ -90,7 +90,7 @@ describe Backbite::Repository::Export::TXT do
   
 end
 
-describe Backbite::Repository::Export::TAGS do
+describe "Backbite::Repository::Export::TAGS" do
 
   before(:all) do
     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
@@ -111,7 +111,7 @@ describe Backbite::Repository::Export::TAGS do
 
 end
 
-describe Backbite::Repository::Export::ARCHIVE do
+describe "Backbite::Repository::Export::ARCHIVE" do
 
   before(:all) do
     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')

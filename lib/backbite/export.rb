@@ -48,14 +48,19 @@ module Backbite
     module Export
 
       # FIXME: use variables defined in config
-      require 'backbite/export/css.rb'
-      require 'backbite/export/html.rb'
-      require 'backbite/export/txt.rb'
-      require 'backbite/export/tags.rb'
-      require 'backbite/export/archive.rb'
+      # require 'backbite/export/css.rb'
+      # require 'backbite/export/html.rb'
+      # require 'backbite/export/txt.rb'
+      # require 'backbite/export/tags.rb'
+      # require 'backbite/export/archive.rb'
 
       # Selects module +way+ and runs ::export
       def export(way, params = { })
+        (path = join('export')).entries.grep(/[^\.]/).each do |wfile|
+          require(path.join(wfile))
+        end
+        
+
         way = way.to_s.upcase
         cway = Repository::Export::const_get(way)
         @export =

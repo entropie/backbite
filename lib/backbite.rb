@@ -31,8 +31,6 @@ require 'backbite/export'
 require 'backbite/tumblog'
 
 
-
-
 Dir['lib/ruby_ext/*.rb'].each do |re|
   require re
 end

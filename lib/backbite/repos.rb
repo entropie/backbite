@@ -115,7 +115,7 @@ module Backbite
         else
           Backbite::Source.join('skel')
         end
-      %w'plugins components'.each do |w|
+      %w'plugins components export'.each do |w|
         (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
           Info << " cp #{st.join(e)} to #{w}/#{e}"
           t = @directory.join(w)
