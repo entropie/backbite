@@ -169,7 +169,7 @@ module Backbite
       end
 
       def to_s
-        "Component: #{@name.to_s} (#{config[:fields].keys.join(', ')})"
+        "#{@name.to_s.capitalize}  Plugins:#{plugins.size}  Fields:#{config[:fields].keys.map{ |f| f.to_s.split(/_/).last }.join(', ')}"
       end
 
       attr_reader :order
@@ -197,7 +197,7 @@ module Backbite
         config[:fields].plugin_date { }
         config[:fields].plugin_permalink { }
         
-        @order = config[:fields].sort.dup.map{ |a| a.first }
+        @order = config[:fields].sort.map{ |a| a.first }
         @config = config
         reread!
         self

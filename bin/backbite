@@ -7,15 +7,30 @@ ROOT = Pathname.new(File.expand_path(__FILE__)).dirname.dirname
 
 require 'lib/backbite'
 
-
-tlog = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+include Backbite
+tlog = Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
 
 Backbite.optionparser(tlog) do |op|
 
+  op.keyword(:plugins, Backbite::Plugins) do |op, handler|
+    op.declare(:generate) { |name|
+      puts Generators.generate(name, handler)
+    }
 
+    op.declare(:generate) { |name|
+      puts Generators.generate(name, handler)
+    }
+  end
+
+  
+  
   op.keyword(:components, tlog.components) do |op, handler|
     op.declare(:ls) {
       puts handler
+    }
+
+    op.declare(:generate) { |name|
+      puts Generators.generate(name, handler)
     }
   end
 
