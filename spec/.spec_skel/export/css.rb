@@ -124,7 +124,7 @@ module Backbite
             retstr << "  /* Component::#{co.name}::Field::#{fn.to_sym} */\n"
             retstr <<  "    #%s > .%s > .%s {\n" %
               [co.config[:target], co.name, fn.to_sym]
-            fn.definitions[:style].each { |n, m|
+            (fn.definitions[:style] || { }).each { |n, m|
               dn = self.class.sanitize_fieldname(n)
               retstr << "     %s:%s;\n" % [dn, m]
             }

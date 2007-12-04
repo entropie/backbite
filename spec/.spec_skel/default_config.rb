@@ -25,6 +25,14 @@ Config[:rspec].setup do
       shell "ftpsync --user %ftpuser% --password %password% %localdir% %target%"
     end
 
+    automatic do
+      plugins { 
+        tags
+        date { value lambda{ style{ foobar :red } } }
+        permalink
+      }
+    end
+    
     replace do # no value of key means use config value.
       author      'Michael Trommer'
       title       'foobar title'
@@ -36,19 +44,16 @@ Config[:rspec].setup do
       colors_bg_body     '#105099'
       colors_bg_red      '#fab444'
       colors_bg_black    '#105099'
-
     end
 
-    export do
-      ways do
-        html {
-          interval 1.days
-        }
-        plain
-        xml
-        atom
-      end
-    end
+    # export do
+    #   ways do
+    #     html
+    #     plain
+    #     xml
+    #     atom
+    #   end
+    # end
 
   end
 

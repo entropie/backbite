@@ -31,7 +31,7 @@ module Backbite
       ret = self.new
       (td = Helper::File.ep(directory)).entries.map do |comp|
         next if comp.to_s =~ /^\.+/
-        comp = Component.read(td.join(comp).readlines)
+        comp = Component.read(td.join(comp).readlines, tlog)
         comp.tlog = tlog
         ret << comp
       end
@@ -58,13 +58,17 @@ module Backbite
       
       # creates the component
       def self.define(name, &blk)
-        Component.new(name).read(&blk)
+        comp = Component.new(name)
+        comp.read!(&blk)
       end
       
       
       # eval +what+
-      def self.read(what)
-        eval(what.to_s)
+      def self.read(what, tlog)
+        ret = eval(what.to_s)
+        ret.tlog = tlog
+        ret.setup!
+        ret
       end
       
       # Returns a list of fields attached to the current Component.
@@ -172,8 +176,12 @@ module Backbite
         "#{@name.to_s.capitalize}  Plugins:#{plugins.size}  Fields:#{config[:fields].keys.map{ |f| f.to_s.split(/_/).last }.join(', ')}"
       end
 
-      attr_reader :order
-
+      def setup!
+        @config = with_default_plugins(config)
+        @order = @config[:fields].sort.map{ |a| a.first }
+        reread!
+      end
+      
       # Wraps the config values to somewhat we can understand better here.
       def reread!
         @config.each do |ident, values|
@@ -187,20 +195,29 @@ module Backbite
       end
 
       
-      # Creates a Configuration instance, evalutes <tt>&blk</tt> and reformats
-      # the fields.
-      def read(&blk)
+      def read!(&blk)
         config = Config::Configuration.new(@name)
         config.setup(&blk)
-        
-        config[:fields].plugin_tags { }
-        config[:fields].plugin_date { }
-        config[:fields].plugin_permalink { }
-        
-        @order = config[:fields].sort.map{ |a| a.first }
         @config = config
-        reread!
         self
+      end
+
+      def order
+        @order
+      end
+      
+      def with_default_plugins(cfg)
+        aplugins = tlog.config[:defaults][:automatic][:plugins]
+        aplugins.order.each do |plugin|
+          name = "plugin_#{plugin.to_s}".to_sym
+          value = aplugins[plugin][:value]
+          if value.kind_of?(Proc)
+             cfg[:fields][name].read(&value)
+          else
+            cfg[:fields].send(name, &lambda{ })
+          end
+        end
+        cfg
       end
       
     end

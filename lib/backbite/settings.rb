@@ -72,9 +72,9 @@ module Backbite
       end
       
 
-      def inspect
-        "Cfg[#{order.join(', ')}]"
-      end
+      # def inspect
+      #   "Cfg[#{order.join(', ')}]"
+      # end
 
       
       def cleanup
