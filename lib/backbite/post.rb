@@ -242,12 +242,12 @@ module Backbite
         target
       end
       
-      def self.input_fields
-        InputFields.new
+      def self.input_fields(org)
+        InputFields.new(org)
       end
 
-      def self.input_styles
-        InputStyles.new
+      def self.input_styles(org)
+        InputStyles.new(org)
       end
 
       # InputField represents a single field in a post.
@@ -327,17 +327,28 @@ module Backbite
           plugin.params = params
           self
         end
-
-      end
-      
-
-      class InputFields < Hash # :nodoc: All
       end
 
+      class Inputs < Hash
+        attr_reader :config
+        def initialize(org)
+          @config = org
+        end
 
-      class InputStyles < Hash # :nodoc: All
+        def ordered
+          @config.ordered
+        end
+
+        def sort
+          @config.sort
+        end
       end
 
+      class InputFields < Inputs # :nodoc: All
+      end
+
+      class InputStyles < Inputs # :nodoc: All
+      end
 
     end
   end

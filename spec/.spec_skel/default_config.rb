@@ -28,8 +28,8 @@ Config[:rspec].setup do
     automatic do
       plugins { 
         tags
-        date { value lambda{ style{ foobar :red } } }
-        #permalink
+        date { value lambda{ style{ background_color :silver } } }
+        permalink
       }
     end
     

@@ -71,12 +71,6 @@ module Backbite
         ret
       end
       
-
-      # def inspect
-      #   "Cfg[#{order.join(', ')}]"
-      # end
-
-      
       def cleanup
         class << self
           [:replace, :id, :clear].each do |m|

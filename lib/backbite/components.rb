@@ -178,8 +178,8 @@ module Backbite
       end
 
       def setup!
+        @order = @config[:fields].order
         @config = with_default_plugins(config)
-        @order = @config[:fields].sort.map{ |a| a.first }
         reread!
       end
       
@@ -188,9 +188,9 @@ module Backbite
         @config.each do |ident, values|
           case ident
           when :fields
-            (@config[ident] = Post::Fields.input_fields).merge!(values)
+            (@config[ident] = Post::Fields.input_fields(values)).merge!(values)
           when :style
-            (@config[ident] = Post::Fields.input_styles).merge!(values)
+            (@config[ident] = Post::Fields.input_styles(values)).merge!(values)
           end
         end
       end
@@ -212,11 +212,11 @@ module Backbite
         aplugins.order.each do |plugin|
           name = "plugin_#{plugin.to_s}".to_sym
           value = aplugins[plugin][:value]
-          if value.kind_of?(Proc)
-             cfg[:fields][name].read(&value)
-          else
-            cfg[:fields].send(name, &lambda{ })
+          unless value.kind_of?(Proc)
+            value = lambda{ }
           end
+          @order = order.push(name).uniq
+          cfg[:fields][name].read(&value)
         end
         cfg
       end

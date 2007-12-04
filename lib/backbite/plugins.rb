@@ -9,7 +9,7 @@ module Backbite
     def [](o)
       r = select{|pl|
         nam = o.to_s.gsub!(/^(plugin|input)_/, '') || o
-        pl.name.split('::').last.downcase.to_sym == nam.to_sym
+        pl.name == nam.to_sym
       }.shift
       r
     end
@@ -94,7 +94,11 @@ module Backbite
     end
     
     def name
-      self.class.name.split('::').last.downcase
+      self.class.name
+    end
+
+    def self.name
+      to_s.split('::').last.downcase.to_sym
     end
     
     def result

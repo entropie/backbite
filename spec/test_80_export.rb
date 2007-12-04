@@ -34,6 +34,7 @@ describe "Backbite::Repository::Export::CSS" do
     @result.should =~ /    #red > \.foo > \.tags/
     @result.should =~ /    #red > \.foo > \.body/
     @result.should =~ /    #red > \.foo > \.date/
+    @result.should =~ /background\-color:silver/
   end
 
   it "should include haml style definitions" do

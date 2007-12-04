@@ -24,10 +24,13 @@ module Backbite
       ordered.each do |field|
         f, filtered = field.to_sym, field.apply_filter(:html)
         opts = { }
+
         opts[:tag] = field.definitions[:tag] unless
           field.definitions[:tag].to_s.empty?
         opts[:tag] ||= :div
+
         tag = opts[:tag]
+
         t.append{ |h|
           h << "#{" "*8}"          
           h.send(tag, :class => field.to_sym) { |f| f.text(filtered)}
