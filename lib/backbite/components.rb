@@ -94,6 +94,7 @@ module Backbite
           end
           @fields.push(*fields)
         end
+        #puts @fields.map{ |f| f.name}.join(',')
         @fields
       end
 

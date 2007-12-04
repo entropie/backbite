@@ -106,29 +106,36 @@ module Backbite
 
         # component basic definitions
         @tlog.components.each do |co|
-          retstr << "  /* Component: `#{co.name}' */\n"
+          retstr << "  /* Component: `#{co.name}' */\n" if $DEBUG
           retstr << "    #%s > .%s {\n" % [co.config[:target], co.name]
           t = co.config[:style]
           co.config[:style].each_pair { |de, na|
             defi = self.class.sanitize_fieldname(de)
             retstr << "      %s:%s;\n" % [defi, na]
           }
-          retstr << "    }\n  /* End component `#{co.name}' */\n\n"            
+          retstr << "    }\n"
+          retstr << "  /* End component `#{co.name}' */\n\n" if $DEBUG
         end
 
-        retstr << "  /* Parsing component defined field definitions */\n\n"
+        retstr << "  /* Parsing component defined field definitions */\n\n" if $DEBUG
 
         # per field definitions
         @tlog.components.each do |co|
           co.fields.each do |fn, fc|
-            retstr << "  /* Component::#{co.name}::Field::#{fn.to_sym} */\n"
+            retstr << "  /* Component::#{co.name}::Field::#{fn.to_sym} */\n" if $DEBUG
             retstr <<  "    #%s > .%s > .%s {\n" %
               [co.config[:target], co.name, fn.to_sym]
-            (fn.definitions[:style] || { }).each { |n, m|
+
+            astyle = co.plugins.map{ |cop|
+              n = cop.to_s.split('::').last.downcase
+              tlog.config[:defaults][:automatic][:plugins][n.to_sym][:style]
+            }.compact.inject{ |m, ps| m.merge(ps)}
+            astyle.merge((fn.definitions[:style] || { })).each { |n, m|
               dn = self.class.sanitize_fieldname(n)
               retstr << "     %s:%s;\n" % [dn, m]
             }
-            retstr << "    }\n  /* END Component::#{co.name}::Field::#{fn.to_sym} */\n\n"
+            retstr << "    }\n"
+            retstr << "  /* END Component::#{co.name}::Field::#{fn.to_sym} */\n\n" if $DEBUG
           end
         end
         retstr

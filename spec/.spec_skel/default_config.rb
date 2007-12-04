@@ -29,7 +29,7 @@ Config[:rspec].setup do
       plugins { 
         tags
         date { value lambda{ style{ foobar :red } } }
-        permalink
+        #permalink
       }
     end
     
@@ -46,15 +46,6 @@ Config[:rspec].setup do
       colors_bg_black    '#105099'
     end
 
-    # export do
-    #   ways do
-    #     html
-    #     plain
-    #     xml
-    #     atom
-    #   end
-    # end
-
   end
 
   stylesheets do
@@ -65,7 +56,6 @@ Config[:rspec].setup do
     files[:jquery]
     files[:foo]
   end
-
 
   html do
     body do |bdy|
