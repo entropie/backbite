@@ -31,7 +31,7 @@ module Backbite
     module Plugins
       def make(name)
         res = ''
-        res << "class #{name.to_s.capitalize} < Plugin\n"
+        res << "class #{name.to_s.capitalize} < Plugin\n\n"
         [:metadata_inject, :input, 'transform!(str)', :content,
          :before, :after, :filter].each do |defun|
           res << (p=" "*2) << "# def #{defun}\n#{p}# end\n\n"

@@ -16,7 +16,7 @@ module Backbite
 
   def self.run_options(tlog, which = nil, *args)
     ret, target, skip = [], tlog.optionparser[which], 0
-
+    args << :index if args.empty?
     return nil unless target
     
     nargs = args.map{ |a| a.to_sym }
@@ -46,21 +46,40 @@ module Backbite
     def each(&blk)
       @responder.each(&blk)
     end
+
+    def to_s
+      ret = ''
+      @descs.each do |kw, f|
+        ret << "> #{kw} '#{f.delete(:__desc__)||'Not Documented'}'\n"
+        f.each do |k,v|
+          size = @responder[kw][k].arity
+          ret << " * #{"%-10s"%k}  #{"%2i"%size}  #{v}\n"
+        end
+        ret << "\n"
+      end
+      ret
+    end
     
-    def keyword(kw, handler)
+    def desc(str)
+      @descs[@current_keyword][:__desc__] = str
+    end
+    
+    def keyword(kw, handler = Object)
       @current_keyword = kw
       @definition = @responder[@current_keyword]
       yield(self, handler)
     end
     
-    def declare(keyw, &blk)
+    def declare(keyw, desc = '', &blk)
       @responder[@current_keyword] ||= { }
+      @descs[@current_keyword][keyw] = desc
       @responder[@current_keyword][keyw] = blk
     end
     
     def initialize(tlog)
       @tlog = tlog
       @responder = tlog.options
+      @descs = Hash.new{ |hash, key| hash[key] = { } }
     end
   end
   

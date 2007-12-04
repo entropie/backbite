@@ -12,7 +12,7 @@ module Backbite
     
     def initialize(tlog)
       @tlog = tlog
-      each
+      __read__
     end
     
     def with_export(type, params)
@@ -36,6 +36,7 @@ module Backbite
       ret = self.dup
       # select Posts by Target
       if target = params[:target]
+        target = target.to_sym
         ret.reject!{ |p|
           target != p.config[:target]
         }
@@ -48,14 +49,13 @@ module Backbite
           not ids.include?(post.pid)
         }
       end
-      
+
       # select Posts by Tags
       if tags = params[:tags]
         ret.reject!{ |post|
           tags.map{ |t| true if post.tags.include?(t) }.compact.empty?
         }
       end
-
       
       # select Posts by metadata[:date
       if bet = params[:between]
@@ -83,7 +83,7 @@ module Backbite
       ret.sort_by{ |po| po.metadata[:date] }
     end
     
-    def each
+    def __read__(&blk)
       postfiles = (par = tlog.repository.join('spool')).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
       i = -1
