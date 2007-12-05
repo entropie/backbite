@@ -8,6 +8,7 @@ ROOT = Pathname.new(File.expand_path(__FILE__)).dirname.dirname
 require 'lib/backbite'
 
 include Backbite
+
 tlog = Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
 
 Backbite.optionparser(tlog) do |op|
@@ -20,10 +21,6 @@ Backbite.optionparser(tlog) do |op|
   end
   
   op.keyword(:plugin, Backbite::Plugins) do |op, handler|
-    op.declare(:generate) { |name|
-      puts Generators.generate(name, handler)
-    }
-
     op.declare(:generate) { |name|
       puts Generators.generate(name, handler)
     }
@@ -80,7 +77,8 @@ Backbite.optionparser(tlog) do |op|
         { :target => $1.to_sym }
       end
 
-      handler.filter(nargs).each do |r|
+      handler.filter(nargs.merge(:nosort => true)).each do |r|
+        puts r.identifier
         puts r
       end
     }

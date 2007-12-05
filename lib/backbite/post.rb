@@ -12,7 +12,7 @@ module Backbite
     
     def initialize(tlog)
       @tlog = tlog
-      __read__
+      read
     end
     
     def with_export(type, params)
@@ -31,7 +31,8 @@ module Backbite
                  :between => :optional,
                  :ids     => :optional,
                  :tags    => :optional,
-                 :target  => :optional
+                 :target  => :optional,
+                 :nosort  => :optional
                  )
       ret = self.dup
       # select Posts by Target
@@ -72,18 +73,33 @@ module Backbite
         }
       end
 
+      ret.by_date! if params[:nosort].nil?
+      ret.with_ids
       ret.each(&blk) if block_given?
       ret
     end
 
-
-    def find(&blk)
-      ret = select(&blk) if block_given?
-      ret ||= self
-      ret.sort_by{ |po| po.metadata[:date] }
+    def with_ids(&blk)
+      i = -1
+      ret = self.map{ |pst|
+        #pst.identifier
+        pst.pid = i+=1 and pst
+      }
+      ret = replace(ret)      
+      ret.each(&blk) if block_given?
+      ret
     end
     
-    def __read__(&blk)
+    def by_date!
+      self.replace(sort_by{ |po| po.metadata[:date] })
+    end
+
+    def update!
+      read
+    end
+    
+
+    def read(&blk)
       postfiles = (par = tlog.repository.join('spool')).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
       i = -1
@@ -97,7 +113,7 @@ module Backbite
         mem << postway
       }
     end
-
+    private :read
   end
   
   class Post < Delegator
@@ -113,13 +129,18 @@ module Backbite
     class Export
     end
     
-    attr_reader :component
-    attr_accessor :pid
+    attr_reader   :component
+    attr_reader   :pid
     attr_accessor :neighbors
     
 
+    def pid=(pid)
+      @pid = pid
+      identifier and pid
+    end
+    
     def <=>(o)
-      date <=> o.date
+      metadata[:date] <=> o.date
     end
     
     def initialize(component)
