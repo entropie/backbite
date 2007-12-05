@@ -81,11 +81,7 @@ module Backbite
 
     def with_ids(&blk)
       i = -1
-      ret = self.map{ |pst|
-        #pst.identifier
-        pst.pid = i+=1 and pst
-      }
-      ret = replace(ret)      
+      ret = replace(self.map{ |pst| pst.pid = i+=1 and pst })
       ret.each(&blk) if block_given?
       ret
     end
@@ -94,10 +90,13 @@ module Backbite
       self.replace(sort_by{ |po| po.metadata[:date] })
     end
 
+    def by_id!
+      self.replace(sort_by{ |po| po.pid })
+    end
+    
     def update!
       read
     end
-    
 
     def read(&blk)
       postfiles = (par = tlog.repository.join('spool')).entries.

@@ -13,16 +13,14 @@ describe Backbite::Posts do
   end
 
   it "should list a specific post (==, =~)" do
-    @target.posts.find{ |p| p.topic == 'Hello from rspec another' }.
-      size.should == 1
-    @target.posts.find{ |p| p.body =~ /^foo another$/ }.
-      size.should == 1
+    @target.posts.select{ |p| p.topic == 'Hello from rspec another' }.size.should == 1
+    @target.posts.select{ |p| p.body =~ /^foo another$/ }.size.should == 1
   end
 
   it "should list specific posts (:target)" do
-    @target.posts.find{ |p| p.config[:target] == :black }.
+    @target.posts.select{ |p| p.config[:target] == :black }.
       size.should == 9
-    @target.posts.find{ |p| p.config[:target] == :red }.
+    @target.posts.select{ |p| p.config[:target] == :red }.
       size.should == 3
   end
 
@@ -37,7 +35,6 @@ describe Backbite::Posts do
     @target.posts.filter(:tags => %w(another)).size.should == 1
     @target.posts.filter(:tags => %w(ahash another)).size.should == 8
   end
-
   
   it "should list posts" do
     @target.posts do |po|
