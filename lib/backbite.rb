@@ -41,7 +41,7 @@ $DEBUG = true if ENV['DEBUG']
 
 module Backbite
 
-  Version = %w'0 1 5'
+  Version = %w'0 1 7'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
 
