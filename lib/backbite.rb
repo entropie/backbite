@@ -23,7 +23,11 @@ require 'delegate'
 require 'uri'
 require 'yaml'
 require 'readline'
-require 'haml'
+begin
+  require 'haml'
+rescue LoadError
+end
+
 require 'pstore'
 require 'abbrev'
 
