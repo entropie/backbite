@@ -42,6 +42,10 @@ Backbite.optionparser(tlog) do |op|
 
     op.desc "everything about your tumblog"
 
+    op.declare(:generate, "generates a config skeleton in <file>") { |file|
+      puts Generators.generate(file, handler)
+    }
+    
     op.declare(:ls, "basic information") {
       puts handler.repository
     }
@@ -78,8 +82,8 @@ Backbite.optionparser(tlog) do |op|
       end
 
       handler.filter(nargs.merge(:nosort => true)).each do |r|
-        puts r.identifier
         puts r
+        puts
       end
     }
   end

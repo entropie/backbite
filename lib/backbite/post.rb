@@ -32,7 +32,8 @@ module Backbite
                  :ids     => :optional,
                  :tags    => :optional,
                  :target  => :optional,
-                 :nosort  => :optional
+                 :nosort  => :optional,
+                 :norenumber => :optional
                  )
       ret = self.dup
       # select Posts by Target
@@ -74,18 +75,11 @@ module Backbite
       end
 
       ret.by_date! if params[:nosort].nil?
-      ret.with_ids
+      ret.with_ids if params[:norenumber].nil?
       ret.each(&blk) if block_given?
       ret
     end
 
-    def with_ids(&blk)
-      i = -1
-      ret = replace(self.map{ |pst| pst.pid = i+=1 and pst })
-      ret.each(&blk) if block_given?
-      ret
-    end
-    
     def by_date!
       self.replace(sort_by{ |po| po.metadata[:date] })
     end
@@ -113,6 +107,13 @@ module Backbite
       }
     end
     private :read
+
+    def with_ids(&blk)
+      i = -1
+      ret = replace(self.map{ |pst| pst.pid = i+=1 and pst })
+      ret.each(&blk) if block_given?
+      ret
+    end
   end
   
   class Post < Delegator
@@ -195,13 +196,19 @@ module Backbite
       }.join(', ') << "]>"
     end
 
-
+    def url
+      df = metadata[:date].strftime(tlog.config[:defaults][:archive_date_format])
+      "/archive/#{df}/##{identifier}"
+    end
+    
     def to_s
       prfx = "\n   "
-      ret = "#{name.to_s.capitalize} [#{prfx}" <<
+      adds = [[:pid, pid], [:ident, identifier], [:url, url]]
+      adds = adds.map{ |an,av| "#{an.to_s.upcase} #{av}"}.join(' >>> ')
+      ret = "#{name.to_s.capitalize} [ #{prfx}" <<
         fields.inject([]) { |m, field|
-        m << field.to_s(10)
-      }.join(",#{prfx}") << "\n]"
+        m << if field.value.to_s.empty? then nil else field.to_s(10) end
+      }.compact.join(", #{prfx}") << "\n] >>> #{adds}"
     end
     
     

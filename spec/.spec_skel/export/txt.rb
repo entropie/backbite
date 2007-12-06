@@ -12,8 +12,8 @@ module Backbite
       module TXT
         
         def to_txt
-          str = '{{{'
-          ordered = tlog.components[self.metadata[:component]].order.dup
+          str = "#{metadata[:component].to_s.capitalize} {"
+          ordered = tlog.components[metadata[:component]].order.dup
           ordered.map!{ |o|
             fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
             fields[fname]
@@ -22,7 +22,7 @@ module Backbite
             f, filtered = field.to_sym, field.apply_filter(:txt)
             m << "\n %-10s %s" % [f.to_s+':', filtered]
           end
-          str << "\n}}}\n"
+          str << "\n}\n"
         end
 
       end
@@ -42,10 +42,10 @@ module Backbite
           def initialize(tlog, params)
             super
             @file = 'plain.txt'
-            @str = "###\n### ''#{params[:title]}`` at '#{timestamp}'\n###\n\n"
+            from = "#{tlog.author[:name]} <#{ tlog.author[:email]}>"
+            @str = "#\n# Title: #{params[:title]}\n# Generated at: #{timestamp}\n# By: #{from}\n#\n# URL: #{tlog.http_path}\n#\n\n"
             posts = @tlog.posts(params[:postopts]).sort.reverse
             posts.with_export(:txt, :tree => self){ |post|
-              @str << "### " << post.metadata[:date].to_s << "\n"
               @str << post.to_txt << "\n"
             }
             @__result__ = @str

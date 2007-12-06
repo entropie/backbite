@@ -84,37 +84,37 @@ describe "Backbite::Repository::Export::TXT" do
   
   it "result should have a title" do
     @result.split("\n")[1].should =~
-      /### ''foobar`` at '.+'/
+      /# Title: foobar/
   end
 
   it "should have some posts" do
-    @result.scan(/^###/).flatten.size.should == 15
-    @result.scan(/^\{\{\{/).flatten.size.should == 12
-    @result.scan(/^\}\}\}/).flatten.size.should == 12
+    @result.scan(/^#/).flatten.size.should == 7
+    @result.scan(/^[A-Z][a-z]+ \{/).flatten.size.should == 12
+    @result.scan(/^\}/m).flatten.size.should == 12
   end
   
 end
 
-describe "Backbite::Repository::Export::TAGS" do
+# describe "Backbite::Repository::Export::TAGS" do
 
-  before(:all) do
-    target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
-    @result = target.repository.export(:tags).to_s
-  end
+#   before(:all) do
+#     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+#     @result = target.repository.export(:tags).to_s
+#   end
   
-  it "result should be big" do
-    @result.size.should > 5000
-  end
+#   it "result should be big" do
+#     @result.size.should > 5000
+#   end
 
-  it "result titles should include tag titles" do
-    ex = ["batz", "bar", "bumm", "ahash", "nana", "file", "another", "keke"]
-    r = @result.scan(/title>(.+)<\/title>/).flatten.map{ |r| r[/: (\w+)/, 1] }
-    r.each do |t|
-      ex.include?(t).should
-    end
-  end
+#   it "result titles should include tag titles" do
+#     ex = ["batz", "bar", "bumm", "ahash", "nana", "file", "another", "keke"]
+#     r = @result.scan(/title>(.+)<\/title>/).flatten.map{ |r| r[/: (\w+)/, 1] }
+#     r.each do |t|
+#       ex.include?(t).should
+#     end
+#   end
 
-end
+# end
 
 describe "Backbite::Repository::Export::ARCHIVE" do
 

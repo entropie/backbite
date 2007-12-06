@@ -41,18 +41,21 @@ define :foo do
       end
     end
 
+    plugin_tags do
+      style do
+        color '#64798a'
+        padding 5.px
+        #border "1px solid #64798a"
+        background_color '#afc7dc'
+        clear :right
+        float :right
+      end
+    end
+
     input_body do
       style do
         background_color '#A6BED7'
         padding 15.px
-      end
-    end
-
-    plugin_tags do
-      style do
-        color 'grey'
-        background_color '#A6BED7'
-        text_align :right
       end
     end
 

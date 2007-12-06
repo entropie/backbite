@@ -10,9 +10,17 @@ module Backbite
     def self.generate(name, what)
       tconst = if what.class === Class then what else what.class end
       tconst = tconst.to_s.split('::').last
-      
       if const = Generators.const_get(tconst)
         return what.extend(const).make(name)
+      end
+    end
+
+    module Tumblelog
+      def make(name)
+        efile = Backbite::Source.join('doc', 'exampleconfig.rb')
+        econts = efile.readlines.join
+        econts.gsub!(/(__name__)/, name.to_s)
+        puts econts
       end
     end
     

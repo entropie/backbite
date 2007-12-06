@@ -7,10 +7,6 @@ module Backbite
 
   module Post::Export::HTML
 
-    def fid
-      "#{name}#{pid}"
-    end
-    
     def to_html(name)
       ordered = tlog.components[self.metadata[:component]].order.dup
       ordered.map!{ |o|
@@ -18,7 +14,7 @@ module Backbite
         fields[fname]
       }
 
-      res = Hpricot("<div class=\"post #{self.name}\" id=\"#{fid}\">\n</div>" + "\n")
+      res = Hpricot("<div class=\"post #{self.name}\" id=\"#{identifier}\">\n</div>" + "\n")
       t = (res/:div)
       t.append{ |h| h << "#{" "*8}"}
       ordered.each do |field|
@@ -84,13 +80,13 @@ module Backbite
 
 
       def body_nodes(params)
-        posts = @tlog.posts.sort.reverse
+        #posts = @tlog.posts.sort.reverse
 
         body do |name, hpe|
-          pexp = posts.filter(params[:postopts].merge(:target => name))
+          pexp = @tlog.posts.filter(params[:postopts].merge(:target => name))
+          #p pexp.map{ |s| s.pid }
           pexp.with_export(:html, @params.merge(:tree => self)) { |post|
-            identifier = "%s%s" % [params[:path_deep], post.fid]
-            hpe << Cache(identifier) { 
+            hpe << Cache("%s%s" % [params[:path_deep], post.identifier]) { 
               r = post.to_html(name)
             }.to_s if hpe.attributes[:id].to_sym == post.config[:target]
           }

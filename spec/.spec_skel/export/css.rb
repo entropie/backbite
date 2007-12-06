@@ -13,20 +13,12 @@ module Backbite
       retstr = ''
       dfs = { :generated => { :media => :screen }, :base => { :media => :screen}}
       dfs.merge(tlog.config[:stylesheets][:files]).each_pair { |ftype, m|
+        #p ftype
         tree = Tree.new(ftype, tlog, params)
         tree.write
         ret << tree
         retstr << tree.to_s
       }
-
-      
-      tlog.config[:stylesheets][:file].each do |sfile|
-        rfile = tlog.repository.join(sfile)
-        tree = Tree.new(sfile, tlog, params)
-        tree.write
-        ret << tree
-        retstr << tree.to_s
-      end
       retstr
     end
 
@@ -50,6 +42,7 @@ module Backbite
           when :base
             generated_base << "\n/* EOF: #{@filename} */\n\n\n"
           when /\.haml/
+            #system("cp ~/rspec.haml #{tlog.repository}")
             file = tlog.repository.join(@ofile)
             if file.exist?
               Sass::Engine.new(file.readlines.join).render

@@ -10,11 +10,10 @@ module Backbite
     DateFormat = '%Y%m%d'
     
     def self.export(tlog, params)
-
       all_posts = tlog.posts
       ds = { }
       all_posts.each do |post|
-        filename = post.metadata[:date].strftime(DateFormat)
+        filename = post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format])
         (ds[filename] ||= []) << post
       end
 

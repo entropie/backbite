@@ -25,11 +25,13 @@ Config[:rspec].setup do
       shell "ftpsync --user %ftpuser% --password %password% %localdir% %target%"
     end
 
+    archive_date_format  '%Y%m%d'
+    
     automatic do
       plugins { 
         tags
-        date { value lambda{ style{ background_color :silver } } }
-        permalink
+        date 
+        permalink { value lambda{ style{ background_color :silver } } }
       }
     end
     

@@ -47,7 +47,7 @@ module Backbite
       def export_tag
         phash = {
           :title => "Tag: #{@tag}",
-          :postopts => { :tags => [@tag]},
+          :postopts => { :tags => [@tag], :norenumber => true},
           :nowrite => true,
           :path_deep => '../'
         }

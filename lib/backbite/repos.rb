@@ -32,7 +32,9 @@ module Backbite
         process!(:title => :optional,
                  :postopts => :optional,
                  :nowrite => :optional,
-                 :path_deep => :optional)
+                 :path_deep => :optional,
+                 :norenumber => :optional,
+                 :nosort   => :optional)
       params[:postopts]  ||= { }
       params[:path_deep] ||= './'
       params[:title] ||= '[no title]'
@@ -124,6 +126,14 @@ module Backbite
         else
           Backbite::Source.join('skel')
         end
+
+      additional =
+        if $DEBUG
+          %w'rspec.haml'
+        else
+          []
+        end
+      
       %w'plugins components export'.each do |w|
         (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
           Info << " cp #{st.join(e)} to #{w}/#{e}"
@@ -131,7 +141,11 @@ module Backbite
           system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
         end
       end
-      system('cp ~/rspec.haml /tmp/rspec/rspec.haml') if $DEBUG
+      additional.each do |a|
+        system("cp #{source.join(a)} #{@directory}")
+      end
+
+
     end
     private :populate!
     
