@@ -5,11 +5,19 @@
 
 $:.unshift(File.dirname(__FILE__))
 
+$DEBUG = true if ENV['DEBUG']
+
 require 'pp'
 require 'pathname'
 require 'fileutils'
-require 'log4r'
-require 'log4r/outputter/syslogoutputter'
+
+begin
+  require 'log4ra'
+  require 'log4r/outputter/syslogoutputtera'
+rescue LoadError
+  $DEBUG = false
+end
+
 require 'hpricot'
 require 'delegate'
 require 'uri'
@@ -37,7 +45,7 @@ Dir['lib/ruby_ext/*.rb'].each do |re|
   require re
 end
 
-$DEBUG = true if ENV['DEBUG']
+
 
 module Backbite
 
