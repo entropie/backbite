@@ -24,7 +24,13 @@ module Backbite
 
     end
 
-    
+    def generate(tlog, name)
+      file = tlog.repository.join('components', "#{name}.rb")
+      res = Generators.generate(name, self.class)
+      File.open(file.to_s, 'w+'){ |f| f.write(res) }
+      file.to_s
+    end
+
     # Loads every single component in +directory+, returns an
     # Components instance.
     def self.load(directory, tlog)

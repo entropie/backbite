@@ -53,6 +53,10 @@ module Backbite
     Informer.create << "starting logger for backbite, #{version.to_s}."
     Debug << "debugmode is on."
   end
+
+  def register
+    @register ||= Register.new
+  end
 end
 
 

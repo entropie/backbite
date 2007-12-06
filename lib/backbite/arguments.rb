@@ -21,14 +21,15 @@ module Backbite
   class Optionparser
 
     def abbrevs_for(target)
-      target.keys.map{ |t| t.to_s }.abbrev
+      (target and target.keys.map{ |t| t.to_s }.abbrev) or { }
     end
     
     def parse(which = nil, *args)
       ret, target, skip = [], self[which], 0
       args << :index if args.empty?
-      unless target
+      if not target
         target = self[ abbrevs_for(@responder)[which.to_s] ]
+        return false unless target
       end
       nargs = args.map{ |a| a.to_sym }
       nargs.each_with_index  do |a, i|
@@ -41,9 +42,10 @@ module Backbite
             (abs[a.to_s] and t = target[ abs[a.to_s].to_sym ])
           arity = t.arity.abs-1
           skip, ni = arity+1, i.succ
-          pargs =args[ni..(ni+arity)]
+          pargs = args[ni..(ni+arity)]
           ret << t.call(*pargs)
         else
+          puts "oha? #{a}"
           Info << "Arguments: not known #{a}"
         end
       end

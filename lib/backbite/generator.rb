@@ -10,8 +10,10 @@ module Backbite
     def self.generate(name, what)
       tconst = if what.class === Class then what else what.class end
       tconst = tconst.to_s.split('::').last
-      if const = Generators.const_get(tconst)
+      if const = Generators.const_get(tconst) and const != NilClass
         return what.extend(const).make(name)
+      else
+        raise "foo"
       end
     end
 
@@ -21,13 +23,13 @@ module Backbite
       end
       
       def make(name)
-        efile = Backbite::Source.join('doc', 'exampleconfig1.rb')
+        efile = Backbite::Source.join('doc', 'exampleconfig.rb')
         cfg = Config.read(efile)
         tlroot = cfg[:defaults][:root]
         
         econts = efile.readlines.join
         econts.gsub!(/(__name__)/, name.to_s)
-        puts econts
+        econts
       end
     end
     

@@ -6,24 +6,26 @@ require 'pathname'
 require 'lib/backbite'
 
 include Backbite
-
-#register = Register.new
 tlog = nil
-#tlog = Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
-#tlog = Tumblelog.new(:ackropolis, '/home/mit/.polis.rb')
-#tlog = nil
 
-# p register
+if af = ARGV.first and r = Backbite.register[af.to_sym]
+  tlog = Backbite.register[ARGV.shift]
+end
 
-# unless tlog
-#   p ARGV
-#   exit
-# end
+if tlog.nil? and Backbite.register.default?
+  tlog = Tumblelog.new(*Backbite.register.default)
+  warn "#{tlog.name} is not a valid repository." unless tlog.valid?
+elsif Backbite.register.empty?
+  warn "no tumblogs known"
+else
+  warn "there's no default tumblog"
+end
 
 op = Backbite.optionparser do |op|
 
   op.keyword(:help) do |op, handler|
     op.desc "The help!"
+
     op.declare(:index, 'this screen') {
       puts op.to_s
     }
@@ -36,67 +38,86 @@ op = Backbite.optionparser do |op|
   end
 
   if tlog
-    op.keyword(:components, tlog.components) do |op, handler|
-      op.desc "create and manage components (ways to post)"
-      op.declare(:ls, "lists components attached to the tumblog") {
-        puts handler
-      }
 
-      op.declare(:generate, "generates a new component skelleton named <name>") { |name|
-        puts Generators.generate(name, handler)
-      }
-    end
+    if tlog.valid?
+      op.keyword(:components, tlog.components) do |op, handler|
+        op.desc "create and manage components (ways to post)"
+        op.declare(:ls, "lists components attached to the tumblog") {
+          puts handler
+        }
 
-    op.keyword(:post, tlog.posts) do |op, handler|
-      op.desc "list, post and edit posts"
-      op.declare(:ls, "lists pending posts") {|args|
-        nargs =
-        case args
-        when nil
-          { }
-        when /(\d+)\.\.(\d+)/
-          { :ids => Range.new($1.to_i, $2.to_i).to_a }
-        when /(\d+)/
-          { :ids => $1.to_i }
-        when /^(\w+)/
-          { :tags =>
-            if args.include?(',')
-              args.split(',')
-            else
-              [$1]
-            end
-          }
-        when /^:(\w+)/
-          { :target => $1.to_sym }
-        end
+        op.declare(:generate, "generates a new component skelleton named <name>") { |name|
+          puts tlog.components.generate(tlog, name)
+        }
+      end
 
-        handler.filter(nargs.merge(:nosort => true)).each do |r|
-          puts r
-          puts
-        end
-      }
+      
+      op.keyword(:post, tlog.posts) do |op, handler|
+        op.desc "list, post and edit posts"
+        op.declare(:ls, "lists pending posts") {|args|
+          nargs =
+          case args
+          when nil
+            { }
+          when /(\d+)\.\.(\d+)/
+            { :ids => Range.new($1.to_i, $2.to_i).to_a }
+          when /(\d+)/
+            { :ids => $1.to_i }
+          when /^(\w+)/
+            { :tags =>
+              if args.include?(',')
+                args.split(',')
+              else
+                [$1]
+              end
+            }
+          when /^:(\w+)/
+            { :target => $1.to_sym }
+          end
+
+          handler.filter(nargs.merge(:nosort => true)).each do |r|
+            puts r
+            puts
+          end
+        }
+      end
     end
   end
-  
+
   op.keyword(:tlog, tlog) do |op, handler|
 
     op.desc "everything about your tumblog"
 
     op.declare(:generate, "generates a config skeleton in <file>") { |file|
-      puts Generators.generate(file, handler)
+      puts Generators.generate(file, Tumblelog)
+    }
+
+    op.declare(:setup, "lists tlog registers") {
+      puts handler.repository.setup!
     }
 
     op.declare(:lsr, "lists tlog registers") {
-      p handler.register
       puts handler.register
     }
     
-    op.declare(:register, "register tlog with <configfile>") {|cfgf|
-      p :register
-      # p cfgf
-      #p Backbite::Config.read(cfgf).class
-      # pp Tumblelog.new(:dummy, cfgf)
-      #puts handler.register!
+    op.declare(:register, "register tlog with <name> and <configfile>") {|name, cfgf|
+      if name and cfgf
+        tlog = Tumblelog.new(name.to_sym, cfgf)
+        Backbite.register[tlog.name] = cfgf
+      end
+      puts register
+    }
+
+    op.declare(:default, "set <default> tumblog"){ |*default|
+      unless default.empty?
+        default = default.shift
+        
+        d = default.to_sym
+        cfg = Backbite.register[d]
+        tlog = Tumblelog.new(default.to_sym, cfg)
+        Backbite.register.default = tlog
+      end
+      puts register
     }
 
     if handler
@@ -111,7 +132,7 @@ op = Backbite.optionparser do |op|
       }
     end
   end
-  
+
 
 end
 

@@ -58,7 +58,11 @@ module Backbite
       Helper::CacheAble.cachefile = @repository.join("#{ @name }.pstore")
       @repository.tlog = self
     end
-    
+
+
+    def valid?
+      @repository.valid?
+    end
 
     def components
       @components ||= @repository.components

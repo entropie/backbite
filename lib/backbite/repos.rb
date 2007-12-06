@@ -19,7 +19,7 @@ module Backbite
     attr_accessor :tlog
     
 
-    BaseDirs = %w(plugins components htdocs tmp spool)
+    BaseDirs = %w(export plugins components htdocs tmp spool)
     SubDirs  = { :htdocs => [:include], :tmp => ['.work'] }
 
     def initialize(name, directory)
@@ -96,7 +96,7 @@ module Backbite
       Info << "Creating directory structure for `#{name}`"
       @directory = Helper::File.ep(@directory)
       @directory.mkdir and (Info << "created #{@directory}") unless @directory.exist?
-      populate!      
+      
       BaseDirs.each do |bdir|
         ndir = @directory.dup.join(bdir.to_s)
         if ndir.exist?
@@ -111,7 +111,10 @@ module Backbite
           end
         end
       end
+      populate!
       Info << "Done, `#{name}` should be valid repository now."
+      Info << "Yes Sir, it is!" if valid?
+      self
     end
 
 
@@ -126,9 +129,8 @@ module Backbite
         else
           Backbite::Source.join('skel')
         end
-
       additional =
-        if $DEBUG
+        if defined?(Spec)
           %w'rspec.haml'
         else
           []
