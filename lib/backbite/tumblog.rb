@@ -12,7 +12,7 @@ module Backbite
 
 
     attr_reader :repository, :config, :name, :options
-    attr_accessor :options, :optionparser
+    attr_accessor :optionparser
 
     def root
       path = @config[:defaults][:root]
@@ -21,6 +21,13 @@ module Backbite
     end
     alias :path :root
 
+
+    def register
+      @register ||= Register.new
+      @register.file = config[:defaults][:register].to_s unless
+        config[:defaults][:register].empty?
+      @register
+    end
 
     def http_path(path = '')
       URI.join(@config[:defaults][:base_href], path)
@@ -36,9 +43,16 @@ module Backbite
       @config[:defaults][:base_href]
     end
 
-    
+
+    def register!
+      register[name] = @configfile
+      register
+    end
+
+
     def initialize(name, fdata)
       @name = name
+      @configfile = fdata
       @config = Config.read(fdata)
       @repository = Repository.new(@name, @config[:defaults][:root])
       Helper::CacheAble.cachefile = @repository.join("#{ @name }.pstore")

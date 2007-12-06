@@ -87,9 +87,9 @@ Config[:__name__].setup do
         end
       end
       
-      black do
-        # ...
-      end         
+      # black do
+      #   # ...
+      # end         
     end
   end
 end

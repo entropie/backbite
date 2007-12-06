@@ -16,8 +16,15 @@ module Backbite
     end
 
     module Tumblelog
+      def load_tlog(name, file)
+        Tumblelog.new(name, file)
+      end
+      
       def make(name)
-        efile = Backbite::Source.join('doc', 'exampleconfig.rb')
+        efile = Backbite::Source.join('doc', 'exampleconfig1.rb')
+        cfg = Config.read(efile)
+        tlroot = cfg[:defaults][:root]
+        
         econts = efile.readlines.join
         econts.gsub!(/(__name__)/, name.to_s)
         puts econts

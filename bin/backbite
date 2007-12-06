@@ -3,15 +3,24 @@
 
 require 'pathname'
 
-ROOT = Pathname.new(File.expand_path(__FILE__)).dirname.dirname
-
 require 'lib/backbite'
 
 include Backbite
 
-tlog = Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+#register = Register.new
+tlog = nil
+#tlog = Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+#tlog = Tumblelog.new(:ackropolis, '/home/mit/.polis.rb')
+#tlog = nil
 
-Backbite.optionparser(tlog) do |op|
+# p register
+
+# unless tlog
+#   p ARGV
+#   exit
+# end
+
+op = Backbite.optionparser do |op|
 
   op.keyword(:help) do |op, handler|
     op.desc "The help!"
@@ -26,17 +35,48 @@ Backbite.optionparser(tlog) do |op|
     }
   end
 
-  op.keyword(:components, tlog.components) do |op, handler|
-    op.desc "create and manage components (ways to post)"
-    op.declare(:ls, "lists components attached to the tumblog") {
-      puts handler
-    }
+  if tlog
+    op.keyword(:components, tlog.components) do |op, handler|
+      op.desc "create and manage components (ways to post)"
+      op.declare(:ls, "lists components attached to the tumblog") {
+        puts handler
+      }
 
-    op.declare(:generate, "generates a new component skelleton named <name>") { |name|
-      puts Generators.generate(name, handler)
-    }
+      op.declare(:generate, "generates a new component skelleton named <name>") { |name|
+        puts Generators.generate(name, handler)
+      }
+    end
+
+    op.keyword(:post, tlog.posts) do |op, handler|
+      op.desc "list, post and edit posts"
+      op.declare(:ls, "lists pending posts") {|args|
+        nargs =
+        case args
+        when nil
+          { }
+        when /(\d+)\.\.(\d+)/
+          { :ids => Range.new($1.to_i, $2.to_i).to_a }
+        when /(\d+)/
+          { :ids => $1.to_i }
+        when /^(\w+)/
+          { :tags =>
+            if args.include?(',')
+              args.split(',')
+            else
+              [$1]
+            end
+          }
+        when /^:(\w+)/
+          { :target => $1.to_sym }
+        end
+
+        handler.filter(nargs.merge(:nosort => true)).each do |r|
+          puts r
+          puts
+        end
+      }
+    end
   end
-
   
   op.keyword(:tlog, tlog) do |op, handler|
 
@@ -45,49 +85,35 @@ Backbite.optionparser(tlog) do |op|
     op.declare(:generate, "generates a config skeleton in <file>") { |file|
       puts Generators.generate(file, handler)
     }
+
+    op.declare(:lsr, "lists tlog registers") {
+      p handler.register
+      puts handler.register
+    }
     
-    op.declare(:ls, "basic information") {
-      puts handler.repository
-    }
-    op.declare(:url, "the url to your tumblog") {
-      puts handler.url
-    }
-    op.declare(:export, "export your tumblog <how>") { |how|
-      puts handler.repository.export((how || 'all').to_sym)
+    op.declare(:register, "register tlog with <configfile>") {|cfgf|
+      p :register
+      # p cfgf
+      #p Backbite::Config.read(cfgf).class
+      # pp Tumblelog.new(:dummy, cfgf)
+      #puts handler.register!
     }
 
+    if handler
+      op.declare(:ls, "basic information") {
+        puts handler.repository
+      }
+      op.declare(:url, "the url to your tumblog") {
+        puts handler.url
+      }
+      op.declare(:export, "export your tumblog <how>") { |how|
+        puts handler.repository.export((how || 'all').to_sym)
+      }
+    end
   end
   
-  op.keyword(:post, tlog.posts) do |op, handler|
-    op.desc "list, post and edit posts"
-    op.declare(:ls, "lists pending posts") {|args|
-      nargs =
-      case args
-      when nil
-        { }
-      when /(\d+)\.\.(\d+)/
-        { :ids => Range.new($1.to_i, $2.to_i).to_a }
-      when /(\d+)/
-        { :ids => $1.to_i }
-      when /^(\w+)/
-        { :tags =>
-          if args.include?(',')
-            args.split(',')
-          else
-            [$1]
-          end
-        }
-      when /^:(\w+)/
-        { :target => $1.to_sym }
-      end
 
-      handler.filter(nargs.merge(:nosort => true)).each do |r|
-        puts r
-        puts
-      end
-    }
-  end
 end
 
-Backbite.run_options(tlog, *ARGV.dup)
+op.parse(*ARGV.dup)
 

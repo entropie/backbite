@@ -17,6 +17,7 @@ require 'yaml'
 require 'readline'
 require 'haml'
 require 'pstore'
+require 'abbrev'
 
 require 'backbite/ruby_ext'
 require 'backbite/helper'
@@ -31,7 +32,7 @@ require 'backbite/export'
 require 'backbite/tumblog'
 require 'backbite/arguments'
 require 'backbite/generator'
-
+require 'backbite/register'
 Dir['lib/ruby_ext/*.rb'].each do |re|
   require re
 end

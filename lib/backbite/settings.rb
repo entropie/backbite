@@ -18,7 +18,6 @@ module Backbite
       Configuration.read(data)
     end
 
-
     module Replacer
       
       attr_reader :root
@@ -126,17 +125,17 @@ module Backbite
     class Configuration
       
       attr_reader :config
-
+      
       def keys
         @config.keys
       end
-      
+
       def self.read(str)
         path = Pathname.new(str)
         if path.exist?
           str = path.readlines.join
         end
-        instance_eval(str)
+        r = instance_eval(str)
       end
       
 

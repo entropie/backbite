@@ -8,35 +8,47 @@ module Backbite
   class Options < Hash # :nodoc: All
   end
   
-  def self.optionparser(tlog)
-    tlog.options      ||= Options.new
-    tlog.optionparser ||= Optionparser.new(tlog)
-    yield tlog.optionparser if block_given?
-  end
-
-  def self.run_options(tlog, which = nil, *args)
-    ret, target, skip = [], tlog.optionparser[which], 0
-    args << :index if args.empty?
-    return nil unless target
-    
-    nargs = args.map{ |a| a.to_sym }
-    nargs.each_with_index  do |a, i|
-      unless skip.zero?
-        skip -= 1
-        next
-      end
-      if t = target[a] and arity = t.arity.abs-1
-        skip, ni = arity+1, i.succ
-        pargs =args[ni..(ni+arity)]
-        ret << t.call(*pargs)
-      else
-        Info << "Arguments: not known #{a}"
-      end
+  def self.optionparser
+    options = Optionparser.new
+    begin
+      yield options if block_given?
+    rescue NoMethodError
+      p $!
     end
-    ret.flatten
+    options
   end
 
   class Optionparser
+
+    def abbrevs_for(target)
+      target.keys.map{ |t| t.to_s }.abbrev
+    end
+    
+    def parse(which = nil, *args)
+      ret, target, skip = [], self[which], 0
+      args << :index if args.empty?
+      unless target
+        target = self[ abbrevs_for(@responder)[which.to_s] ]
+      end
+      nargs = args.map{ |a| a.to_sym }
+      nargs.each_with_index  do |a, i|
+        unless skip.zero?
+          skip -= 1
+          next
+        end
+        abs = abbrevs_for(target)
+        if t = target[a] or
+            (abs[a.to_s] and t = target[ abs[a.to_s].to_sym ])
+          arity = t.arity.abs-1
+          skip, ni = arity+1, i.succ
+          pargs =args[ni..(ni+arity)]
+          ret << t.call(*pargs)
+        else
+          Info << "Arguments: not known #{a}"
+        end
+      end
+      ret.flatten
+    end
 
     def [](obj)
       return nil unless obj
@@ -76,9 +88,8 @@ module Backbite
       @responder[@current_keyword][keyw] = blk
     end
     
-    def initialize(tlog)
-      @tlog = tlog
-      @responder = tlog.options
+    def initialize
+      @responder = Options.new
       @descs = Hash.new{ |hash, key| hash[key] = { } }
     end
   end
