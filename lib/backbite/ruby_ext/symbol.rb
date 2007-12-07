@@ -3,8 +3,10 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-%w(fixnum symbol).each do |l|
-  require "backbite/ruby_ext/" + l.to_s
+class Symbol
+  def to_proc
+    lambda{|o, *args| o.send(self, *args) }
+  end
 end
 
 
