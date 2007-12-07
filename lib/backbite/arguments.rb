@@ -45,8 +45,7 @@ module Backbite
           pargs = args[ni..(ni+arity)]
           ret << t.call(*pargs)
         else
-          puts "oha? #{a}"
-          Info << "Arguments: not known #{a}"
+          Warn << "Arguments: not known #{a}" unless defined? Spec
         end
       end
       ret.flatten

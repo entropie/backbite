@@ -336,6 +336,10 @@ module Backbite
         def value=(o)
           @__text__ = o
         end
+
+        def interactive?
+          respond_to?(:plugin) and plugin.interactive?
+        end
         
       end
 

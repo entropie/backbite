@@ -155,7 +155,7 @@ module Backbite
     # Checks wheter our actual repos is valid or not.
     def valid?
       @directory.exist? and
-        @directory.entries.reject{ |d| d.to_s =~ /^\.+/ }.
+        @directory.entries.reject{ |d| d.to_s =~ /^\.+/ or not @directory.join(d).directory? }.
         map{ |d| d.to_s } == BaseDirs
     end
     

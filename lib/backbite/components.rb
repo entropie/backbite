@@ -15,7 +15,7 @@ module Backbite
     module YAMLComponent
       def read(*a);    raise "read not available in YAML"    end
       def reread!(*a) ; raise "reread! not available in YAML" end
-      def post(*a);    raise "post not available in YAML"    end
+      #def post(*a);    raise "post not available in YAML"    end
 
       def map(source)
         self.source = source

@@ -54,6 +54,11 @@ op = Backbite.optionparser do |op|
       
       op.keyword(:post, tlog.posts) do |op, handler|
         op.desc "list, post and edit posts"
+
+        op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
+          puts tlog.post(c.to_sym, :way => w).save
+        }
+        
         op.declare(:ls, "lists pending posts") {|args|
           nargs =
           case args

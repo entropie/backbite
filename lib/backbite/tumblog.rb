@@ -87,6 +87,8 @@ module Backbite
       params[:way] ||= :hash
       params[:to]  ||= @repository.join('spool')
       components[component.to_sym].post(params)
+    # rescue
+    #   raise "unknown component (#{$!}"
     end
 
 

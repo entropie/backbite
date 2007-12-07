@@ -12,7 +12,7 @@ module Backbite
   class Post < Delegator
 
     module Ways
-
+      
       # Dispatch selects +way+ and returns proper instance to operate
       # on in a block.
       def self.dispatch(way) # :yield: Way.new
@@ -29,7 +29,7 @@ module Backbite
 
       # Parent class for any old way to post to a tumblog.
       class Way
-
+        
         attr_accessor :fields
         
         attr_accessor :tlog
@@ -82,7 +82,7 @@ module Backbite
           end
           self
         end
-
+        
         # the filename we'll write the result or where the result is
         # stored, depending on the state.
         def filename
@@ -99,9 +99,14 @@ module Backbite
             file.write(contents)
           end
           Info << "#{component.name} Finished"
-          true
+          self
         end
 
+        def to_s
+          pp self
+          ' a'
+        end
+        
         # Save the nut the YAML way.
         def to_yaml
           result = { }
@@ -123,7 +128,7 @@ module Backbite
       end
 
       class Hash < Way
-
+        
         def run(field, params)
           result = params[:hash][field.to_sym]
           super(field, result)
@@ -133,7 +138,7 @@ module Backbite
 
       # Yaml is the way to retrive Posts from already saved yaml files.
       class Yaml < Way
-
+        
         attr_accessor :source
 
         attr_reader   :metadata
@@ -158,26 +163,95 @@ module Backbite
         
       end
       
+
       class File < Way
+        
         def run(field, params)
           result = params[:file].
-            scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/).
+            scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/m).
             flatten.join
           super(field, result)
         end
       end
 
+
+      class Editor < Way
+        
+
+        def tfilename
+          tlog.repository.join("tmp", filename.to_s+'.tmp')
+        end
+
+        def header
+          "foo bar batz\n\n"
+        end
+
+        def mkfield(field)
+          ret = ''
+          ret <<
+            if field.interactive? 
+              "# #{field.plugin.input}\n"
+            else
+              ''
+            end
+            ret << "[#{field.to_sym}_start]\n\n[#{field.to_sym}_end]\n"
+            ret
+        end
+        
+        def fileskel(comp)
+          file = header
+          comp.fields.each do |field|
+            unless field.interactive?
+              file << mkfield(field) << "\n\n"
+            end
+          end
+          file
+        end
+
+        def yes_no(text = 'Done? %s/%s', y = 'Y', n = 'n', &blk)
+          ret = blk.call
+          loop {
+            r = Readline.readline(text % [y,n]).strip
+            r = y if r.empty?
+            false
+            return ret if r =~ /^#{y}/i
+          }
+        end
+
+        def edit!
+          system("%s '%s'" % [tlog.config[:defaults][:editor], tfilename])
+          ::File.open(tfilename.to_s).readlines.to_s
+        end
+
+        def process(params, comp)
+          @component = comp
+          tfilename.open('w+'){ |res| res.write(@fcontents = fileskel(component)) }
+          @fcontents = yes_no{ 
+            edit!
+          }
+          super
+          p tfilename
+          self
+        end
+
+        def run(field, params)
+          result = @fcontents.scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/m).
+            flatten.join.strip
+          #super(field, result)
+        end
+
+        
+      end
+
+      
       class Commandline < Way
+        
         def run(field, params)
           result = Readline.readline(' %20s>' % field.name.to_s)
           super(field, result)
         end
       end
-
-      class Editor < Way
-      end
-
-      
+   
     end
     
   end

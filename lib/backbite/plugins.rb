@@ -58,6 +58,10 @@ module Backbite
     attr_accessor :path_deep
     
     attr_accessor :neighbors
+
+    def interactive?
+      not respond_to?(:input)
+    end
     
     # dispatch runs +input+ on the plugin during component evaluation,
     # so its basically used to hard-set the result values.
