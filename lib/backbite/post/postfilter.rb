@@ -16,13 +16,13 @@ module Backbite
         posto = posto.dup
         params.keys.each do |param|
           cos = consts.select{ |c|
-            #param = [param] unless param.kind_of(Array)
             if c.const_defined?(:RespondsTo)
               t = c.const_get(:RespondsTo)
               t = [t] unless t.kind_of?(Array)
               t.include?(param)
             else
-              warn "#{c}: RepsondTo attribute, module is useles."
+              Warn << "#{c}: No RepsondTo attribute, module is useles."
+              false
             end
           }.each do |co|
             posto.extend(co).filter(params)
@@ -39,7 +39,7 @@ module Backbite
         def filter(params, &blk)
           ids  = params[:ids]
           ids = [ids] unless ids.kind_of?(Array)
-          dup.reject!{ |post|
+          reject!{ |post|
             not ids.include?(post.pid)
           }
         end

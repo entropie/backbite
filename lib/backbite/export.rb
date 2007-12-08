@@ -47,24 +47,41 @@ module Backbite
     # The export class should respond on :to_s with the result stream.
     module Export
 
+      UnknownWay = Backbite::NastyDream(Export)
+      
+      # require every ./export/*.rb file in the repos
       def __require__
-        (path = join('export')).entries.grep(/[^\.]/).each do |wfile|
-          file = path.join(wfile)
-          require(file)
+        unless self.class.const_defined?(:REQUIRED)
+          (path = join('export')).entries.grep(/[^\.]/).each do |wfile|
+            file = path.join(wfile)
+            Info << "Export: loading #{file}"
+            require(file)
+          end
+          self.class.const_set(:REQUIRED, true)
         end
+        true
+      end
+
+      def self.known?(way)
+        const_defined?(way.to_s.upcase)
+      end
+
+      def self.choose(way)
+        const_get(way.to_s.upcase)
       end
       
       # Selects module +way+ and runs ::export
       def export(way, params = { })
-        __require__
-        way = way.to_s.upcase
-        cway = Repository::Export::const_get(way)
+        __require__ 
+        raise UnknownWay, way unless
+          Repository::Export.known?(way)
+        cway = Repository::Export::choose(way)
         @export =
           if cway
             Info << " Exporting via #{way}"
             cway.export(tlog, params)
           else
-            raise "#{way} is unknown"
+            Warn << "#{way} is unknown"
           end
       end
 

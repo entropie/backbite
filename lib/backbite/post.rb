@@ -37,18 +37,10 @@ module Backbite
                  :nosort  => :optional,
                  :norenumber => :optional
                  )
-      # select Posts by Target
-      Filter.select(params, self).by_date!.reverse
-      # select Posts by IDs
 
-      # select Posts by Tags
-      
-      # select Posts by metadata[:date
-
-      # ret.by_date! if params[:nosort].nil?
-      # ret.with_ids if params[:norenumber].nil?
-      # ret.each(&blk) if block_given?
-      # ret
+      ret = Filter.select(params, self).by_date!.reverse
+      ret.each(&blk) if block_given?
+      ret
     end
 
     def by_date!

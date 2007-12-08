@@ -25,6 +25,7 @@ require 'pstore'
 require 'abbrev'
 
 require 'backbite/ruby_ext'
+require 'backbite/exception'
 require 'backbite/helper'
 require 'backbite/settings'
 require 'backbite/ways'
