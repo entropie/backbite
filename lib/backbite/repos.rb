@@ -19,7 +19,10 @@ module Backbite
     attr_accessor :tlog
     
 
+    # Basically a list of names
     BaseDirs = %w(export plugins components htdocs tmp spool)
+
+
     SubDirs  = { :htdocs => [:include], :tmp => ['.work'] }
 
     def initialize(name, directory)
@@ -51,7 +54,7 @@ module Backbite
       r << inspect
       require 'find'
       Find.find(@directory) do |pa|
-        r << "\n"+pa
+        Info << "\n"+pa
       end
       r
     end

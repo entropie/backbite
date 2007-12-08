@@ -3,11 +3,13 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
+require 'backbite/post/postfilter'
+
 module Backbite
 
   # Posts handles access to the different Posts in our Repository.
   class Posts < Array
-
+    
     attr_reader :tlog
     
     def initialize(tlog)
@@ -35,49 +37,18 @@ module Backbite
                  :nosort  => :optional,
                  :norenumber => :optional
                  )
-      ret = self.dup
       # select Posts by Target
-      if target = params[:target]
-        target = target.to_sym
-        ret.reject!{ |p|
-          target != p.config[:target]
-        }
-      end
-
+      Filter.select(params, self).by_date!.reverse
       # select Posts by IDs
-      if ids = params[:ids]
-        ids = [ids] unless ids.kind_of?(Array)
-        ret.reject!{ |post|
-          not ids.include?(post.pid)
-        }
-      end
 
       # select Posts by Tags
-      if tags = params[:tags]
-        ret.reject!{ |post|
-          tags.map{ |t| true if post.tags.include?(t) }.compact.empty?
-        }
-      end
       
       # select Posts by metadata[:date
-      if bet = params[:between]
-        ret.reject!{ |p|
-          if bet.kind_of?(Range)
-            if bet.include?(p.metadata[:date])
-              false
-            else
-              true
-            end
-          else
-            Time.now.to_i-bet >= p.metadata[:date].to_i
-          end
-        }
-      end
 
-      ret.by_date! if params[:nosort].nil?
-      ret.with_ids if params[:norenumber].nil?
-      ret.each(&blk) if block_given?
-      ret
+      # ret.by_date! if params[:nosort].nil?
+      # ret.with_ids if params[:norenumber].nil?
+      # ret.each(&blk) if block_given?
+      # ret
     end
 
     def by_date!

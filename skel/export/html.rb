@@ -83,8 +83,8 @@ module Backbite
         #posts = @tlog.posts.sort.reverse
 
         body do |name, hpe|
-          pexp = @tlog.posts.filter(params[:postopts].merge(:target => name))
-          #p pexp.map{ |s| s.pid }
+          pexp = @tlog.posts.
+            filter(params[:postopts].merge(:target => name))
           pexp.with_export(:html, @params.merge(:tree => self)) { |post|
             hpe << Cache("%s%s" % [params[:path_deep], post.identifier]) { 
               r = post.to_html(name)
