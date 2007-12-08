@@ -141,5 +141,11 @@ op = Backbite.optionparser do |op|
 
 end
 
-op.parse(*ARGV.dup)
+begin
+  op.parse(*ARGV.dup)
+rescue GetReal => e
+  puts e.inspect
+end
+
+
 

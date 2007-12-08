@@ -9,10 +9,11 @@ module Backbite
   end
 
   class GetReal < Exception
-    attr_accessor :from
 
-    def backtrace
-      Warn << "[Wake up: #{self.class.to_s.split('::').last(2).join('::')}] #{message}"
+    def inspect
+      res = "[#{"Wake up".underline}:#{self.class.to_s.split('::').last(2).join('::').red}] #{message.to_s.white}"
+      res << "\n        " << backtrace.join("\n        ") if $DEBUG
+      res
     end
   end
 end

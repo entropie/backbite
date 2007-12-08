@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-%w(fixnum symbol).each do |l|
+%w(fixnum symbol string).each do |l|
   require "backbite/ruby_ext/" + l.to_s
 end
 

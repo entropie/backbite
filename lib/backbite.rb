@@ -24,6 +24,7 @@ end
 require 'pstore'
 require 'abbrev'
 
+require 'backbite/globals'
 require 'backbite/ruby_ext'
 require 'backbite/exception'
 require 'backbite/helper'
@@ -39,9 +40,9 @@ require 'backbite/tumblog'
 require 'backbite/arguments'
 require 'backbite/generator'
 require 'backbite/register'
-Dir['lib/ruby_ext/*.rb'].each do |re|
-  require re
-end
+# Dir['lib/ruby_ext/*.rb'].each do |re|
+#   require re
+# end
 
 begin
   require 'log4r'

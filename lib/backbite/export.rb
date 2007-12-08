@@ -47,7 +47,7 @@ module Backbite
     # The export class should respond on :to_s with the result stream.
     module Export
 
-      UnknownWay = Backbite::NastyDream(Export)
+      UnknownWay = Backbite::NastyDream(self)
       
       # require every ./export/*.rb file in the repos
       def __require__

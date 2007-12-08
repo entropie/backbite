@@ -13,13 +13,15 @@ module Backbite
     begin
       yield options if block_given?
     rescue NoMethodError
-      p $!
+      Warn << $!
     end
     options
   end
 
   class Optionparser
 
+    UnknownArgument = Backbite::NastyDream(self)
+    
     def abbrevs_for(target)
       (target and target.keys.map{ |t| t.to_s }.abbrev) or { }
     end
@@ -45,7 +47,7 @@ module Backbite
           pargs = args[ni..(ni+arity)]
           ret << t.call(*pargs)
         else
-          Warn << "Arguments: not known #{a}" unless defined? Spec
+          raise UnknownArgument, a unless defined? Spec
         end
       end
       ret.flatten
