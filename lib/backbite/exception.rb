@@ -4,6 +4,7 @@
 #
 
 module Backbite
+
   def Backbite::NastyDream(what)
     Class.new(GetReal)
   end

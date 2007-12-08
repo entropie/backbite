@@ -62,6 +62,13 @@ Config[:rspec].setup do
   html do
     body do |bdy|
 
+      # before, after, content
+      # at_{start,end}
+
+      independent do
+        before :toc
+      end
+      
       style do
         margin 0.px
         padding 0.px

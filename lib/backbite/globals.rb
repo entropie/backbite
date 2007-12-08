@@ -27,7 +27,7 @@ module Backbite
   end
   
   def self.[](globalkey)
-    globals
+    globals[globalkey.to_sym]
   end
 end
 

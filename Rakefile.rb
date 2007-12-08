@@ -15,7 +15,7 @@ include FileUtils
 
 REV = `hg head`[/changeset: +(\d+)/, 1].to_i
 PKG = VERS = Backbite::version + ".#{REV}"
-RDOC_OPTS = ['-I', 'png', '--quiet', '--title', 'The Backbite RDoc Reference', '--main', 'README', '--inline-source', '-x', 'spec']
+RDOC_OPTS = ['-I', 'png', '--quiet', '--title', 'The Backbite RDoc Reference', '--main', 'README', '--inline-source', '-x', '(spec|skel)']
 SPATH = Backbite::Source
 
 
@@ -89,12 +89,12 @@ end
 
 task :rdoc do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "spec"')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel),"')
 end
 
 task :rdia do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "spec" -d')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)" -d')
 end
 
 

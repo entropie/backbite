@@ -13,6 +13,10 @@ module Backbite
       }.shift
       r
     end
+
+    def self.independent
+    end
+
   end
 
   # Each user-defined plugin is a subclass of Plugin.
@@ -138,6 +142,11 @@ module Backbite
       @@rets.last
     end
     
+  end
+
+
+  class IndependentPlugin < Plugin
+    AutoSubNames = [:at_start, :at_end]
   end
   
 end
