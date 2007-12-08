@@ -73,8 +73,7 @@ module Backbite
       # Selects module +way+ and runs ::export
       def export(way, params = { })
         __require__ 
-        raise UnknownWay, way unless
-          Repository::Export.known?(way)
+        raise UnknownWay, way unless Repository::Export.known?(way)
         cway = Repository::Export::choose(way)
         @export =
           if cway

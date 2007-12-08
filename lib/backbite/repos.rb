@@ -125,13 +125,13 @@ module Backbite
     def populate!
       Info << "populating directory structure with defaults for `#{name}`"
 
-      source =
+      sources =
         if defined?(Spec)
           Info << "!!! using testing skeleton"
           Backbite::Source.join('spec/.spec_skel')
-        else
-          Backbite::Source.join('skel')
         end
+      sources = [Backbite::Source.join('skel'), sources].compact
+
       additional =
         if defined?(Spec)
           %w'rspec.haml'
@@ -140,17 +140,17 @@ module Backbite
         end
       
       %w'plugins components export'.each do |w|
-        (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
-          Info << " cp #{st.join(e)} to #{w}/#{e}"
-          t = @directory.join(w)
-          system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
+        sources.each do |source|
+          (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
+            Info << " cp #{st.join(e)} to #{w}/#{e}"
+            t = @directory.join(w)
+            system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
+          end
+          additional.each do |a|
+            system("cp #{source.join(a)} #{@directory} 2>/dev/null")
+          end
         end
       end
-      additional.each do |a|
-        system("cp #{source.join(a)} #{@directory}")
-      end
-
-
     end
     private :populate!
     
@@ -168,10 +168,10 @@ end
 
 
 =begin
-Local Variables:
+  Local Variables:
   mode:ruby
   fill-column:70
   indent-tabs-mode:nil
   ruby-indent-level:2
-End:
+  End:
 =end
