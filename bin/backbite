@@ -59,7 +59,8 @@ op = Backbite.optionparser do |op|
           puts tlog.post(c.to_sym, :way => w).save
         }
         
-        op.declare(:ls, "lists pending posts") {|args|
+        op.declare(:ls, "lists pending posts") {|*args|
+          args = args.first if args and not args.empty?
           nargs =
           case args
           when nil
@@ -78,9 +79,11 @@ op = Backbite.optionparser do |op|
             }
           when /^:(\w+)/
             { :target => $1.to_sym }
+          else
+            { }
           end
 
-          handler.filter(nargs.merge(:nosort => true)).each do |r|
+          handler.filter(nargs) do |r|
             puts r
             puts
           end

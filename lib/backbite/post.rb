@@ -165,13 +165,13 @@ module Backbite
     end
     
     def to_s
-      prfx = "\n   "
+      prfx = "\n  "
       adds = [[:pid, pid], [:ident, identifier], [:url, url]]
-      adds = adds.map{ |an,av| "#{an.to_s.upcase} #{av}"}.join(' >>> ')
-      ret = "#{name.to_s.capitalize} [ #{prfx}" <<
+      adds = adds.map{ |an,av| "#{an.to_s.upcase.yellow}: #{av.to_s.cyan}"}.join(";  #{"".bold.green}")
+      ret = "#{name.to_s.capitalize.white.bold} #{"[".red} #{prfx}" <<
         fields.inject([]) { |m, field|
         m << if field.value.to_s.empty? then nil else field.to_s(10) end
-      }.compact.join(", #{prfx}") << "\n] >>> #{adds}"
+      }.compact.join("#{prfx}") << "\n#{"]".red} #{"".bold.green}#{adds}"
     end
     
     
@@ -289,7 +289,7 @@ module Backbite
         end
         
         def to_s(prfx_size = 0)
-          "%#{prfx_size}s:  '#{ value }'" % name.to_s[/_([a-zA-Z_]+)$/, 1]
+          "%-#{prfx_size+13}s #{ value.to_s.white }" % name.to_s[/_([a-zA-Z_]+)$/, 1].upcase.yellow.bold
         end
 
         def value
