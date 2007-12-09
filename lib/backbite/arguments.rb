@@ -65,10 +65,10 @@ module Backbite
     def to_s
       ret = ''
       @descs.each do |kw, f|
-        ret << "> #{kw} '#{f.delete(:__desc__)||'Not Documented'}'\n"
+        ret << " #{kw.to_s.upcase.negative.black} '#{(f.delete(:__desc__)||'Not Documented').magenta}'\n"
         f.each do |k,v|
           size = @responder[kw][k].arity
-          ret << " * #{"%-10s"%k}  #{"%2i"%size}  #{v}\n"
+          ret << "  * #{("%-10s"%k).bold.green}  #{("%2i"%size).cyan}  #{v.magenta}\n"
         end
         ret << "\n"
       end
