@@ -95,39 +95,39 @@ describe "Backbite::Repository::Export::TXT" do
   
 end
 
-describe "Backbite::Repository::Export::TAGS" do
+# describe "Backbite::Repository::Export::TAGS" do
 
-  before(:all) do
-    target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
-    @result = target.repository.export(:tags).to_s
-  end
+#   before(:all) do
+#     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+#     @result = target.repository.export(:tags).to_s
+#   end
   
-  it "result should be big" do
-    @result.size.should > 5000
-  end
+#   it "result should be big" do
+#     @result.size.should > 5000
+#   end
 
-  it "result titles should include tag titles" do
-    ex = ["batz", "bar", "bumm", "ahash", "nana", "file", "another", "keke"]
-    r = @result.scan(/title>(.+)<\/title>/).flatten.map{ |r| r[/: (\w+)/, 1] }
-    r.each do |t|
-      ex.include?(t).should
-    end
-  end
+#   it "result titles should include tag titles" do
+#     ex = ["batz", "bar", "bumm", "ahash", "nana", "file", "another", "keke"]
+#     r = @result.scan(/title>(.+)<\/title>/).flatten.map{ |r| r[/: (\w+)/, 1] }
+#     r.each do |t|
+#       ex.include?(t).should
+#     end
+#   end
 
-end
+# end
 
-describe "Backbite::Repository::Export::ARCHIVE" do
+# describe "Backbite::Repository::Export::ARCHIVE" do
 
-  before(:all) do
-    target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
-    @result = target.repository.export(:archive).to_s
-  end
+#   before(:all) do
+#     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+#     @result = target.repository.export(:archive).to_s
+#   end
   
-  it "result should be big" do
-    @result.should
-  end
+#   it "result should be big" do
+#     @result.should
+#   end
 
-end
+# end
 
 
 

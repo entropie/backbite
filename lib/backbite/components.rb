@@ -134,19 +134,8 @@ module Backbite
       def plugins(name = nil, force = false, &blk) # :yield: Plugin
         tld = @tlog.repository.join('plugins')
         if not @plugins or force
-          plugin_fields = @config[:fields].map{ |f|
-            f.first
-          }.compact
-          plugins = tld.entries.map do |pl|
-            next if pl.to_s =~ /^\.+/
-            npl = ("plugin_" + pl.to_s[0..-4]).to_sym
-            if plugin_fields.include?(npl)
-              Plugin.load(tld.join(pl.to_s))
-            end
-          end.compact
-          @plugins = Plugins.new.push(*plugins)
+          @plugins = Plugins.load_for_component(self)
         end
-
         if name
           ret = @plugins[name]
           yield ret if block_given?
@@ -154,7 +143,6 @@ module Backbite
         elsif block_given?
           plugins.each(&blk)
         end
-
         @plugins
       end
 

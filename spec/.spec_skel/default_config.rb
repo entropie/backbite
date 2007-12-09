@@ -64,9 +64,14 @@ Config[:rspec].setup do
 
       # before, after, content
       # at_{start,end}
-
       independent do
-        before :toc
+        before do
+          toc {
+            style {
+              color :red
+            }
+          }
+        end
       end
       
       style do

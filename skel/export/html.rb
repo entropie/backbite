@@ -16,7 +16,7 @@ module Backbite
 
       res = Hpricot("<div class=\"post #{self.name}\" id=\"#{identifier}\">\n</div>" + "\n")
       t = (res/:div)
-      t.append{ |h| h << "#{" "*8}"}
+      t.append{ |h| h << "#{" "*6}"}
       ordered.each do |field|
         f, filtered = field.to_sym, field.apply_filter(:html)
         opts = { }
@@ -28,12 +28,12 @@ module Backbite
         tag = opts[:tag]
 
         t.append{ |h|
-          h << "#{" "*8}"          
+          h << "\n#{" "*6}"
           h.send(tag, :class => field.to_sym) { |f| f.text(filtered)}
-          h << "\n#{" "*8}"
+          h << "#{" "*6}"
         }
       end
-      t.append{ |h| h << "\n#{" "*8}"}
+      t.append{ |h| h << "\n#{" "*8}\n"}
       t
     end
   end
@@ -52,6 +52,8 @@ module Backbite
     class Tree < Repository::ExportTree
 
       include Helper::CacheAble
+
+      IgnoredBodyFields = [:style, :independent]
       
       attr_reader :hpricot
       
@@ -64,6 +66,7 @@ module Backbite
         styles!
         files!
         body_nodes(params)
+        independent_nodes(params)        
         @file = 'index.html'
         @__result__ = to_html
       end
@@ -79,40 +82,53 @@ module Backbite
       private
 
 
-      def body_nodes(params)
-        #posts = @tlog.posts.sort.reverse
-
+      def body_nodes(params)    
         body do |name, hpe|
           pexp = @tlog.posts.
             filter(params[:postopts].merge(:target => name))
           pexp.with_export(:html, @params.merge(:tree => self)) { |post|
             hpe << Cache("%s%s" % [params[:path_deep], post.identifier]) { 
               r = post.to_html(name)
-            }.to_s if hpe.attributes[:id].to_sym == post.config[:target]
+            }.to_s if hpe.attributes[:id] and hpe.attributes[:id].to_sym == post.config[:target]
           }
         end
+        
       end
 
+      def independent_nodes(params)
+        Plugin::AutoFieldNames.each do |af|
+          tar = @tlog.config[:html][:body][:independent][af]
+          Plugins.independent(@hpricot, @tlog, tar) do |a|
+            tag = a.class.const_defined?(:TAG) ? a.class.const_get(:TAG) : :div
+            w = case af; when :before then :prepend; when :after then :append end
+            res = Hpricot("\n    <div class=\"indy #{a.name}\" id=\"#{a.identifier}\">\n      #{a.result}\n    </div>" + "\n")
+            (@hpricot/:body).prepend(res.to_s)
+          end
+        end
+      end
+      
       def body # :yield: hpricot_body_node
-        tl = tlog
-        ord = tl.config[:html][:body].order
-        (hp=(@hpricot/:body)).append do |h|
-          ord.each do |n|
-            v = tl.config[:html][:body][n]
-            next if n == :style
+        tl = @tlog
+        ord = tl.config[:html][:body].
+          order.reject!{ |o| IgnoredBodyFields.include?(o) }
+        return unless ord
+        hp = nil
+        ord.each do |n|
+          v = tl.config[:html][:body][n]
+          (hp=(@hpricot/:body)).append do |h|
             h << " "*4
             tag = v[:tag]
             tag = :div if tag.empty?
             h.send(tag, :id => n) { |ha|
-              ha << "\n#{" "*4}"
+              ha << "\n#{" "*8}"
             }
             h << "\n\n"
           end
         end
 
+
         ord.each do |o|
           (hp.first).containers.each do |co|
-            next if o == :style
             next if co.attributes[:id] =! o
             yield(o, co)
           end

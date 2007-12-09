@@ -6,6 +6,8 @@
 module Backbite
 
   class Plugins < Array
+
+    
     def [](o)
       r = select{|pl|
         nam = o.to_s.gsub!(/^(plugin|input)_/, '') || o
@@ -14,9 +16,84 @@ module Backbite
       r
     end
 
-    def self.independent
+
+    def self.load_for_component(comp)
+      tlog = comp.tlog
+      tld = tlog.repository.join('plugins')
+      plugin_fields = comp.config[:fields].map{ |f|
+        f.first
+      }.compact
+      plugins = tld.entries.map do |pl|
+        next if pl.to_s =~ /^\.+/
+        npl = ("plugin_" + pl.to_s[0..-4]).to_sym
+        if plugin_fields.include?(npl)
+          Plugin.load(tld.join(pl.to_s))
+        end
+      end
+      Plugins.new.push(*plugins.compact)
     end
 
+
+    def self.load_for_independent(tlog, name)
+      tlg = tlog.repository.join('plugins').entries
+      files = tlg.map(&:to_s).grep(/#{name}\.rb$/)
+      
+      ret = []
+      files.each do |f|
+        ret << Plugin.load(tlog.repository.join('plugins', f))
+      end if files
+      Plugins.new.push(*ret)
+    end
+    
+
+    def self.result_for_independent(tree, tlog, conf)
+      conf.map{ |plname, plvals|
+        load_for_independent(tlog, plname)
+      }.flatten.map { |ip|
+        ip.new(tlog)
+      }.map do |ip|
+        ip.tree = tree
+        ip.tlog = tlog
+        ip.identifier =
+          if ip.class.const_defined?(:ID)
+            ip.class.const_get(:ID)
+          else
+            ip.name
+          end
+        yield(ip.prepare)
+      end
+
+      return
+      flds = Backbite::Plugin::AutoFieldNames.map{|afn|
+        conf[afn]
+      }.compact
+      if flds and !flds.empty?
+        flds.map do |f|
+          #p conf[f]
+          rs = load_for_independent(tlog, conf[f])
+        end.flatten.map{ |ip|
+          ip.new(tlog)
+        }.map do |ip|
+          ip.tree = tree
+          ip.tlog = tlog
+          ip.identifier =
+            if ip.class.const_defined?(:ID)
+              ip.class.const_get(:ID)
+            else
+              ip.name
+            end
+          yield(ip)
+        end
+        return true
+      end
+      false
+    end
+
+
+    class << self
+      alias :independent :result_for_independent
+    end
+    
   end
 
   # Each user-defined plugin is a subclass of Plugin.
@@ -125,6 +202,7 @@ module Backbite
     
     def self.inherited(o)
       @@rets << o
+    rescue
     end
 
     def initialize(tlog)
@@ -148,7 +226,7 @@ module Backbite
   class IndependentPlugin < Plugin
     AutoSubNames = [:at_start, :at_end]
   end
-  
+
 end
 
 
