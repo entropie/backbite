@@ -289,7 +289,7 @@ module Backbite
         end
         
         def to_s(prfx_size = 0)
-          "%-#{prfx_size+13}s #{ value.to_s.white }" % name.to_s[/_([a-zA-Z_]+)$/, 1].upcase.yellow.bold
+          "%-#{prfx_size+13}s #{ value.to_s.inspect.white }" % name.to_s[/_([a-zA-Z_]+)$/, 1].upcase.yellow.bold
         end
 
         def value

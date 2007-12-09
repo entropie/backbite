@@ -168,7 +168,7 @@ module Backbite
       end
 
       def to_s
-        "#{@name.to_s.capitalize}  Plugins:#{plugins.size}  Fields:#{config[:fields].keys.map{ |f| f.to_s.split(/_/).last }.join(', ')}"
+        "#{("%-10s"%@name.to_s).capitalize.bold.white} #{"[".red} #{"Plugins".yellow}:#{plugins.size.to_s.cyan}  #{"Fields".yellow}:#{config[:fields].keys.map{ |f| f.to_s.split(/_/).last }.map(&:cyan).join(', ')} #{"]".red}"
       end
 
       def setup!
