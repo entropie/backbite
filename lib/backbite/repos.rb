@@ -31,16 +31,8 @@ module Backbite
 
 
     def export(way, params = { })
-      params.extend(Helper::ParamHash).
-        process!(:title => :optional,
-                 :postopts => :optional,
-                 :nowrite => :optional,
-                 :path_deep => :optional,
-                 :norenumber => :optional,
-                 :nosort   => :optional)
-      params[:postopts]  ||= { }
       params[:path_deep] ||= './'
-      params[:title] ||= '[no title]'
+      params[:title] ||= "[no title]"
       dup.extend(Export).export(way, params)
     end
 
@@ -63,7 +55,11 @@ module Backbite
     def posts(params = { }, &blk)
       Posts.new(@tlog).filter(params, &blk)
     end
-    
+
+    def export_ways
+      dup.extend(Export).export.ways
+    end
+
 
     # Returns a list of every known Component
     def components

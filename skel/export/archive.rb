@@ -16,14 +16,16 @@ module Backbite
         filename = post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format])
         (ds[filename] ||= []) << post
       end
-
       archive_dir = tlog.repository.working_dir('archive')
       archive_dir.mkdir unless archive_dir.exist?
       result = ''
-      ds.each_pair do |d, post|
-        tree = Tree.new(d, archive_dir.join("#{d}/index.html"), tlog, post)
-        pids = post.map{ |pos| pos.pid }
-        tree.export_date(pids)
+
+      ds.each_pair do |d, posts|
+        pids = posts.map{ |pos| pos.pid }
+        tree = Tree.new(d, archive_dir.join(fn="#{d}/index.html"), tlog.dup, params)
+        Info << "ARCHIVE: #{fn} pids=#{pids.join(',')}"
+        
+        tree.export_date(*pids)
         result << tree.write
       end
       result
@@ -37,16 +39,23 @@ module Backbite
         super(tlog, params)
         @date = date
         @file = filename
-        @result = ''
       end
 
-      def export_date(ids)
-        @__result__ = tlog.
-          repository.export(:html,
-                            :title => "Archive: @#{@date}",
-                            :postopts => { :ids => ids },
-                            :nowrite => true,
-                            :path_deep => '../../').to_s
+      def write
+        @__result__ = @result.to_html
+        super
+      end
+      
+      def export_date(*pids)
+        h = {
+          :title => "Archive: @#{@date}",
+          :postopts => { :ids => pids },
+          :nowrite => true,
+          :path_deep => '../../'
+        }
+        #tlog.repository.export(:html, h).to_s
+        @result = tlog.repository.export(:html, h)
+        self
       end
       
     end

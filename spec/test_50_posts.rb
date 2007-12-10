@@ -24,6 +24,10 @@ describe Backbite::Posts do
       size.should == 3
   end
 
+  it "target by ids" do
+    @target.posts.filter(:ids => [1]).size.should == 1
+  end
+  
   
   it "should list a specific post (:between) " do
     @target.posts.filter(:between => 4.days..3.days).size.should == 1

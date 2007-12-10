@@ -53,14 +53,21 @@ module Backbite
     class << self
       alias :<< :log
     end
-    
+
     def self.do_log(lvl, msg)
-      lvl = :info if lvl == :debug
-      Log4r::Logger['backbite'].send(lvl, msg)
+      if lgr = Log4r::Logger['backbite']
+        lgr.send(lvl, msg)
+      else
+        case lvl
+        when :info
+          puts "  * ".cyan.bold + msg.to_s.strip.white
+        when :warn
+          puts "!!! ".red.bold + msg.to_s.strip.white.bold
+        end if not $DEBUG
+      end
     rescue
-      #bputs $!
+      #puts $!
     end
-    
   end
 
   class Debug < Informer # :nodoc: All

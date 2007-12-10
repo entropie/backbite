@@ -17,28 +17,15 @@ module Backbite
       read
     end
     
-    def with_export(type, params)
+    def with_export(type, params = { })
       const = Post::Export.const_get(type.to_s.upcase)
       map{ |post|
-        npost = post.extend(const)
-        npost.setup!(params)
-        yield npost
-        npost
+        post.with_export(const, params)
       }
     end
     
     def filter(params, &blk)
-      params.extend(Helper::ParamHash).
-        process!(
-                 :between => :optional,
-                 :ids     => :optional,
-                 :tags    => :optional,
-                 :target  => :optional,
-                 :nosort  => :optional,
-                 :norenumber => :optional
-                 )
-
-      ret = Filter.select(params, self).by_date!.reverse
+      ret = Filter.select(params, self) #.by_date!.reverse
       ret.each(&blk) if block_given?
       ret
     end
@@ -55,29 +42,27 @@ module Backbite
       read
     end
 
-    def read(&blk)
+    def read
       postfiles = (par = tlog.repository.join('spool')).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
-      i = -1
       postfiles.inject(self) { |mem, f|
         postway = Post::Ways.dispatch(:yaml) { |way|
-          way.tlog = self.tlog
+          way.tlog   = self.tlog
           way.source = YAML::load(par.join(f).readlines.join)
         }.process
-        postway.pid = i+=1
-        yield postway if block_given?
         mem << postway
-      }
+      }.with_ids
     end
     private :read
 
-    def with_ids(&blk)
+    def with_ids
       i = -1
-      ret = replace(self.map{ |pst| pst.pid = i+=1 and pst })
-      ret.each(&blk) if block_given?
-      ret
+      replace(self.map{ |pst| pst.pid = i+=1 and pst })
+      each(&blk) if block_given?
+      self
     end
   end
+  
   
   class Post < Delegator
     
@@ -97,6 +82,12 @@ module Backbite
     attr_accessor :neighbors
     
 
+    def with_export(const, params)
+      npost = dup.extend(const)
+      npost.setup!(params)
+      npost
+    end
+    
     def pid=(pid)
       @pid = pid
       identifier and pid
@@ -329,7 +320,7 @@ module Backbite
           @config = org
         end
 
-        def ordered
+        def order
           @config.ordered
         end
 

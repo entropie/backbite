@@ -13,9 +13,9 @@ module Backbite
         fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
         fields[fname]
       }
-
       res = Hpricot("<div class=\"post #{self.name}\" id=\"#{identifier}\">\n</div>" + "\n")
-      t = (res/:div)
+      t = (res/"##{identifier}")
+      return '' unless t
       t.append{ |h| h << "#{" "*6}"}
       ordered.each do |field|
         f, filtered = field.to_sym, field.apply_filter(:html)
@@ -29,7 +29,7 @@ module Backbite
 
         t.append{ |h|
           h << "\n#{" "*6}"
-          h.send(tag, :class => field.to_sym) { |f| f.text(filtered)}
+          h.send(tag, :class => field.to_sym) { |f| f.text(filtered.to_s)}
           h << "#{" "*6}"
         }
       end
@@ -39,8 +39,7 @@ module Backbite
   end
 
   module Repository::Export::HTML # :nodoc: All
-    
-    # mount point
+
     def self.export(tlog, params)
       @tree = Tree.new(tlog, params)
       @tree.write unless params[:nowrite]
@@ -61,13 +60,13 @@ module Backbite
         super
         @hpricot = Hpricot(make_tree)
         @params = params
+        @file = 'index.html'
         title!
         meta!
-        styles!
-        files!
+        styles!(params)
+        files!(params)
         body_nodes(params)
-        independent_nodes(params)        
-        @file = 'index.html'
+        independent_nodes
         @__result__ = to_html
       end
       
@@ -75,27 +74,66 @@ module Backbite
       # returns the html tree
       def to_html
         @hpricot.to_html
+      # rescue
+      #   ''
       end
       alias :to_s :to_html
       
-
       private
 
-
-      def body_nodes(params)    
-        body do |name, hpe|
-          pexp = @tlog.posts.
-            filter(params[:postopts].merge(:target => name))
-          pexp.with_export(:html, @params.merge(:tree => self)) { |post|
-            hpe << Cache("%s%s" % [params[:path_deep], post.identifier]) { 
-              r = post.to_html(name)
-            }.to_s if hpe.attributes[:id] and hpe.attributes[:id].to_sym == post.config[:target]
-          }
+      def body # :yield: hpricot_body_node
+        ord = @tlog.config[:html][:body].
+          order.reject{ |o| IgnoredBodyFields.include?(o) }
+        hp = nil
+        unless ord
+          Error << "w"
+          #ord = @tlog.config[:html][:body].order
+          return
         end
-        
+        ord.each do |n|
+          v = @tlog.config[:html][:body][n]
+          (hp=(@hpricot/:body)).append do |h|
+            h << " "*4
+            tag = v[:tag]
+            tag = :div if tag.empty?
+            h.send(tag, :id => n) { |ha|
+              ha << "\n#{" "*8}"
+            }
+            h << "\n\n"
+          end
+        end
+        thash = Hash[*hp.first.containers.map{ |c| [c.attributes[:id].to_sym, c] }.flatten]
+        ord.each do |o|
+          yield(o, thash[o])
+        end
+        hp
+      end
+      
+
+      def body_nodes(params)
+        posts =
+          if psopts = params[:postopts]
+            tlog.posts.dup.filter(params.merge(psopts))
+          else
+            tlog.posts.dup
+          end
+        #p posts.map(&:identifier)
+        params.delete(:ids)
+        params.delete(:postopts)
+        body do |name, hpe|
+          posts.by_date!.reverse.with_export(:html, params.merge(:tree => self, :target => name)).each do |post|
+            next if name != post.config[:target]
+            phtml = Cache("%s%s" % [@params[:path_deep], post.identifier]) {
+              post.to_html(name).to_s
+            }
+            Debug << "#{@file}: body > #{name} received #{phtml.size} Bytes"
+            hpe << phtml
+          end
+          hpe
+        end
       end
 
-      def independent_nodes(params)
+      def independent_nodes
         Plugin::AutoFieldNames.each do |af|
           tar = @tlog.config[:html][:body][:independent][af]
           Plugins.independent(@hpricot, @tlog, tar) do |a|
@@ -107,34 +145,6 @@ module Backbite
         end
       end
       
-      def body # :yield: hpricot_body_node
-        tl = @tlog
-        ord = tl.config[:html][:body].
-          order.reject!{ |o| IgnoredBodyFields.include?(o) }
-        return unless ord
-        hp = nil
-        ord.each do |n|
-          v = tl.config[:html][:body][n]
-          (hp=(@hpricot/:body)).append do |h|
-            h << " "*4
-            tag = v[:tag]
-            tag = :div if tag.empty?
-            h.send(tag, :id => n) { |ha|
-              ha << "\n#{" "*8}"
-            }
-            h << "\n\n"
-          end
-        end
-
-
-        ord.each do |o|
-          (hp.first).containers.each do |co|
-            next if co.attributes[:id] =! o
-            yield(o, co)
-          end
-        end
-      end
-
       def make_tree
         ret = ''
         ret << doctype << "\n"
@@ -167,29 +177,27 @@ module Backbite
         end
       end
 
-      def styles!
+      def styles!(params)
         tl = tlog
-        p = @params
         (@hpricot/:head).append do |h|
           dfs = { :generated => { :media => :screen }, :base => { :media => :screen}}
           dfs.merge(tl.config[:stylesheets][:files]).each_pair{ |n, v|
             h << " "*4            
-            link(:href => "#{p[:path_deep]}include/#{n}.css",
+            link(:href  => "#{params[:path_deep]}include/#{n}.css",
                  :media => v[:media],
-                 :type => "text/css",
-                 :rel => "stylesheet")
+                 :type  => "text/css",
+                 :rel   => "stylesheet")
             h << "\n"
           }
         end
       end
 
-      def files!
+      def files!(params)
         tl = tlog
-        p = @params          
         (@hpricot/:head).append do |h|
           tl.config[:javascript][:files].each{ |n|
             h << " "*4
-            script(:src => "#{p[:path_deep]}include/#{n.first}.js",
+            script(:src => "#{params[:path_deep]}include/#{n.first}.js",
                    :type => "text/javascript" )
             h << "\n"
           }

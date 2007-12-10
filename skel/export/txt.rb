@@ -44,15 +44,15 @@ module Backbite
             @file = 'plain.txt'
             from = "#{tlog.author[:name]} <#{ tlog.author[:email]}>"
             @str = "#\n# Title: #{params[:title]}\n# Generated at: #{timestamp}\n# By: #{from}\n#\n# URL: #{tlog.http_path}\n#\n\n"
-            posts = @tlog.posts(params[:postopts]).sort.reverse
-            posts.with_export(:txt, :tree => self){ |post|
+            posts = @tlog.posts.by_date!.reverse.filter(params)
+            posts.with_export(:txt, :tree => self).each{ |post|
               @str << post.to_txt << "\n"
             }
             @__result__ = @str
           end
 
           def to_s
-            @str
+            @__result__
           end
         end
         

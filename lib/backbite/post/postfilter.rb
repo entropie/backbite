@@ -25,8 +25,11 @@ module Backbite
               false
             end
           }.each do |co|
+            fs = posto.size
             posto.extend(co).filter(params)
-            Debug << "Postfilter: Filtering by #{co.name.to_s.split(':').last} -> #{posto.size}"
+            (ps = params.dup)
+            ps.delete(:tree)
+            Debug << "Postfilter: #{co.name.to_s.split(':').last} [#{fs}:#{posto.size}] #{ps.inspect}"
           end
         end
         posto
@@ -65,7 +68,7 @@ module Backbite
         def filter(params, &blk)
           tags = params[:tags]
           reject!{ |post|
-            tags.map{ |t| true if post.tags.include?(t) }.compact.empty?
+            not tags or tags.map{ |t| true if post.tags.include?(t) }.compact.empty?
           }
         end
       end

@@ -135,8 +135,18 @@ op = Backbite.optionparser do |op|
       op.declare(:url, "the url to your tumblog") {
         puts handler.url
       }
-      op.declare(:export, "export your tumblog <how>") { |how|
-        puts handler.repository.export((how || 'all').to_sym)
+      op.declare(:export, "export your tumblog <how>") { |*how|
+        if not how or how.empty? or how.to_s == 'all'
+          how = handler.repository.export_ways.map.join(',')
+        end
+        nhow = if how.to_s =~ /,/
+                 how.to_s.split(',').map(&:strip).flatten
+               else [how] end
+        p nhow
+        nhow.map(&:to_sym).each do |h|
+          handler.repository.export(h)
+        end
+        
       }
     end
   end

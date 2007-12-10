@@ -12,7 +12,7 @@ module Backbite
       attr_reader :tlog, :timestamp, :written
       
       def initialize(tlog, params)
-        @tlog, @params = tlog, params
+        @tlog, @params = tlog, params.dup
         @timestamp = Time.new
         @__result__ = ''
         @written = false
@@ -28,7 +28,7 @@ module Backbite
         wdir = tlog.repository.working_dir
         wdir.mkdir unless wdir.exist?
         file = wdir.join(@file)
-        Info << " #{class_name}: writing #{@__result__.size} Bytes to #{file}"
+        Info << "#{class_name}: writing #{@__result__.size} Bytes to #{file}"
         file.dirname.mkdir unless file.dirname.exist?
         file.open('w+'){ |f| f.write(@__result__)}
         @written = true
@@ -47,7 +47,24 @@ module Backbite
     # The export class should respond on :to_s with the result stream.
     module Export
 
+      module ExportNames # :nodoc: All
+        def to_s
+          name.to_s.split('::').last
+        end
+      end
+      
       UnknownWay = Backbite::NastyDream(self)
+
+      def Export.ways
+        Repository::Export.constants.map{ |c|
+          next unless c == c.upcase
+          self.const_get(c).extend(ExportNames)
+        }.compact
+      end
+
+      def ways
+        Export.ways
+      end
       
       # require every ./export/*.rb file in the repos
       def __require__
@@ -71,13 +88,14 @@ module Backbite
       end
       
       # Selects module +way+ and runs ::export
-      def export(way, params = { })
-        __require__ 
+      def export(way = nil, params = { })
+        __require__
+        return self unless way
         raise UnknownWay, way unless Repository::Export.known?(way)
         cway = Repository::Export::choose(way)
         @export =
           if cway
-            Info << " Exporting via #{way}"
+            Info << "Exporting via #{way}"
             cway.export(tlog, params)
           else
             Warn << "#{way} is unknown"

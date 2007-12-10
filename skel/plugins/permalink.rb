@@ -14,7 +14,7 @@ class Permalink < Plugin
   end
   
   def html_filter
-    '<a class="pl" href="%s%s/%s/#%s">#</a>' % [path_deep, 'archive', filter, identifier]
+    '<a class="pl" href="%s%s/%s/index.html#%s">#</a>' % [path_deep, 'archive', filter, identifier]
   end
 end
 
