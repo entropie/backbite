@@ -25,6 +25,10 @@ module Backbite
   def self.globals
     GLOBALS
   end
+
+  def self.[]=(globalkey, value)
+    globals[globalkey.to_sym] = value
+  end
   
   def self.[](globalkey)
     globals[globalkey.to_sym]

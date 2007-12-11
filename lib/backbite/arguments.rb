@@ -64,9 +64,9 @@ module Backbite
 
     def to_s
       ret = ''
-      @descs.each do |kw, f|
+      @descs.sort_by{ |k,f| k}.each do |kw, f|
         ret << " #{"%-27s" % kw.to_s.upcase.yellow} #{(f.delete(:__desc__)||'Not Documented').magenta}\n"
-        f.each do |k,v|
+        f.sort.each do |k,v|
           size = @responder[kw][k].arity
           ret << "   #{("%-10s"%k).bold.green}  #{("%2i"%size).cyan}   #{v.white}\n"
         end

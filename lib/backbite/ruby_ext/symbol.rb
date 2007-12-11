@@ -7,6 +7,10 @@ class Symbol
   def to_proc
     lambda{|o, *args| o.send(self, *args) }
   end
+
+  def <=>(o)
+    self.to_s <=> o.to_s
+  end
 end
 
 
