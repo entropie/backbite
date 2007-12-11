@@ -10,7 +10,6 @@ module Backbite
   end
 
   class GetReal < Exception
-
     def inspect
       res = "[#{"Wake up".underline}:#{self.class.to_s.split('::').last(2).join('::').red}] #{message.to_s.white}"
       res << "\n        " << backtrace.join("\n        ") if $DEBUG

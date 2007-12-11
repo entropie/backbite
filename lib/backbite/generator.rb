@@ -7,13 +7,24 @@ module Backbite
 
   module Generators
 
+    UnknownGenerator = Backbite::NastyDream(self)
+    
+    def self.generators
+      Generators.constants.map{ |const|
+        gen = Generators.const_get(const)
+        name = gen.to_s.split('::').last.downcase
+        next if gen == UnknownGenerator
+        yield name, gen
+      }
+    end
+
     def self.generate(name, what)
       tconst = if what.class === Class then what else what.class end
       tconst = tconst.to_s.split('::').last
       if const = Generators.const_get(tconst) and const != NilClass
         return what.extend(const).make(name)
       else
-        raise "foo"
+        raise UnknownGenerator, what
       end
     end
 

@@ -74,8 +74,6 @@ module Backbite
       # returns the html tree
       def to_html
         @hpricot.to_html
-      # rescue
-      #   ''
       end
       alias :to_s :to_html
       

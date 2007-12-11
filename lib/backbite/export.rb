@@ -63,6 +63,7 @@ module Backbite
       end
 
       def ways
+        __require__
         Export.ways
       end
       
@@ -71,7 +72,7 @@ module Backbite
         unless self.class.const_defined?(:REQUIRED)
           (path = join('export')).entries.grep(/[^\.]/).each do |wfile|
             file = path.join(wfile)
-            Info << "Export: loading #{file}"
+            Debug << "Export: loading #{file}"
             require(file)
           end
           self.class.const_set(:REQUIRED, true)

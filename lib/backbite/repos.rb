@@ -30,7 +30,8 @@ module Backbite
     end
 
 
-    def export(way, params = { })
+    def export(way = nil, params = { })
+      return dup.extend(Export) unless way
       params[:path_deep] ||= './'
       params[:title] ||= "[no title]"
       dup.extend(Export).export(way, params)
@@ -40,6 +41,7 @@ module Backbite
     def inspect
       "<Repository: '#{@directory.to_s}'>"
     end
+
 
     def to_s
       r=''
@@ -51,13 +53,10 @@ module Backbite
       r
     end
 
+
     # Return a list of Posts
     def posts(params = { }, &blk)
       Posts.new(@tlog).filter(params, &blk)
-    end
-
-    def export_ways
-      dup.extend(Export).export.ways
     end
 
 
@@ -67,6 +66,7 @@ module Backbite
       @components ||= Components.load(join(:components), tlog)
     end
 
+    
     def working_dir(*other_dirs)
       res = join('tmp', '.work', *other_dirs)
       res
@@ -90,6 +90,21 @@ module Backbite
     end
     
 
+    def clean!
+      fc, toclean = 0, [:tmp]
+      toclean.each do |tc|
+        (base = join(tc)).entries.each do |te|
+          file = base.join(te)
+          next if file.directory?
+          if file.extname == '.tmp' and file.unlink
+            fc+=1
+          end
+        end
+      end
+      fc
+    end
+
+    
     # Creates a directory structure for the repos.
     def setup!
       Info << "Creating directory structure for `#{name}`"
