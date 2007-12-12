@@ -38,20 +38,18 @@ module Backbite
     end
 
 
-    def inspect
-      "<Repository: '#{@directory.to_s}'>"
-    end
-
-
     def to_s
-      r=''
-      r << inspect
-      require 'find'
-      Find.find(@directory) do |pa|
-        Info << "\n"+pa
-      end
-      r
+      tas  = [ ['Posts'.cyan, @tlog.posts.size.to_s.magenta], ['Components'.cyan, @tlog.components.size.to_s.magenta]]
+      s, se = `du -sh #{@directory}`.split("\t").first
+      rstr = "#{'Repository'.green.bold} #{@directory.to_s.bold} #{'Size'.cyan}:#{s.magenta}"
+      tas.inject(rstr) { |m,v|
+        m << " " << v.join(':')
+      }
+      
     end
+
+
+    #def to_s end
 
 
     # Return a list of Posts
@@ -108,7 +106,7 @@ module Backbite
     # Creates a directory structure for the repos.
     def setup!
       Info << "Creating directory structure for `#{name}`"
-      @directory = Helper::File.ep(@directory)
+      @directory = Pathname.new(File.expand_path(@directory))
       @directory.mkdir and (Info << "created #{@directory}") unless @directory.exist?
       
       BaseDirs.each do |bdir|

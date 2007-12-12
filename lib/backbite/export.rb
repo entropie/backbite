@@ -96,7 +96,7 @@ module Backbite
         cway = Repository::Export::choose(way)
         @export =
           if cway
-            Info << "Exporting via #{way}"
+            Debug << "Exporting via #{way}"
             cway.export(tlog, params)
           else
             Warn << "#{way} is unknown"

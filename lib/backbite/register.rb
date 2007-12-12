@@ -42,7 +42,9 @@ module Backbite
 
     def to_s
       reload
-      self.map {|a,b| "#{"%-10s"%a} = #{b}" }.join("\n")
+      self.map {|a,b|
+        "#{"%-10s".send(a==:DEFAULT ? 'bold' : 'cyan') % a} = #{b.white}"
+      }.join("\n")
     end
     
     def [](obj)

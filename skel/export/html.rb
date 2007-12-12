@@ -145,7 +145,7 @@ module Backbite
       
       def make_tree
         ret = ''
-        ret << doctype << "\n"
+        ret << doctype << "\n" << timestamp << "\n"
         ret << "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n\n"
         ret << "<head>\n</head>" << "\n"
         ret << "<body>\n\n</body>\n\n</html>"
@@ -156,6 +156,9 @@ module Backbite
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"DTD/xhtml1-transitional.dtd\">\n"
       end
 
+      def timestamp
+        %Q(<!-- Generated: #{Time.now} -->)
+      end
 
       def title!
         t = @params[:title].to_s

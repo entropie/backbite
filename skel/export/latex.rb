@@ -12,9 +12,8 @@ module Backbite
 
     def self.export(tlog, params)
       @tree = Tree.new(tlog, params)
-      puts @tree
+      #puts @tree
       @tree
-
     end
 
     class Tree < Repository::ExportTree

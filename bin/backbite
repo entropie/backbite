@@ -8,6 +8,8 @@ require 'lib/backbite'
 include Backbite
 tlog = nil
 
+ARGV << 'help' if ARGV.empty?
+
 if af = ARGV.first and r = Backbite.register[af.to_sym]
   tlog = Backbite.register[ARGV.shift]
 end
@@ -100,11 +102,19 @@ op = Backbite.optionparser do |op|
     end
   end
 
+  op.keyword(:register, tlog.register) do |op, handler|
+    op.desc "basically a set of tumblogs and maybe a default"
+
+    op.declare(:ls, "lists registers"){
+      puts handler
+    }
+  end
+  
   op.keyword(:tlog, tlog) do |op, handler|
 
     op.desc "everything about your tumblog"
 
-    op.declare(:generate, "generates a config skeleton in <file>") { |file|
+    op.declare(:generate, "generates a tumblog named <name> to stdout") { |file|
       puts Generators.generate(file, Tumblelog)
     }
 

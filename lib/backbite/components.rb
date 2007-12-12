@@ -35,7 +35,8 @@ module Backbite
     # Components instance.
     def self.load(directory, tlog)
       ret = self.new
-      (td = Helper::File.ep(directory)).entries.map do |comp|
+      td = Pathname.new(File.expand_path(directory))
+      td.entries.map do |comp|
         next if comp.to_s =~ /^\.+/
         comp = Component.read(td.join(comp).readlines, tlog)
         comp.tlog = tlog
