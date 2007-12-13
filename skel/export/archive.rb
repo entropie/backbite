@@ -23,7 +23,7 @@ module Backbite
       ds.each_pair do |d, posts|
         pids = posts.map{ |pos| pos.pid }
         tree = Tree.new(d, archive_dir.join(fn="#{d}/index.html"), tlog.dup, params)
-        Info << "ARCHIVE: #{fn} pids=#{pids.join(',')}"
+        Debug << "ARCHIVE: #{fn} pids=#{pids.join(',')}"
         
         tree.export_date(*pids)
         result << tree.write

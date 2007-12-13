@@ -24,7 +24,6 @@ module Backbite
       tag_dir.mkdir unless tag_dir.exist?
       result = ''
       all.each do |t|
-        Info << "Export::Tags: processing tag: #{t}"
         filename = tag_dir.join("#{sanitize_tag(t)}.html")
         tree = Tree.new(t, filename, tlog, params)
         tree.export_tag

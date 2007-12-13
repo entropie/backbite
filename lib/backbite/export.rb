@@ -28,7 +28,7 @@ module Backbite
         wdir = tlog.repository.working_dir
         wdir.mkdir unless wdir.exist?
         file = wdir.join(@file)
-        Info << "#{class_name}: writing #{@__result__.size} Bytes to #{file}"
+        Info << "#{"%-15s" % class_name} #{"%10i" % @__result__.size} Bytes to #{file}"
         file.dirname.mkdir unless file.dirname.exist?
         file.open('w+'){ |f| f.write(@__result__)}
         @written = true

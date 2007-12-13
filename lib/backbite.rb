@@ -10,6 +10,8 @@ $:.unshift(File.dirname(__FILE__))
 require 'pp'
 require 'pathname'
 require 'fileutils'
+require 'rubygems'
+
 
 require 'hpricot'
 require 'delegate'
