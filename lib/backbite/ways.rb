@@ -11,17 +11,38 @@ module Backbite
   # Post delegates the Component instance.
   class Post < Delegator
 
+    UnknownWay = Backbite::NastyDream(self)
+    
     module Ways
+
+      def self.ways
+        constants.map{ |c|
+          next if c == 'Way'
+          const_get(c)
+        }.compact
+      end
+
+      def ways
+        Ways.ways
+      end
+      
+      def way?(w)
+        Ways.way?(w)
+      end
+
+      def self.way?(w)
+        const_defined?(w.to_s.capitalize)
+      end
       
       # Dispatch selects +way+ and returns proper instance to operate
       # on in a block.
       def self.dispatch(way) # :yield: Way.new
-        ret = nil
-        if const = const_get(way.to_s.capitalize)
+        way, ret = way.to_s.capitalize, nil
+        if const_defined?(way) and const = const_get(way)
           ret = const.new
           yield ret
         else
-          raise "Sorry, way '#{way}' is unknown."
+          raise UnknownWay, way
         end
         return ret
       end
@@ -29,7 +50,7 @@ module Backbite
 
       # Parent class for any old way to post to a tumblog.
       class Way
-        
+
         attr_accessor :fields
         
         attr_accessor :tlog
@@ -64,7 +85,7 @@ module Backbite
         # If the field's a plugin, we're going to create an instance of
         # it (because we only want to work on a single plugin instance).
         def process(params, component)
-          Info << " - #{component.name} -> #{self.class}"
+          Info << "#{component.name.to_s.upcase} -> #{self.class}"
           @component = component
           @meta = params[:meta]
           fields.each do |hand|
@@ -94,17 +115,15 @@ module Backbite
         def save(how = :to_yaml)
           file = @tlog.repository.join('spool').join(filename)
           contents = send(how)
-          Info << " #{component.name}: write #{how}(#{contents.size}Bytes) to #{file}"
+          Info << "#{component.name}: write #{how}(#{contents.size}Bytes) to #{file}"
           file.open('w+') do |file|
             file.write(contents)
           end
-          Info << "#{component.name} Finished"
-          self
+          contents.size
         end
 
         def to_s
-          pp self
-          ' a'
+          self.class.to_s.split('::').last
         end
         
         # Save the nut the YAML way.
@@ -230,7 +249,6 @@ module Backbite
             edit!
           }
           super
-          p tfilename
           self
         end
 

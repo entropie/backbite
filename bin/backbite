@@ -65,8 +65,14 @@ op = Backbite.optionparser do |op|
       op.keyword(:post, tlog.posts) do |op, handler|
         op.desc "list, post and edit posts"
 
+        op.declare(:ways, 'list ways to post') {
+          puts tlog.components.ways.map{ |w|
+            w.to_s.split('::').last.bold
+          }.join(', ')
+        }
+        
         op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
-          puts tlog.post(c.to_sym, :way => w).save
+          puts "%i Bytes" % [tlog.post(c.to_sym, :way => w).save]
         }
         
         op.declare(:ls, "lists pending posts") {|*args|
@@ -158,7 +164,7 @@ op = Backbite.optionparser do |op|
         puts handler.url
       }
       op.declare(:ways, "list the ways to post to the tumblog") {
-        puts handler.repository.export.ways.map(&:to_s).map(&:bold).join(',')
+        puts handler.repository.export.ways.map(&:to_s).map(&:bold).join(', ')
       }
 
       op.declare(:export, "export your tumblog <how>") { |*how|

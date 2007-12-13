@@ -82,7 +82,7 @@ module Backbite
     def keyword(kw, handler = Object)
       @current_keyword = kw
       @definition = @responder[@current_keyword]
-      yield(self, handler)
+      yield(self, handler.dup)
     end
     
     def declare(keyw, desc = '', &blk)

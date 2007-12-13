@@ -9,7 +9,8 @@ module Backbite
   # (and load them if necessary).
   class Components < Array
 
-
+    include Post::Ways
+    
     # YAMLComponent is uesed to extend the component class to set the values for
     # we're getting from the YAML source.
     module YAMLComponent
@@ -24,6 +25,7 @@ module Backbite
 
     end
 
+
     def generate(tlog, name)
       file = tlog.repository.join('components', "#{name}.rb")
       res = Generators.generate(name, self.class)
@@ -35,7 +37,7 @@ module Backbite
     # Components instance.
     def self.load(directory, tlog)
       ret = self.new
-      td = Pathname.new(File.expand_path(directory))
+      td = Pathname.new(::File.expand_path(directory))
       td.entries.map do |comp|
         next if comp.to_s =~ /^\.+/
         comp = Component.read(td.join(comp).readlines, tlog)
@@ -117,12 +119,13 @@ module Backbite
                    :file  => :optional,
                    :meta  => :optional
                    )
-        Info << "Post[#{name}]: posting via `#{params[:way]}` to (#{params[:to]})"
         post_way = Post::Ways.dispatch(params[:way]) do |pw|
           pw.tlog    = @tlog
           pw.fields  = fields
         end
+        Info << "#{post_way} starting..."
         post_way.process(params, self)
+        Info << "#{name} Finished"
         post_way
       end
       

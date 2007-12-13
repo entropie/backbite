@@ -42,15 +42,15 @@ module Backbite
           when :base
             generated_base << "\n/* EOF: #{@filename} */\n\n\n"
           when /\.haml/
-            Warn << "CSS: haml not yet supported"
+            #Warn << "CSS: haml not supported (yet)"
             # FIXME
-            # file = tlog.repository.join(@ofile)
-            # if file.exist?
-            #   Sass::Engine.new(file.readlines.join).render
-            # else
-            #   Warn << "#{file} does not exist."
-            #   ''
-            # end
+            file = tlog.repository.join(@ofile)
+            if file.exist?
+              Sass::Engine.new(file.readlines.join).render
+            else
+              Warn << "#{file} does not exist."
+              ''
+            end
           else
             Info << " Ingoring #{self.class}#definition: #{file}"
             ''
