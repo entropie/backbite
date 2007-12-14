@@ -34,8 +34,20 @@ module Backbite
     end
     
 
-    def author
-      @config[:defaults][:author]
+    def author(what = 0)
+      case what
+      when 0
+        "%s mailto:%s" % [@config[:defaults][:author][:name],
+                 @config[:defaults][:author][:email]]
+      else
+        @config[:defaults][:author].to_s
+      end
+    end
+
+
+
+    def title
+      @config[:defaults][:title]
     end
 
 

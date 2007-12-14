@@ -22,7 +22,7 @@ describe Backbite::Config do
 
   it "should replace values of the hash" do
     @config.with_replacer[:defaults][:title].
-      should == "rspec - foobar title"
+      should == "rspec"
   end
   
 end

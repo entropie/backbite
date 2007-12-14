@@ -3,24 +3,41 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
+require 'iconv'
+
+$KCODE = 'u'
+
 module Backbite
 
   module Post::Export::LATEX
 
+    def convert_field(str)
+      str.gsub(/([öüä])/) do |r|
+        w = "\\\"" << r.to_s
+        r = Iconv.iconv("ascii//translit", "ISO-8859-1", w)
+        r
+      end
+    end
+    
     def to_latex
-      $KCODE = 'u'
       ordered = tlog.components[self.metadata[:component]].order.dup
       ordered.map!{ |o|
         fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
         fields[fname]
       }
       res = ""
-      res << "\\item #{identifier}\n"
-      res << "\\begin{description}\n"
+      res << "\\subsubsection{Identifier: #{identifier}}\n"
+      res << "\\flushleft\n"      
+      res << "\\begin{description}\n"      
+      res << "\\begin{enumerate}\n"      
+      #res << "\\item asd\n"
       ordered.each do |field|
-        filtered = field.apply_filter(:latex).gsub(/([öüä])/, '')
-        res << "\\item[#{field.to_sym}] #{filtered}\n"
+        #next if field.to_sym == :permalink
+        filtered = field.apply_filter(:latex)
+        filtered = convert_field(filtered)
+        res << "\\item[#{field.to_sym}:] #{filtered}\n"
       end
+      res << "\\end{enumerate}\n"
       res << "\\end{description}\n"
       res << "\n"
       res
@@ -32,7 +49,6 @@ module Backbite
 
     def self.export(tlog, params)
       @tree = Tree.new(tlog, params)
-      @tree.write
       #puts @tree
       @tree
     end
@@ -43,9 +59,10 @@ module Backbite
         @latex_file = File.expand_path('~/backbite.tex')
         super
         @file = 'backbite.dvi'
-        make_tree
+        @result = make_tree
         tempfile_write
         @__result__ = to_dvi
+        write        
       end
 
       def tempfile_write
@@ -54,8 +71,9 @@ module Backbite
       end
 
       def to_dvi
-        unless written?
-          `latex -output-directory=#{ @dvifile.dirname } #{@dvifile.to_s}`
+        Info << "[2 times] cd #{ @dvifile.dirname } && latex #{@dvifile.to_s}"
+        1.upto(2) do |i|
+          `cd #{ @dvifile.dirname } && latex #{@dvifile.to_s}`
         end
         @dvifile.dirname.join('latex.out.dvi').open('r').readlines.to_s
       end
@@ -76,17 +94,13 @@ module Backbite
         ret = ''
         ord.each do |n|
           v = @tlog.config[:html][:body][n]
-          ret << "\\subsection{#{n}}\n\n"
-          ret = "\\flushleft\n"
-          ret << "\\begin{enumerate}\n"      
+          ret << "\\section{Node: #{n}}\n\n"
           ps = @params.dup.merge(:tree => self)
-          psts = posts.by_date!.reverse.
+          psts = posts.filter(:target => n).by_date!.reverse.
             with_export(:latex, ps)
-          #:target => post.config[:target]
           psts.each do |post|
             ret << post.to_latex
           end
-          ret << "\\end{enumerate}\n"
         end
         ret
       end
@@ -97,7 +111,10 @@ module Backbite
       end
 
       def make_body(skel)
-        @result = skel.to_s.gsub(/BODY/, body)
+        result = skel.to_s.gsub(/BODY/, body)
+        result.gsub!(/TITLE/, tlog.title)
+        result.gsub!(/AUTHOR/, tlog.author.to_s)
+        result
       end
       
 

@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-%w(paramhash cache date).each do |l|
+%w(paramhash cache date text).each do |l|
   require "backbite/helper/"+ l
 end
 

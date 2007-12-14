@@ -10,7 +10,9 @@ module Backbite
     class Export
 
       module TXT
-        
+
+        include Helper::Text        
+
         def to_txt
           str = "#{metadata[:component].to_s.capitalize} {"
           ordered = tlog.components[metadata[:component]].order.dup
@@ -20,6 +22,7 @@ module Backbite
           }
           ordered.inject(str) do |m, field|
             f, filtered = field.to_sym, field.apply_filter(:txt)
+            filtered = paragraphify(filtered)
             m << "\n %-10s %s" % [f.to_s+':', filtered]
           end
           str << "\n}\n"
@@ -42,7 +45,7 @@ module Backbite
           def initialize(tlog, params)
             super
             @file = 'plain.txt'
-            from = "#{tlog.author[:name]} <#{ tlog.author[:email]}>"
+            from = tlog.author
             @str = "#\n# Title: #{params[:title]}\n# Generated at: #{timestamp}\n# By: #{from}\n#\n# URL: #{tlog.http_path}\n#\n\n"
             posts = @tlog.posts.by_date!.reverse.filter(params)
             posts.with_export(:txt, :tree => self).each{ |post|

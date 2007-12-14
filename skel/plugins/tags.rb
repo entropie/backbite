@@ -30,6 +30,16 @@ class Tags < Plugin
           end
     "Filed in #{tgs}."
   end
+
+  def latex_filter
+    fs = field.value.map{ |v| "\\em{#{v}}"}
+    tgs = if fs.size > 1
+            "#{fs[0..-2].join(', ')} and #{fs.last}"
+          else
+            "#{fs.join(', ')}"
+          end
+    "Filed in #{tgs.strip}."
+  end
 end
 
 

@@ -9,7 +9,7 @@ Config[:rspec].setup do
 
     root         '/tmp/rspec'
 
-    title        "rspec - %title%"
+    title        "rspec"
 
     author.name  "Michael Trommer"
     author.email "mictro@gmail.com"
