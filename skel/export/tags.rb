@@ -40,7 +40,6 @@ module Backbite
         super(tlog, params)
         @file = filename
         @tag = tag
-        @result = ''
       end
 
       def export_tag

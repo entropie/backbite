@@ -18,7 +18,8 @@ module Backbite
 
     attr_accessor :tlog
     
-
+    IgnoredBodyFields = [:style, :independent]
+    
     # Basically a list of names
     BaseDirs = %w(export plugins components htdocs tmp spool)
 

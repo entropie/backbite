@@ -52,8 +52,6 @@ module Backbite
 
       include Helper::CacheAble
 
-      IgnoredBodyFields = [:style, :independent]
-      
       attr_reader :hpricot
       
       def initialize(tlog, params)
@@ -81,7 +79,9 @@ module Backbite
 
       def body # :yield: hpricot_body_node
         ord = @tlog.config[:html][:body].
-          order.reject{ |o| IgnoredBodyFields.include?(o) }
+          order.reject{ |o|
+          Repository::IgnoredBodyFields.include?(o)
+        }
         hp = nil
         unless ord
           Error << "w"
@@ -119,7 +119,9 @@ module Backbite
         params.delete(:ids)
         params.delete(:postopts)
         body do |name, hpe|
-          posts.by_date!.reverse.with_export(:html, params.merge(:tree => self, :target => name)).each do |post|
+          psts = posts.by_date!.reverse.
+            with_export(:html, params.merge(:tree => self, :target => name))
+          psts.each do |post|
             next if name != post.config[:target]
             phtml = Cache("%s%s" % [@params[:path_deep], post.identifier]) {
               post.to_html(name).to_s

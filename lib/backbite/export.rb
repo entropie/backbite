@@ -21,6 +21,10 @@ module Backbite
       def class_name
         self.class.to_s.split('::')[-2..-1].join('::')
       end
+
+      def written?
+        @written
+      end
       
       def write
         raise "#{class_name}: need @file to write contents" unless @file

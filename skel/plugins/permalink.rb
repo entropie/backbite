@@ -16,6 +16,10 @@ class Permalink < Plugin
   def html_filter
     '<a class="pl" href="%s%s/%s/index.html#%s">#</a>' % [path_deep, 'archive', filter, identifier]
   end
+
+  def latex_filter
+    txt_filter.gsub('#', '-')
+  end
 end
 
 
