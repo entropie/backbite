@@ -48,17 +48,22 @@ module Backbite
   module Repository::Export::LATEX # :nodoc: All
 
     def self.export(tlog, params)
-      @tree = Tree.new(tlog, params)
-      #puts @tree
-      @tree
+      (td = tlog.repository.join('tmp')).entries.grep(/latex\.out/).each do |tf|
+        p td.join(tf).unlink
+      end
+      [:dvi, :pdf].each do |ext|
+        @tree = Tree.new(ext, tlog, params)
+        @tree
+      end
     end
 
     class Tree < Repository::ExportTree
 
-      def initialize(tlog, params)
+      def initialize(ext, tlog, params)
         @latex_file = File.expand_path('~/backbite.tex')
-        super
-        @file = 'backbite.dvi'
+        @ext = ext
+        super(tlog, params)
+        @file = "backbite.#{@ext}"
         @result = make_tree
         tempfile_write
         @__result__ = to_dvi
@@ -75,9 +80,39 @@ module Backbite
         1.upto(2) do |i|
           `cd #{ @dvifile.dirname } && latex #{@dvifile.to_s}`
         end
-        @dvifile.dirname.join('latex.out.dvi').open('r').readlines.to_s
+        @dvifile.dirname.join("latex.out.#{@ext}").open('r').readlines.to_s
       end
 
+      def default_options
+        %Q(
+\\usepackage{hyperref}
+)
+      end
+      
+      def pdf_options
+        %Q(
+\\usepackage[pdfauthor={AUTHOR},%
+             pdftitle={TITLE},%
+             unicode={true},%
+             pdftex]{hyperref}
+\\hypersetup{colorlinks,%
+  citecolor=black,%
+  filecolor=black,%
+  linkcolor=blue,%
+  urlcolor=blue,%
+  pdftex}
+)
+      end
+      
+      def options
+        case @ext
+        when :pdf
+          pdf_options
+        else
+          default_options
+        end
+      end
+      
       alias :to_s :to_dvi
 
       def body
@@ -94,7 +129,7 @@ module Backbite
         ret = ''
         ord.each do |n|
           v = @tlog.config[:html][:body][n]
-          ret << "\\section{Node: #{n}}\n\n"
+          ret << "\\subsection{Node: #{n}}\n\n"
           ps = @params.dup.merge(:tree => self)
           psts = posts.filter(:target => n).by_date!.reverse.
             with_export(:latex, ps)
@@ -112,7 +147,9 @@ module Backbite
 
       def make_body(skel)
         result = skel.to_s.gsub(/BODY/, body)
+        result.gsub!(/OPTIONS/, options)        
         result.gsub!(/TITLE/, tlog.title)
+        result.gsub!(/AUTHOR/, tlog.author.to_s)
         result.gsub!(/AUTHOR/, tlog.author.to_s)
         result
       end

@@ -32,9 +32,9 @@ class Tags < Plugin
   end
 
   def latex_filter
-    fs = field.value.map{ |v| "\\em{#{v}}"}
+    fs = field.value.map{ |v| "\\em{#{v}}".strip}
     tgs = if fs.size > 1
-            "#{fs[0..-2].join(', ')} and #{fs.last}"
+            "#{fs[0..-2].join(', ')} and \\em{#{fs.last}}"
           else
             "#{fs.join(', ')}"
           end

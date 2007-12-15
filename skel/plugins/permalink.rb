@@ -18,7 +18,7 @@ class Permalink < Plugin
   end
 
   def latex_filter
-    "\\url{#{tlog.url.to_s.strip}/archive/#{txt_filter.gsub('#', '#')}}"
+    "\\href{#{tlog.url.to_s.strip}/archive/#{txt_filter}}-{#{identifier}}"
   end
 end
 

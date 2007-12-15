@@ -27,6 +27,11 @@ class Date < Plugin
     #f.first + filter + f.last
     filter.gsub(/\-/, '&mdash;')
   end
+
+  def latex_filter
+    field.value.strftime("%Y %B, %A %d   %H:%M  %Z")
+  end
+  
 end
 
 

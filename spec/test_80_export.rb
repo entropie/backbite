@@ -116,7 +116,7 @@ describe "Backbite::Repository::Export::TAGS" do
 
 end
 
-describe "Backbite::Repository::Export::TAGS" do
+describe "Backbite::Repository::Export::LATEX" do
 
   before(:all) do
     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
@@ -124,7 +124,7 @@ describe "Backbite::Repository::Export::TAGS" do
   end
   
   it "result should be big" do
-    @result.size.should > 4000
+    @result.size.should
   end
 
 end
