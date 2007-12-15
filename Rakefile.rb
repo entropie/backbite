@@ -92,6 +92,23 @@ task :rdoc do
   system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)"')
 end
 
+task :advance do
+  file = File.open(tf = Backbite::Source.join('lib/backbite.rb'))
+  fcs = file.readlines
+  v = ''
+  new = fcs.map do |line|
+    if vs = line.grep(/Version =.*$/) and not vs.empty?
+      newv = vs.to_s.scan(/\d/).join('.')
+      vs = vs.to_s.gsub(newv.split('.').join(' '), v=newv.succ.succ.split('.').join(' '))
+    else
+      line
+    end
+  end
+  tf.open('w+'){ |f| f.write(new)}
+  puts "hg tag \"Version #{v}\""
+  puts "hg commit -m \"Version #{v}\""
+end
+
 task :rdia do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
   system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)" -d')
