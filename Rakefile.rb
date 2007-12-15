@@ -105,8 +105,8 @@ task :advance do
     end
   end
   tf.open('w+'){ |f| f.write(new)}
-  puts "hg tag \"Version #{v}\""
-  puts "hg commit -m \"Version #{v}\""
+  `hg tag \"Version #{v}\"`
+  `hg commit -m \"Version #{v}\"`
 end
 
 task :rdia do
