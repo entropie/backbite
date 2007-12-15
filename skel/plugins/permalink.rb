@@ -24,6 +24,15 @@ class Permalink < Plugin
   def latex_filter
     "\\href{#{url}}-{#{identifier}}"
   end
+
+  def atom_filter
+    atom_url
+  end
+
+  def atom_url
+    "<a href=\"#{url}\">#{url}</a>"
+  end
+  
 end
 
 

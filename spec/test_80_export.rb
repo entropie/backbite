@@ -129,6 +129,19 @@ describe "Backbite::Repository::Export::LATEX" do
 
 end
 
+describe "Backbite::Repository::Export::ATOM" do
+
+  before(:all) do
+    target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+    @result = target.repository.export(:atom).to_s
+  end
+  
+  it "result should be big" do
+    @result.size.should
+  end
+
+end
+
 
 describe "Backbite::Repository::Export::ARCHIVE" do
 

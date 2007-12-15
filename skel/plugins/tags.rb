@@ -21,6 +21,10 @@ class Tags < Plugin
     field.value.join(' ')
   end
 
+  def atom_filter
+    html_filter
+  end
+  
   def html_filter
     fs = field.value.map{ |v|
       "<a class=\"tag\" href=\"#{path_deep}tags/#{v}.html\">#{v}</a>"

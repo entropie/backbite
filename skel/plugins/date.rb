@@ -31,7 +31,11 @@ class Date < Plugin
   def latex_filter
     field.value.strftime("%Y %B, %A %d   %H:%M  %Z")
   end
-  
+
+  def to_atom_id
+    field.value.strftime("%a, %d %b %Y %H:%S +0000")
+  end
+
 end
 
 
