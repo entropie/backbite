@@ -47,10 +47,13 @@ module Backbite
 
   module Repository::Export::LATEX # :nodoc: All
 
-    def self.export(tlog, params)
+    def self.clean!(tlog, params)
       (td = tlog.repository.join('tmp')).entries.grep(/latex\.out/).each do |tf|
-        p td.join(tf).unlink
+        td.join(tf).unlink
       end
+    end
+    
+    def self.export(tlog, params)
       [:dvi, :pdf].each do |ext|
         @tree = Tree.new(ext, tlog, params)
         @tree

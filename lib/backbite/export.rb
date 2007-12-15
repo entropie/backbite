@@ -102,6 +102,10 @@ module Backbite
           if cway
             Debug << "Exporting via #{way}"
             cway.export(tlog, params)
+            if cway.respond_to?(:clean!)
+              Info << "#{way.to_s.upcase}: cleaning ./tmp"
+              cway.clean!(tlog, params)
+            end
           else
             Warn << "#{way} is unknown"
           end
