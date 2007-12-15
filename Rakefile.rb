@@ -104,6 +104,7 @@ task :advance do
       line
     end
   end
+  v = v.split(' ').join('.')
   tf.open('w+'){ |f| f.write(new)}
   `hg tag \"Version #{v}\"`
   `hg commit -m \"Version #{v}\"`
