@@ -66,7 +66,7 @@ module Backbite
       @name = name
       @configfile = fdata
       @config = Config.read(fdata)
-      @repository = Repository.new(@name, @config[:defaults][:root])
+      @repository = Repository.new(@name, root)
       Helper::CacheAble.cachefile = @repository.join("#{ @name }.pstore")
       @repository.tlog = self
     end
@@ -82,10 +82,7 @@ module Backbite
 
 
     def posts(params = { }, &blk)
-      @repository.posts(params).each { |co|
-        yield co
-      } if block_given?
-      @repository.posts(params)
+      @repository.posts(params, &blk)
     end
 
 

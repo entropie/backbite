@@ -4,7 +4,9 @@
 #
 
 
-require 'text/format'
+Backbite.wo_debug do
+  require 'text/format'
+end
 
 module Backbite
   module Helper

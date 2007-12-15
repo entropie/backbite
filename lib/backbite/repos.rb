@@ -65,22 +65,22 @@ module Backbite
       @components ||= Components.load(join(:components), tlog)
     end
 
-    
-    def working_dir(*other_dirs)
-      res = join('tmp', '.work', *other_dirs)
-      res
+
+    # returns pathname instance of working dir
+    def working_dir(*other)
+      join('tmp', '.work', *other)
     end
     
 
     # Returns a Pathname instance, the Repository path joined with
     # +other_dirs+.
-    def join(*other_dirs)
-      dir = Pathname.new(::File.expand_path(@directory))
-      dir.join(*other_dirs.map{ |o| o.to_s})
+    def join(*other)
+      @directory.join(*other.map(&:to_s))
     end
 
 
     # unlinks everthing in our repos directory
+    # FIXME
     def remove!
       Info << "say bye to your repos in 5 seconds..."
       sleep 5 unless $DEBUG
@@ -89,6 +89,7 @@ module Backbite
     end
     
 
+    # removes temporary files
     def clean!
       fc, toclean = 0, [:tmp]
       toclean.each do |tc|
@@ -152,8 +153,12 @@ module Backbite
       %w'plugins components export'.each do |w|
         sources.each do |source|
           (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
-            Info << " cp #{st.join(e)} to #{w}/#{e}"
             t = @directory.join(w)
+            if not defined? Spec and st.join(e).exist?
+              Warn << "skipping #{st.join(e)}"
+              next
+            end
+            Info << " cp #{st.join(e)} to #{w}/#{e}"            
             system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
           end
           additional.each do |a|

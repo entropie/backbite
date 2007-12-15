@@ -5,15 +5,6 @@
 
 module Backbite
 
-  # class DefaultLogFormatter < Log4r::Formatter
-  #   def format(event)
-  #     buff = Time.now.strftime("%a %m/%d/%y %H:%M %Z")
-  #     buff += " - #{Log4r::LNAMES[event.level]}"
-  #     buff += " - #{event.data}\n"
-  #   end
-  # end
-
-  
   # Informer handles Logging, thanks to Log4r, once it's instantiated
   # we don't need to keep track of the instance.
   #
@@ -28,6 +19,24 @@ module Backbite
   # * Error
   # * Fatal
   class Informer
+
+    class Formatter < Log4r::Formatter
+      def format(event)
+        t, buff = Time.now, ''
+        lvl = Log4r::LNAMES[event.level]
+        buff << "[".white << "#{"%8s" % t.usec.to_s}".cyan << "]".white
+        case lvl
+        when 'INFO'
+          buff += "  * ".green.bold + event.data.to_s.strip.white
+        when 'DEBUG'
+          return '' unless $DEBUG
+          buff += "  * ".white + event.data.to_s.strip.white
+        when 'WARN'
+          buff += "!!! ".red.bold + event.data.to_s.strip.white.bold
+        end
+        buff << "\n"
+      end
+    end
     
     # Creates the logger.
     def self.create
@@ -37,9 +46,22 @@ module Backbite
 
     def initialize
       @logger = Log4r::Logger.new 'backbite' #, :formatter=> DefaultLogFormatter
-      @logger.outputters = Log4r::SyslogOutputter.new('backbite')
+      choose_outputter
     end
 
+    def choose_outputter
+      begin
+        if defined? Spec
+          @logger.outputters = Log4r::SyslogOutputter.new('backbite')
+        else
+          op = Log4r::StdoutOutputter.new('backbite')
+          op.formatter = Formatter
+          @logger.outputters = op
+        end
+        
+      end
+    end
+    
     def self.log(msg)
       level =
         if name =~ /informer$/i then :info
@@ -58,12 +80,6 @@ module Backbite
       if lgr = Log4r::Logger['backbite']
         lgr.send(lvl, msg)
       else
-        case lvl
-        when :info
-          puts "  * ".cyan.bold + msg.to_s.strip.white
-        when :warn
-          puts "!!! ".red.bold + msg.to_s.strip.white.bold
-        end if not $DEBUG
       end
     rescue
       #puts $!
@@ -84,6 +100,10 @@ module Backbite
 
   class Fatal < Informer # :nodoc: All
   end
+
+  Informer.create
+  Debug << "Starting logger for backbite."
+  Debug << "debugmode is on."
   
 end
 

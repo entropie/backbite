@@ -7,20 +7,25 @@ module Backbite
 
   class Globals < Hash
 
-    Globs = [:colors]
+    Globs = [:colors, :force, :debug, :haml]
 
-    def initialize
+    def initialize(env)
+      @env = env
       Globs.each do |glbl|
         self[glbl] = true
         self.class.send(:define_method, "#{glbl}?") {
           self[glbl]
         }
+        if glblval = env[glbl.to_s.upcase]
+          #Info << "Globals[#{glbl} = #{glblval.dump}"
+          self[glbl] = glbl
+        end
       end
     end
     
   end
 
-  GLOBALS = Globals.new
+  GLOBALS = Globals.new(ENV)
 
   def self.globals
     GLOBALS

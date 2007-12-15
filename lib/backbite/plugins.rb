@@ -201,8 +201,7 @@ module Backbite
     end
     
     def self.inherited(o)
-      @@rets << o
-    rescue
+      @@rets << o if defined? @@rets
     end
 
     def initialize(tlog)
