@@ -66,7 +66,7 @@ module Backbite
         @latex_file = File.expand_path('~/backbite.tex')
         @ext = ext
         super(tlog, params)
-        @file = "backbite.#{@ext}"
+        @file = "#{tlog.name}.#{@ext}"
         @result = make_tree
         tempfile_write
         @__result__ = to_dvi

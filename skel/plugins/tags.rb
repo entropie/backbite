@@ -22,7 +22,9 @@ class Tags < Plugin
   end
 
   def html_filter
-    fs = field.value.map{ |v| "<a class=\"tag\" href=\"#{path_deep}tags/#{v}.html\">#{v}</a>" }
+    fs = field.value.map{ |v|
+      "<a class=\"tag\" href=\"#{path_deep}tags/#{v}.html\">#{v}</a>"
+    }
     tgs = if fs.size > 1
             "#{fs[0..-2].join(', ')} and #{fs.last}"
           else
@@ -32,13 +34,15 @@ class Tags < Plugin
   end
 
   def latex_filter
-    fs = field.value.map{ |v| "\\em{#{v}}".strip}
+    prfx, fs = "\\emph{", field.value.map{ |v|
+      "\\href{#{ tlog.url.to_s.strip}/tags/#{v}.html}-{#{v}}".strip
+    }
     tgs = if fs.size > 1
-            "#{fs[0..-2].join(', ')} and \\em{#{fs.last}}"
+            "#{fs[0..-2].join(', ')} \\emph{and} #{fs.last}"
           else
-            "#{fs.join(', ')}"
+            "#{fs.join(' ')}"
           end
-    "Filed in #{tgs.strip}."
+    "Filed in #{ prfx }#{tgs.strip}.}"
   end
 end
 

@@ -95,20 +95,22 @@ module Backbite
       # Selects module +way+ and runs ::export
       def export(way = nil, params = { })
         __require__
+        ret = nil
         return self unless way
         raise UnknownWay, way unless Repository::Export.known?(way)
         cway = Repository::Export::choose(way)
         @export =
           if cway
             Debug << "Exporting via #{way}"
-            cway.export(tlog, params)
-            if cway.respond_to?(:clean!)
+            ret = cway.export(tlog, params)
+            if ret.respond_to?(:clean!)
               Info << "#{way.to_s.upcase}: cleaning ./tmp"
-              cway.clean!(tlog, params)
+              ret.clean!(tlog, params)
             end
           else
             Warn << "#{way} is unknown"
           end
+        ret
       end
 
       def to_s

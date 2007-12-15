@@ -9,6 +9,10 @@ class Permalink < Plugin
     component.metadata[:date].strftime(Repository::Export::ARCHIVE::DateFormat)
   end
 
+  def url(pd = 0)
+    "#{tlog.url.to_s.strip}/archive/#{filter}/##{identifier}"
+  end
+  
   def txt_filter
     "#{filter}##{identifier}"
   end
@@ -18,7 +22,7 @@ class Permalink < Plugin
   end
 
   def latex_filter
-    "\\href{#{tlog.url.to_s.strip}/archive/#{txt_filter}}-{#{identifier}}"
+    "\\href{#{url}}-{#{identifier}}"
   end
 end
 
