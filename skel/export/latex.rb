@@ -129,7 +129,8 @@ module Backbite
           order.reject{ |o|
           Repository::IgnoredBodyFields.include?(o)
         }
-        ret = ''
+        ret = "\\section{The nuts by date}\n"
+
         ord.each do |n|
           v = @tlog.config[:html][:body][n]
           ret << "\\subsection{Node: #{n}}\n\n"

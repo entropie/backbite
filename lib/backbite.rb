@@ -23,6 +23,9 @@ else
 end
 
 module Backbite
+
+  GlobalDefaults = { :colors => true }
+  
   def self.wo_debug
     begin
       s, $DEBUG = $DEBUG, false
@@ -84,7 +87,7 @@ module Backbite
     wo_debug { require 'haml' }
   rescue LoadError
     Info << "No haml support."
-    globals[:haml] = false
+    globals[:support_haml] = false
   end
 
 end

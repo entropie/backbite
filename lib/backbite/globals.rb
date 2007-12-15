@@ -5,24 +5,37 @@
 
 module Backbite
 
+  # Globals are used to save overall data and to addept enviroment variables.
+  
   class Globals < Hash
 
-    Globs = [:colors, :force, :debug, :haml]
+    # the list of known variables
+    Globs = [:colors, :force, :debug, :support_haml]
 
-    def initialize(env)
+    def initialize(env = ENV)
       @env = env
+      set_defaults
+    end
+
+    private
+    def set_defaults
       Globs.each do |glbl|
-        self[glbl] = true
+        self[glbl] = Backbite::GlobalDefaults[glbl] || false
         self.class.send(:define_method, "#{glbl}?") {
           self[glbl]
         }
-        if glblval = env[glbl.to_s.upcase]
-          #Info << "Globals[#{glbl} = #{glblval.dump}"
-          self[glbl] = glbl
+        if glblval = @env[glbl.to_s.upcase]
+          value =
+            case glblval
+            when "0", "false", "no" then false
+            when "1", "true", "yes" then true
+            else
+              Backbite::GlobalDefaults[glbl] || false
+            end
+          self[glbl] = value
         end
       end
     end
-    
   end
 
   GLOBALS = Globals.new(ENV)

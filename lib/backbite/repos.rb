@@ -154,8 +154,9 @@ module Backbite
         sources.each do |source|
           (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
             t = @directory.join(w)
-            if not defined? Spec and st.join(e).exist?
-              Warn << "skipping #{st.join(e)}"
+            if st.join(e).exist? and
+                not (Backbite::globals[:force] or defined? Spec)
+              Warn << "POPULATE: skipping #{st.join(e).to_s.split('/')[-3..-1].join('/')} (use FORCE=1 to overwrite)"
               next
             end
             Info << " cp #{st.join(e)} to #{w}/#{e}"            
