@@ -20,7 +20,13 @@ module Backbite
 
   class Optionparser
 
+    include Helper::Text
+    
     UnknownArgument = Backbite::NastyDream(self)
+
+    def banner(text)
+      @banner = text << "\n"
+    end
     
     def abbrevs_for(target)
       (target and target.keys.map{ |t| t.to_s }.abbrev) or { }
@@ -64,6 +70,9 @@ module Backbite
 
     def to_s
       ret = ''
+      if @banner
+        ret << "\n" << paragraphify(@banner, 2).green << "\n\n"
+      end
       @descs.sort_by{ |k,f| k}.each do |kw, f|
         ret << " #{"%-27s" % kw.to_s.upcase.yellow} #{(f.delete(:__desc__)||'Not Documented').magenta}\n"
         f.sort.each do |k,v|

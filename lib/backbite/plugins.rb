@@ -17,6 +17,7 @@ module Backbite
     end
 
 
+    # loads all plugins for +comp+
     def self.load_for_component(comp)
       tlog = comp.tlog
       tld = tlog.repository.join('plugins')
@@ -34,6 +35,7 @@ module Backbite
     end
 
 
+    # loads independent named +name+ plugin for +tlog+
     def self.load_for_independent(tlog, name)
       tlg = tlog.repository.join('plugins').entries
       files = tlg.map(&:to_s).grep(/#{name}\.rb$/)
@@ -49,9 +51,8 @@ module Backbite
     def self.result_for_independent(tree, tlog, conf)
       conf.map{ |plname, plvals|
         load_for_independent(tlog, plname)
-      }.flatten.map { |ip|
-        ip.new(tlog)
-      }.map do |ip|
+      }.flatten.map do |ip|
+        ip = ip.new(tlog)
         ip.tree = tree
         ip.tlog = tlog
         ip.identifier =
@@ -62,31 +63,6 @@ module Backbite
           end
         yield(ip.prepare)
       end
-
-      return
-      flds = Backbite::Plugin::AutoFieldNames.map{|afn|
-        conf[afn]
-      }.compact
-      if flds and !flds.empty?
-        flds.map do |f|
-          #p conf[f]
-          rs = load_for_independent(tlog, conf[f])
-        end.flatten.map{ |ip|
-          ip.new(tlog)
-        }.map do |ip|
-          ip.tree = tree
-          ip.tlog = tlog
-          ip.identifier =
-            if ip.class.const_defined?(:ID)
-              ip.class.const_get(:ID)
-            else
-              ip.name
-            end
-          yield(ip)
-        end
-        return true
-      end
-      false
     end
 
 
@@ -99,6 +75,7 @@ module Backbite
   # Each user-defined plugin is a subclass of Plugin.
   #
   # In the plugin various attributes are available:
+  # * +input+ -- marks field as non-interaktive
   # * +tree+  -- the response stream
   # * +field+ -- the Field instance
   # * +component+ -- the Component instance
@@ -120,9 +97,9 @@ module Backbite
 
     AutoFieldNames = [:before, :content, :after]
 
+
     # The params
     attr_accessor :params
-
     # The instance of the current field
     attr_accessor :field
     # The entire result parse-tree
@@ -146,8 +123,7 @@ module Backbite
     
     # dispatch runs +input+ on the plugin during component evaluation,
     # so its basically used to hard-set the result values.
-    #
-    def dispatch(way)
+    def dispatch(field, way)
       @result ||= { }      
       if respond_to?(:metadata_inject)
         nam = send(:metadata_inject)
@@ -158,7 +134,7 @@ module Backbite
         Info << " - Plugin[#{name}]#input"
         fcontent = send(:input)
         yield fcontent, self if block_given?
-        @result[:content] = way.run(name, params)
+        @result[:content] = way.run(field, params)
       end
 
       if respond_to?(:transform!) and @result[:content]

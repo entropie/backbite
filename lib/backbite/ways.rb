@@ -33,6 +33,11 @@ module Backbite
       def self.way?(w)
         const_defined?(w.to_s.capitalize)
       end
+
+      def select_way_with_abbrev(target)
+        abbw = ways.map{ |w| w.to_s.split('::').last.downcase }.abbrev
+        abbw[target]
+      end
       
       # Dispatch selects +way+ and returns proper instance to operate
       # on in a block.
@@ -86,7 +91,7 @@ module Backbite
         # it (because we only want to work on a single plugin instance).
         def process(params, component)
           Info << "#{component.name.to_s.upcase} -> #{self.class}"
-          @component = component
+          @component = component.dup
           @meta = params[:meta]
           fields.each do |hand|
             @result[hand.name.to_sym] =
@@ -96,7 +101,7 @@ module Backbite
               elsif hand.is_a?(:plugin)
                 # create plugin instance
                 field = hand.run(params, tlog)
-                field.plugin.dispatch(self)
+                field.plugin.dispatch(field, self)
                 field.plugin.prepare
                 field.plugin
               end
@@ -160,8 +165,6 @@ module Backbite
         
         attr_accessor :source
 
-        attr_reader   :metadata
-
         def metadata
           source[:metadata]
         end
@@ -172,8 +175,7 @@ module Backbite
             extend(Components::YAMLComponent)
           @component.map(source)
           @component.metadata = metadata
-          ret = @component.to_post
-          ret
+          @component.to_post
         end
         
         def run(field, params); raise "no need to run a YAML Way"; end
@@ -196,7 +198,6 @@ module Backbite
 
       class Editor < Way
         
-
         def tfilename
           tlog.repository.join("tmp", filename.to_s+'.tmp')
         end
@@ -227,10 +228,10 @@ module Backbite
           file
         end
 
-        def yes_no(text = 'Done? %s/%s', y = 'Y', n = 'n', &blk)
-          ret = blk.call
+        def yes_no?(text = 'Done? %s/%s', y = 'Y', n = 'n', &blk)
           loop {
-            r = Readline.readline(text % [y,n]).strip
+            ret = blk.call
+            r = Readline.readline((text.to_s + " ") % [y,n]).strip
             r = y if r.empty?
             false
             return ret if r =~ /^#{y}/i
@@ -245,7 +246,7 @@ module Backbite
         def process(params, comp)
           @component = comp
           tfilename.open('w+'){ |res| res.write(@fcontents = fileskel(component)) }
-          @fcontents = yes_no{ 
+          @fcontents = yes_no?{
             edit!
           }
           super
@@ -255,17 +256,15 @@ module Backbite
         def run(field, params)
           result = @fcontents.scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/m).
             flatten.join.strip
-          #super(field, result)
+          super(field, result)
         end
-
-        
       end
 
       
+      # Uses readline to get the field values
       class Commandline < Way
-        
         def run(field, params)
-          result = Readline.readline(' %20s>' % field.name.to_s)
+          result = Readline.readline('%20s > ' % field.to_sym.to_s.white)
           super(field, result)
         end
       end

@@ -11,6 +11,7 @@ tlog = nil
 ARGV << 'help' if ARGV.empty?
 
 if af = ARGV.first and r = Backbite.register[af.to_sym]
+  Info << "Using #{af}"
   tlog = Backbite.register[ARGV.shift]
 end
 
@@ -25,6 +26,15 @@ end
 
 op = Backbite.optionparser do |op|
 
+  op.banner %Q(
+This is Backbite [#{Backbite.version}]
+
+
+
+To select a non-default tumblog just use its name as first argument.
+All arguments may shortened, write `#{'backbite post to editor'.white}` or
+`#{'backbite po to ed'.white}`)
+  
   op.keyword(:help) do |op, handler|
     op.desc "The help!"
 
@@ -75,7 +85,12 @@ op = Backbite.optionparser do |op|
         }
         
         op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
-          puts "%i Bytes" % [tlog.post(c.to_sym, :way => w).save]
+          way = if not w
+                  log.config[:defaults][:post_way]
+                else
+                  tlog.components.select_way_with_abbrev(w)
+                end
+          puts "%s Bytes".red % [tlog.post(c.to_sym, :way => way).save.to_s.yellow]
         }
         
         op.declare(:ls, "lists pending posts, accepts ids, ranges, tags(,other) and :targets") {|*args|

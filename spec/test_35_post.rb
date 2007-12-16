@@ -72,7 +72,7 @@ describe Backbite::Post do
                           :body  => 'foo another',
                           :tags  => 'batz, bar, bumm, another',
                         },
-                        :meta  => { :date => Time.now-(3*24*60*60) })
+                        :meta  => { :date => Time.now-(3*24*60*60), :author => 'me' })
     post.save.should
     post.class.should == Backbite::Post::Ways::Hash
   end

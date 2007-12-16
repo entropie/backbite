@@ -80,7 +80,11 @@ module Backbite
     attr_reader   :component
     attr_reader   :pid
     attr_accessor :neighbors
-    
+
+
+    def author
+       metadata[:author] or tlog.author
+    end
 
     def with_export(const, params)
       npost = dup.extend(const)
