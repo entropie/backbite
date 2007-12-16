@@ -1,4 +1,4 @@
-#
+#2
 #
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
@@ -19,8 +19,9 @@ module Backbite
       }
       po, tl = self, tlog
       permurl = CGI.escapeHTML(fields[:permalink].plugin.atom_url)
-
+      
       res = Gestalt.build do
+        id{ CGI.escapeHTML(permurl) }
         ct = ordered.map do |field|
           opts = { }
           opts[:tag] = field.definitions[:tag] unless
@@ -31,9 +32,9 @@ module Backbite
         end
 
         title { po.identifier }
-        author{ name(tl.author) }
+        #author{ name(tl.author(0)) }
         updated(po.metadata[:date].iso8601)
-        id(:html => true){ permurl }
+        
         content(:type => :html){ CGI.escapeHTML(ct.to_s) }
       end
       res
@@ -62,6 +63,15 @@ module Backbite
         @__result__.to_s
       end
 
+      # def write
+      #   @tmpfile = tlog.repository.join('tmp', 'atom.xml')
+      #   @tmpfile.open('w+'){ |t| t.write(@__result__)}#
+      #   nfile = @tlog.repository.working_dir('atom.xml')#
+      #   `tidy -xml -i -w 1000000 -m /home/mit/Data/polis/tmp/.work/atom.xml`
+      #   @__result__ = nfile.readlines
+      #   super
+      # end
+      
       def head
         %Q(<?xml version="1.0" encoding="UTF-8"?>)
       end
@@ -73,7 +83,7 @@ module Backbite
             title{ tlog.title }
             link(:href => tlog.url, :rel => 'alternate', :type => 'text/html')
             link(:href => tlog.http_path('atom.xml'), :rel => 'self', :type => "application/atom+xml")
-            updated(Time.now.iso8601)
+            updated( CGI.escapeHTML(Time.now.iso8601))
             author{ name(tlog.author(0)) }
             id(tlog.http_path.to_s.strip)
             tlog.posts.with_export(:atom, :tree => self).each{ |post|
