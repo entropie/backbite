@@ -123,7 +123,7 @@ module Backbite
           pw.tlog    = @tlog
           pw.fields  = fields
         end
-        Info << "#{post_way} starting..."
+        Info << "posting via #{post_way}"
         post_way.process(params, self)
         Info << "#{name} Finished"
         post_way
@@ -157,7 +157,7 @@ module Backbite
       
 
       def inspect
-        "<Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}>"
+        "Component::#{@name.to_s.capitalize} [#{@config[:fields].keys.join(', ')}]"
       end
 
 

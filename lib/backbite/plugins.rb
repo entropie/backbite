@@ -124,7 +124,7 @@ module Backbite
     # dispatch runs +input+ on the plugin during component evaluation,
     # so its basically used to hard-set the result values.
     def dispatch(field, way)
-      @result ||= { }      
+      @result ||= { }
       if respond_to?(:metadata_inject)
         nam = send(:metadata_inject)
         Info << " - Plugin[#{name}]#metadata_inject: value from #{nam}"

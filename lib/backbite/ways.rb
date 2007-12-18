@@ -203,19 +203,16 @@ module Backbite
         end
 
         def header
-          "foo bar batz\n\n"
+          "# #{component.name} for #{filename}\n" +
+            "# #{component.inspect}\n\n"
         end
 
         def mkfield(field)
           ret = ''
-          ret <<
-            if field.interactive? 
-              "# #{field.plugin.input}\n"
-            else
-              ''
-            end
-            ret << "[#{field.to_sym}_start]\n\n[#{field.to_sym}_end]\n"
-            ret
+          ret << "# #{field.plugin.input}\n"
+          value = field.definitions[:value] || ''
+          ret << "[#{field.to_sym}_start]\n#{value}\n[#{field.to_sym}_end]\n"
+          ret
         end
         
         def fileskel(comp)
@@ -223,6 +220,7 @@ module Backbite
           comp.fields.each do |field|
             unless field.interactive?
               file << mkfield(field) << "\n\n"
+            else
             end
           end
           file
