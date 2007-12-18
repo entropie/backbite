@@ -8,12 +8,18 @@ define(:mercurial) do
   target :red
 
   style {
+    border "1px solid navy"
+    padding 10.px
   }
 
   fields {
 
     plugin_permalink {
-      style { float :right }
+      style {
+        float :right
+        background_color :transparent
+        color :yellow
+      }
     }
 
     input_hg {

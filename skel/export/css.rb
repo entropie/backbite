@@ -115,41 +115,47 @@ module Backbite
 
         # component basic definitions
         @tlog.components.each do |co|
-          retstr << "  /* Component: `#{co.name}' */\n" if $DEBUG
-          retstr << "    #%s > .%s {\n" % [co.config[:target], co.name]
+          retstr << "/* Component: `#{co.name}' */\n" if $DEBUG
+          retstr << "   #%s > .%s {\n" % [co.config[:target], co.name]
           if style = co.config[:style]
             style.sort.each { |de, na|
               defi = self.class.sanitize_fieldname(de)
               retstr << "      %s:%s;\n" % [defi, na]
-          }
+            }
           end
-          retstr << "    }\n"
-          retstr << "  /* End component `#{co.name}' */\n\n" if $DEBUG
-        end
+          retstr << "    }\n\n"
 
-        retstr << "  /* Parsing component defined field definitions */\n\n" if $DEBUG
-        # per field definitions
-        @tlog.components.each do |co|
+          retstr << "  /* Parsing component defined field definitions */\n\n" if $DEBUG
+          # Maybe: FIXME
           co.fields.each do |fn, fc|
-            retstr << "  /* Component::#{co.name}::Field::#{fn.to_sym} */\n" if $DEBUG
+            to, ord = { }, []
+            retstr << "\n    /* Component::#{co.name}::Field::#{fn.to_sym} */\n" if $DEBUG
             retstr <<  "    #%s > .%s > .%s {\n" % [co.config[:target], co.name, fn.to_sym]
 
-            css = []
+
+            # first grab plugin defaults
             if pl = co.plugins[fn.name]
               defs = tlog.config[:defaults][:automatic][:plugins][pl.name][:style]
-              css.push(*defs.sort)
+              ord.push(*defs.sort.map{ |f| f.first })
+              to.merge!(defs)
             end
+
+            # overwrite with component defs
             if defstyle = fn.definitions[:style]
-              css.push(*defstyle.sort)
+              ord.push(*defstyle.sort.map{ |f| f.first })
+              to.merge!(defstyle)
             end
-            css.each { |n, m|
-              dn = self.class.sanitize_fieldname(n)
+
+            ord.uniq.each do |of|
+              dn, m = self.class.sanitize_fieldname(of), to[of]
               retstr << "     %s:%s;\n" % [dn, m]
-            }
+            end
             retstr << "    }\n"
-            retstr << "  /* END Component::#{co.name}::Field::#{fn.to_sym} */\n\n" if $DEBUG
+
           end
+          retstr << "/* END Component::#{co.name} */\n\n\n\n" if $DEBUG
         end
+        
         retstr
       end
 

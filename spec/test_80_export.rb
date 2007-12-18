@@ -12,28 +12,28 @@ describe "Backbite::Repository::Export::CSS" do
 
   it "should include basic tlog style definitions" do
     @result.should =~ /CSS file:.*\/base\.css/
-    @result.should =~ /^body \{/
-    @result.should =~ /^  #red \{/
-    @result.should =~ /^  #black \{/
-    @result.should_not =~ /^  #style \{/
+    @result.should =~ /body \{/
+    @result.should =~ /#red \{/
+    @result.should =~ /#black \{/
+    @result.should_not =~ /#style \{/
   end
 
   it "should include basic component style definitions" do
     @result.should =~ /CSS file:.*\/generated\.css/
-    @result.should =~ /    #black > \.test \{/
-    @result.should =~ /    #red > \.foo \{/
-    @result.should_not =~ /    #style/      
+    @result.should =~ /#black > \.test \{/
+    @result.should =~ /#red > \.foo \{/
+    @result.should_not =~ /#style/      
   end
 
   it "should include component field style definitions" do
-    @result.should =~ /    #black > \.test > \.topic/
-    @result.should =~ /    #black > \.test > \.tags/
-    @result.should =~ /    #black > \.test > \.body/
-    @result.should =~ /    #black > \.test > \.date/
-    @result.should =~ /    #red > \.foo > \.topic/
-    @result.should =~ /    #red > \.foo > \.tags/
-    @result.should =~ /    #red > \.foo > \.body/
-    @result.should =~ /    #red > \.foo > \.date/
+    @result.should =~ /#black > \.test > \.topic/
+    @result.should =~ /#black > \.test > \.tags/
+    @result.should =~ /#black > \.test > \.body/
+    @result.should =~ /#black > \.test > \.date/
+    @result.should =~ /#red > \.foo > \.topic/
+    @result.should =~ /#red > \.foo > \.tags/
+    @result.should =~ /#red > \.foo > \.body/
+    @result.should =~ /#red > \.foo > \.date/
     @result.should =~ /background\-color:silver/
   end
 
