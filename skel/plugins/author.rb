@@ -4,12 +4,17 @@
 #
 
 class Author < Plugin          
- 
+
+  def make_mailto(author_str)
+    # "Michael Trommer <mictro@gmail.com>"
+    author_str.gsub(/<(.*)>/, '&lt;<a class="author" href="mailto:\1">\1</a>&gt;')
+  end
+  
   def input
   end
 
   def html_filter
-    CGI.escapeHTML(field.value.to_s)
+    "by <strong>#{make_mailto(field.value.to_s)}</strong>"
   end
 end
 

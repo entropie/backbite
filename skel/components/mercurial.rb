@@ -9,29 +9,43 @@ define(:mercurial) do
 
   style {
     border "1px solid navy"
-    padding 10.px
+    margin_bottom 10.px
+    padding_left 10.px
   }
 
   fields {
-
     plugin_permalink {
       style {
         float :right
         background_color :transparent
         color :yellow
+        font_size 10.px
       }
     }
 
+    plugin_changeset {
+      style {
+        float :left        
+        padding_right 20.px
+      }
+    }
+    
+    plugin_author {
+      style {
+
+      }
+    }
+    
     input_hg {
       tag :p
       style {
-        color :blue
+        color :silver
+        background_color '#6F6F6F'
+        padding 10.px
+        margin 0.px
       }
     }
 
-    plugin_author
-    input_changeset
-    
     plugin_tags {
       value " mercurial, automated "
     }
