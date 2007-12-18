@@ -23,9 +23,7 @@ module Backbite
 
     def default
       if default?
-        ret = self[:DEFAULT].split(':')
-        ret.unshift(ret.shift.to_sym)
-        ret
+        self[:DEFAULT]
       end
     end
     
@@ -49,8 +47,9 @@ module Backbite
     
     def [](obj)
       return nil unless include?(obj)
-      reload
-      self.fetch(obj)
+      f = self.fetch(obj)
+      n, v = if obj == :DEFAULT then [*f.split(':')] else [obj, f] end
+      Tumblelog.new(n, v)
     end
     
     def reload

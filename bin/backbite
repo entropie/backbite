@@ -12,11 +12,11 @@ ARGV << 'help' if ARGV.empty?
 
 if af = ARGV.first and r = Backbite.register[af.to_sym]
   Info << "Using #{af}"
-  tlog = Backbite.register[ARGV.shift]
+  tlog = Backbite.register[af.to_sym]
 end
 
 if tlog.nil? and Backbite.register.default?
-  tlog = Tumblelog.new(*Backbite.register.default)
+  tlog = Backbite.register.default
   warn "#{tlog.name} is not a valid repository." unless tlog.valid?
 elsif Backbite.register.empty?
   warn "no tumblogs known"

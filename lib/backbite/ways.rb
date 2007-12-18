@@ -71,6 +71,12 @@ module Backbite
         # Should be called via +super+ in the child.
         def run(field, value)
           Info << " - #{self.class}.#{field.to_sym}='#{value}'"
+
+          unless field.predefined.empty?
+            Info << " - #{self.class}.#{field.to_sym}:merge_predef:#{field.predefined.dump}"
+            value << field.predefined
+          end
+          
           value
         end
         
@@ -209,9 +215,8 @@ module Backbite
 
         def mkfield(field)
           ret = ''
-          ret << "# #{field.plugin.input}\n"
-          value = field.definitions[:value] || ''
-          ret << "[#{field.to_sym}_start]\n#{value}\n[#{field.to_sym}_end]\n"
+          ret << "# #{field.plugin.input}\n" if field.interactive?
+          ret << "[#{field.to_sym}_start]\n#{field.predefined}\n[#{field.to_sym}_end]\n"
           ret
         end
         
@@ -262,6 +267,7 @@ module Backbite
       # Uses readline to get the field values
       class Commandline < Way
         def run(field, params)
+          puts "#{"Predefined".red}: #{field.predefined.dump.white}" unless field.predefined.empty?
           result = Readline.readline('%20s > ' % field.to_sym.to_s.white)
           super(field, result)
         end

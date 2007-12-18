@@ -252,6 +252,10 @@ module Backbite
           end
         end
 
+        def predefined
+          @predefined = definitions[:value] || ''
+        end
+        
         def apply_filter(filter, def_filter = :filter)
           filter = "#{filter}_filter".to_sym
           if self.respond_to?(:plugin) and plugin

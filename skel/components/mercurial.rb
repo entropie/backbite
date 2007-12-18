@@ -23,8 +23,11 @@ define(:mercurial) do
       }
     }
 
+    input_author
+    input_changeset
+    
     plugin_tags {
-      value "mercurial automated"
+      value " mercurial, automated "
     }
 
     plugin_date

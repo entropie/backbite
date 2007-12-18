@@ -6,7 +6,6 @@
 require '/home/mit/Source/ackro/bin/ackro.rb'
 
 
-
 =begin
 Local Variables:
   mode:ruby
