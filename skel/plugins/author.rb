@@ -3,16 +3,14 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-class Hg < Plugin
-
+class Author < Plugin          
+ 
   def input
-    "mercurial commit message"
   end
 
-  def transform!(str)
-    str
+  def html_filter
+    CGI.escapeHTML(field.value.to_s)
   end
-
 end
 
 

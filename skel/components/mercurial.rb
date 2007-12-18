@@ -16,14 +16,14 @@ define(:mercurial) do
       style { float :right }
     }
 
-    plugin_hg {
+    input_hg {
       tag :p
       style {
         color :blue
       }
     }
 
-    input_author
+    plugin_author
     input_changeset
     
     plugin_tags {
