@@ -22,6 +22,7 @@ else
   $DEBUG = true if ENV['DEBUG']
 end
 
+# :include:../README.rdoc
 module Backbite
 
   GlobalDefaults = { :colors => true }

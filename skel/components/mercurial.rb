@@ -50,7 +50,11 @@ define(:mercurial) do
       value " mercurial, automated "
     }
 
-    plugin_date
+    plugin_date {
+      style {
+        margin_left 0.px
+      }
+    }
 
   }
 

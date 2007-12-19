@@ -1,0 +1,78 @@
+= Backbite
+
+It is not that easy to describe what Backbite exactly is. Basically
+its a system to save any kind of data structured and export it in
+different ways.
+
+The base idea was to create a controller for multiple Tumblogs. If you
+know what I'm talking about, you see that a Tumblelog may consist of
+quotes, images, videos or simply blog Posts. Each of this parts is
+called *Component* in Backbite terminology.
+
+
+== The Tumblelog
+
+Your Tumblelog is basically defined by a single configuration file. This
+is an totaly open to edit -- means, you can add and use options if you need it
+in your export/component/plugin.
+
+You are able to control everything in your repos via commandline.
+You can create posts, list and search in your posts, export your
+repos, upload it ...
+
+You can submit posts from any ruby programm, because Backbite is also
+a library. Tonight I hacked the mercurial component, and the hook in
+my <tt>~/bin/hgcommit</tt> looks like:
+
+ # ~/bin/hgcommit -- executed on `hg commit`
+ #
+ # trival stuff striped to get the mercurial infos by a `hg head`.grep() ....
+ #
+
+ require '/home/mit/Source/backbite/lib/backbite.rb' # localy not a gem,yet
+
+ msg, name, author, changeset =
+   retHash['summary'], retHash['name'], retHash['user'], retHash['changeset']
+
+ tlog = Backbite.register[:polis] # get the tumblog instance by Register
+ post = tlog.post(:mercurial,
+                   :hash => {
+                     :hg => msg,
+                     :tags => [], # default tags are predefined in component
+                     :author => author[1..-2],
+                     :changeset => "#{name}:#{changeset}"
+                 })
+ puts post.save
+
+
+== Components
+
+A component is the way to save data in your repos. It is defined by
+fields and plugins, which are attached to fields. Plugins are
+completely optional, and modify the data of the attached component.
+So, if you want to to post images or something, you will create a
+component named _image_, with the fields _url_, _url_ is a attached to
+the plugin *Image*, or even *Lightbox*. If you post data to your
+*Image* plugin, the field _url_ wants input, which may modified by the
+*Plugin*. So its easy to post/pre process your data. In this case it
+would make sense to create thumbnails.
+
+Its dead easy:
+
+  # image component
+  # image plugin
+
+== Export
+
+That's the other goal. Your repos contains some default ways to export
+your data. If you're a ruby hacker, it's not that complicated to create
+new ways to export or edit existing. The export variants are directly
+connected to your repos.
+
+If you just want to manage a todo, or a contact list, there may no
+need for exporting your repos, but maybe, later you want to put your
+data in CSV or send it to your cellphone -- no problem, just create
+your export way and mail it to the global repos (to let people know
+that your variant exists and to share!)
+
+
