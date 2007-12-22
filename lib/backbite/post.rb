@@ -255,6 +255,17 @@ module Backbite
         def predefined
           @predefined = definitions[:value] || ''
         end
+
+        def apply_markup(markup, str)
+          case markup
+          when :redcloth
+            require 'redcloth'
+            RedCloth.new(str).to_html
+          else
+            str
+          end
+          
+        end
         
         def apply_filter(filter, def_filter = :filter)
           filter = "#{filter}_filter".to_sym

@@ -9,7 +9,8 @@ define(:mercurial) do
 
   style {
     #background_image 'url(../images/l_bg.png)'    
-    padding_left 10.px
+    padding_left 30.px
+    padding_right 30.px
   }
 
   fields {
@@ -33,9 +34,10 @@ define(:mercurial) do
     input_hg {
       tag :p
       style {
+        padding_left 20.px
         color '#615B57'
         margin 0.px
-        font_family 'arial'
+        font_family 'fixed'
       }
     }
 
