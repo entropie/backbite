@@ -88,7 +88,7 @@ module Backbite
           #ord = @tlog.config[:html][:body].order
           return
         end
-        ord.each do |n|
+        ord.map! do |n|
           v = @tlog.config[:html][:body][n]
           (hp=(@hpricot/:body)).append do |h|
             h << " "*4
@@ -99,10 +99,21 @@ module Backbite
             }
             h << "\n\n"
           end
+          n
         end
+
         thash = Hash[*hp.first.containers.map{ |c| [c.attributes[:id].to_sym, c] }.flatten]
+
         ord.each do |o|
-          yield(o, thash[o])
+          if indyp = (cnf=@tlog.config[:html][:body][o])[:plugin] and
+              not indyp.kind_of?(Hash)
+            Info << "Independent plugin #{indyp} for #{o}"
+            Plugins.independent(@hpricot, @tlog, { indyp => cnf}, @params) do |a|
+              thash[o] << a.content
+            end
+          else
+            yield(o, thash[o])
+          end
         end
         hp
       end
@@ -133,10 +144,13 @@ module Backbite
         end
       end
 
+      def plugin_node
+      end
+      
       def independent_nodes
         Plugin::AutoFieldNames.each do |af|
           tar = @tlog.config[:html][:body][:independent][af]
-          Plugins.independent(@hpricot, @tlog, tar) do |a|
+          Plugins.independent(@hpricot, @tlog, tar, @params) do |a|
             tag = a.class.const_defined?(:TAG) ? a.class.const_get(:TAG) : :div
             w = case af; when :before then :prepend; when :after then :append end
             res = Hpricot("\n    <div class=\"indy #{a.name}\" id=\"#{a.identifier}\">\n      #{a.result}\n    </div>" + "\n")

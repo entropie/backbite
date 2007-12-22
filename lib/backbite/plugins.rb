@@ -48,13 +48,14 @@ module Backbite
     end
     
 
-    def self.result_for_independent(tree, tlog, conf)
+    def self.result_for_independent(tree, tlog, conf, params = { })
       conf.map{ |plname, plvals|
         load_for_independent(tlog, plname)
       }.flatten.map do |ip|
         ip = ip.new(tlog)
         ip.tree = tree
         ip.tlog = tlog
+        ip.path_deep = params[:path_deep]
         ip.identifier =
           if ip.class.const_defined?(:ID)
             ip.class.const_get(:ID)

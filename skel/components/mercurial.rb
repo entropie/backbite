@@ -5,15 +5,11 @@
 
 define(:mercurial) do
   
-  target :content
+  target :box
 
   style {
-    border_left "3px solid #205F21"
-    background_image 'url(../images/l_bg.png)'    
-    margin_bottom 23.px
+    #background_image 'url(../images/l_bg.png)'    
     padding_left 10.px
-    float :left
-    min_width "45%"
   }
 
   fields {
@@ -33,19 +29,13 @@ define(:mercurial) do
       }
     }
     
-    plugin_author {
-      style {
-
-      }
-    }
-    
+    plugin_author    
     input_hg {
       tag :p
       style {
-        color '#28902A'
-        font_family 'arial'
-        padding 10.px
+        color '#615B57'
         margin 0.px
+        font_family 'arial'
       }
     }
 
@@ -53,12 +43,7 @@ define(:mercurial) do
       value " mercurial, automated "
     }
 
-    plugin_date {
-      style {
-        margin_left 0.px
-      }
-    }
-
+    plugin_date
   }
 
 end
