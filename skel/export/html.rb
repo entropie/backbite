@@ -185,7 +185,7 @@ module Backbite
         (@hpricot/:head).append do |h|
           dfs = { :generated => { :media => :screen }, :base => { :media => :screen}}
           dfs.merge(tl.config[:stylesheets][:files]).each_pair{ |n, v|
-            h << " "*4            
+            h << " "*4
             link(:href  => "#{params[:path_deep]}include/#{n}.css",
                  :media => v[:media],
                  :type  => "text/css",

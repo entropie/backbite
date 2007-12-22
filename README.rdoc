@@ -7,7 +7,7 @@ different ways.
 The base idea was to create a controller for multiple Tumblogs. If you
 know what I'm talking about, you see that a Tumblelog may consist of
 quotes, images, videos or simply blog Posts. Each of this parts is
-called *Component* in Backbite terminology.
+called *Cowmponent* in Backbite terminology.
 
 
 == The Tumblelog

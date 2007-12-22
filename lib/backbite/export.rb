@@ -110,9 +110,16 @@ module Backbite
           else
             Warn << "#{way} is unknown"
           end
+        move!
         ret
       end
 
+      
+      def move!
+        Info << "copy working dir to repository"
+        system("cp -r #{working_dir}/* #{join('htdocs')}/")
+      end
+      
       def to_s
         @export.to_s
       end

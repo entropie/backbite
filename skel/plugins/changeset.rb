@@ -12,7 +12,7 @@ class Changeset < Plugin
   def html_filter
     name, rev, chs = field.value.split(':')
 
-    %Q(<a style="font-variant:small-caps" href="#{HG_URL % name}">#{name}</a>:<a style="font-variant:small-caps" href="#{(HG_URL % name) << chs}">#{rev}</a>)
+    %Q(<a class="url" href="#{HG_URL % name}">#{name}</a>:<a href="#{(HG_URL % name) << chs}">#{rev}</a>)
   end
 end
 

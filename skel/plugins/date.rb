@@ -14,7 +14,7 @@ class Date < Plugin
   end
 
   def filter
-    field.value.strftime("%Y %B, %d - %H:%M  %Z")
+    field.value.strftime("%Y/%m/%d-%H:%M %Z")
   end
 
   def html_filter

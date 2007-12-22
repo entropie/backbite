@@ -5,12 +5,15 @@
 
 define(:mercurial) do
   
-  target :red
+  target :content
 
   style {
-    border "1px solid navy"
-    margin_bottom 10.px
+    border_left "3px solid #205F21"
+    background_image 'url(../images/l_bg.png)'    
+    margin_bottom 23.px
     padding_left 10.px
+    float :left
+    min_width "45%"
   }
 
   fields {
@@ -39,8 +42,8 @@ define(:mercurial) do
     input_hg {
       tag :p
       style {
-        color :silver
-        background_color '#6F6F6F'
+        color '#28902A'
+        font_family 'arial'
         padding 10.px
         margin 0.px
       }
