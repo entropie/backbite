@@ -11,8 +11,6 @@ require 'pathname'
 require 'fileutils'
 require 'rubygems'
 
-
-
 begin
   require 'log4r'
   require 'log4r/outputter/syslogoutputter'
@@ -36,7 +34,7 @@ module Backbite
     end
   end
 
-  Version = %w'0 2 9'
+  Version = %w'0 3 1'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
   
@@ -64,24 +62,11 @@ module Backbite
         exit 23
       end
     end
-    
 
-    require 'backbite/globals'
-    require 'backbite/ruby_ext'
-    require 'backbite/informer'
-    require 'backbite/exception'
-    require 'backbite/helper'
-    require 'backbite/settings'
-    require 'backbite/ways'
-    require 'backbite/post'
-    require 'backbite/components'
-    require 'backbite/plugins'
-    require 'backbite/repos'
-    require 'backbite/export'
-    require 'backbite/tumblog'
-    require 'backbite/arguments'
-    require 'backbite/generator'
-    require 'backbite/register'
+    %w(globals ruby_ext informer exception helper settings ways post components
+     plugins repos export tumblog arguments generator register).each do |lfile|
+      require "backbite/" + lfile
+    end
   end
   require_libs
 
