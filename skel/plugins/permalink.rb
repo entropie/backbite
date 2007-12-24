@@ -18,7 +18,7 @@ class Permalink < Plugin
   end
   
   def html_filter
-    '<a class="pl" href="%s%s/%s/index.html#%s">#</a>' % [path_deep, 'archive', filter, identifier]
+    %Q(<a class="pl" href="%s%s/%s/index.html#%s"><img src="#{path_deep}images/permalink.png" height="16" width="16" alt="#" title="Permalink"/></a>) % [path_deep, 'archive', filter, identifier]
   end
 
   def latex_filter

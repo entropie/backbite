@@ -7,14 +7,15 @@ different ways.
 The base idea was to create a controller for multiple Tumblogs. If you
 know what I'm talking about, you see that a Tumblelog may consist of
 quotes, images, videos or simply blog Posts. Each of this parts is
-called *Cowmponent* in Backbite terminology.
+called *Component* in Backbite terminology.
 
+Example: http://ackro.ath.cx/~mit/polis
 
 == The Tumblelog
 
-Your Tumblelog is basically defined by a single configuration file. This
-is an totaly open to edit -- means, you can add and use options if you need it
-in your export/component/plugin.
+Your Tumblelog is basically defined by a single configuration file.
+It's totaly open to edit -- means, you can add and use options if you
+need it in your export/component/plugin.
 
 You are able to control everything in your repos via commandline.
 You can create posts, list and search in your posts, export your

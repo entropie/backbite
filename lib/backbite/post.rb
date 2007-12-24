@@ -264,7 +264,11 @@ module Backbite
           else
             str
           end
-          
+        end
+
+        def has_filter?(filter)
+          filter = "#{filter}_filter".to_sym
+          respond_to?(:plugin) and plugin.respond_to?(filter)
         end
         
         def apply_filter(filter, def_filter = :filter)

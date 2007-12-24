@@ -18,8 +18,9 @@ define(:mercurial) do
       style {
         float :right
         background_color :transparent
-        color :yellow
-        font_size 10.px
+        font_size 20.px
+        margin_right -23.px
+        margin_top -10.px
       }
     }
 

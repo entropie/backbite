@@ -86,7 +86,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         
         op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
           way = if not w
-                  log.config[:defaults][:post_way]
+                  tlog.config[:defaults][:post_way]
                 else
                   tlog.components.select_way_with_abbrev(w)
                 end

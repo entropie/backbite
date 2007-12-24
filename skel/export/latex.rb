@@ -4,6 +4,8 @@
 #
 
 require 'iconv'
+require 'rdoc/markup/simple_markup'
+require 'rdoc/markup/simple_markup/to_latex'
 
 $KCODE = 'u'
 
@@ -11,20 +13,34 @@ module Backbite
 
   module Post::Export::LATEX
 
-    def convert_field(str)
-      str.gsub(/([öüä])/) do |r|
+    def convert_lang(str)
+      str.gsub!(/([öüä])/) do |r|
         w = "\\\"" << r.to_s
         r = Iconv.iconv("ascii//translit", "ISO-8859-1", w)
         r
       end
+      str
     end
     
+    def convert_field(str, field)
+      if(mu = field.definitions[:markup][:html]).kind_of?(Symbol)
+        return Hpricot.parse(field.apply_markup(mu, str)).to_plain_text
+      elsif not field.has_filter?(:latex)
+        h = SM::ToLaTeX.new
+        sm = SM::SimpleMarkup.new
+        return sm.convert(str, h)
+      else
+        str
+      end
+    end
+
     def to_latex
       ordered = tlog.components[self.metadata[:component]].order.dup
       ordered.map!{ |o|
         fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
         fields[fname]
       }
+      
       res = ""
       res << "\\subsubsection{Identifier: #{identifier}}\n"
       res << "\\flushleft\n"      
@@ -32,9 +48,10 @@ module Backbite
       res << "\\begin{enumerate}\n"      
       #res << "\\item asd\n"
       ordered.each do |field|
-        #next if field.to_sym == :permalink
+        next if field.to_sym == :permalink
         filtered = field.apply_filter(:latex)
-        filtered = convert_field(filtered)
+        filtered = convert_lang(filtered)
+        filtered = convert_field(filtered, field)
         res << "\\item[#{field.to_sym}:] #{filtered}\n"
       end
       res << "\\end{enumerate}\n"
@@ -125,12 +142,10 @@ module Backbite
           else
             tlog.posts.dup
           end
-        ord = @tlog.config[:html][:body].
-          order.reject{ |o|
-          Repository::IgnoredBodyFields.include?(o)
+        ord = @tlog.config[:html][:body].order.reject{ |o|
+          @tlog.config[:html][:body][o][:plugin].kind_of?(Symbol) or  Repository::IgnoredBodyFields.include?(o)
         }
         ret = "\\section{The nuts by date}\n"
-
         ord.each do |n|
           v = @tlog.config[:html][:body][n]
           ret << "\\subsection{Node: #{n}}\n\n"

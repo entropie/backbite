@@ -21,9 +21,9 @@ module Backbite
         f, filtered = field.to_sym, field.apply_filter(:html)
         opts = { }
 
-#        if hm = field.definitions[:markup][:html] and not hm.kind_of?(Hash)
+        # if hm = field.definitions[:markup][:html] and not hm.kind_of?(Hash)
         filtered = field.apply_markup(field.definitions[:markup][:html], filtered)
-#        end
+        # end
         
         opts[:tag] = field.definitions[:tag] unless
           field.definitions[:tag].to_s.empty?
