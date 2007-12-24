@@ -21,7 +21,7 @@ module Backbite
     IgnoredBodyFields = [:style, :independent]
     
     # Basically a list of names
-    BaseDirs = %w(export plugins components htdocs tmp spool)
+    BaseDirs = %w(export plugins components htdocs tmp spool misc)
 
 
     SubDirs  = { :htdocs => [:include], :tmp => ['.work'] }
@@ -143,14 +143,13 @@ module Backbite
         end
       sources = [Backbite::Source.join('skel'), sources].compact
 
-      additional =
-        if defined?(Spec)
-          %w'rspec.haml'
-        else
-          []
-        end
-      
-      %w'plugins components export'.each do |w|
+      # additional =
+      #   if defined?(Spec)
+      #     %w'misc/rspec.haml'
+      #   else
+      #     %w'misc/backbite.tex'
+      #   end
+      %w'plugins components export misc'.each do |w|
         sources.each do |source|
           (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
             t = @directory.join(w)
@@ -162,9 +161,9 @@ module Backbite
             Info << " cp #{st.join(e)} to #{w}/#{e}"            
             system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
           end
-          additional.each do |a|
-            system("cp #{source.join(a)} #{@directory} 2>/dev/null")
-          end
+          # additional.each do |a|
+          #   p("cp #{source.join(a)} #{@directory} 2>/dev/null")
+          # end
         end
       end
     end

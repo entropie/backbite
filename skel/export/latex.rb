@@ -62,7 +62,7 @@ module Backbite
 
   end
 
-  module Repository::Export::LATEX # :nodoc: All
+  module Repository::Export::LATEX
 
     def self.clean!(tlog, params)
       (td = tlog.repository.join('tmp')).entries.grep(/latex\.out/).each do |tf|
@@ -80,7 +80,7 @@ module Backbite
     class Tree < Repository::ExportTree
 
       def initialize(ext, tlog, params)
-        @latex_file = File.expand_path('~/backbite.tex')
+        @latex_file = tlog.repository.join('misc', 'backbite.tex')
         @ext = ext
         super(tlog, params)
         @file = "#{tlog.name}.#{@ext}"

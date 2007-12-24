@@ -89,7 +89,7 @@ end
 
 task :rdoc do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)"')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec)"')
 end
 
 task :advance do
@@ -112,7 +112,7 @@ end
 
 task :rdia do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)" -d')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec)" -d')
 end
 
 

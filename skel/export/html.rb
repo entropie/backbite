@@ -116,7 +116,8 @@ module Backbite
               thash[o] << a.content
             end
           else
-            yield(o, thash[o])
+            cfg = @tlog.config[:html][:body][o]
+            yield(o, thash[o], cfg)
           end
         end
         hp
@@ -133,9 +134,14 @@ module Backbite
         #p posts.map(&:identifier)
         params.delete(:ids)
         params.delete(:postopts)
-        body do |name, hpe|
+        body do |name, hpe, cfg|
           psts = posts.by_date!.reverse.
             with_export(:html, params.merge(:tree => self, :target => name))
+
+          if(mi = cfg[:items][:max]).kind_of?(Fixnum)
+            psts = psts[0..(mi+1)]
+          end
+          
           psts.each do |post|
             next if name != post.config[:target]
             phtml = Cache("%s%s" % [@params[:path_deep], post.identifier]) {

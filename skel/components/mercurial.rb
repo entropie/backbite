@@ -26,7 +26,7 @@ define(:mercurial) do
 
     plugin_changeset {
       style {
-        float :left        
+        float :left
         padding_right 20.px
       }
     }
@@ -38,7 +38,7 @@ define(:mercurial) do
         padding_left 20.px
         color '#615B57'
         margin 0.px
-        font_family 'fixed'
+        font_family 'helvecita'
       }
     }
 
