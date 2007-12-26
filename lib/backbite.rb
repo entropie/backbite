@@ -34,7 +34,7 @@ module Backbite
     end
   end
 
-  Version = %w'0 3 1'
+  Version = %w'0 3 3'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
   
