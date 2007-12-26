@@ -51,12 +51,11 @@ Config[:rspec].setup do
   end
 
   stylesheets do
-    files['rspec.haml'].media = :screen
+    screen 'rspec.haml'
   end
 
   javascript do
-    files[:jquery]
-    files[:foo]
+    files [:jquery, :foo]
   end
 
   html do

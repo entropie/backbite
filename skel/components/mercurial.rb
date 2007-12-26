@@ -8,21 +8,13 @@ define(:mercurial) do
   target :box
 
   style {
-    #background_image 'url(../images/l_bg.png)'    
-    padding_left 30.px
-    padding_right 30.px
+    #background_image 'url(../images/l_bg.png)'
+    position :relative
+    padding_left 50.px
+    padding_right 40.px
   }
 
   fields {
-    plugin_permalink {
-      style {
-        float :right
-        background_color :transparent
-        font_size 20.px
-        margin_right -23.px
-        margin_top -10.px
-      }
-    }
 
     plugin_changeset {
       style {
@@ -30,6 +22,14 @@ define(:mercurial) do
         padding_right 20.px
       }
     }
+
+    plugin_tags {
+      value " mercurial, automated "
+      style {
+        background_color :transparent
+      }
+    }
+
     
     plugin_author    
     input_hg {
@@ -42,11 +42,22 @@ define(:mercurial) do
       }
     }
 
-    plugin_tags {
-      value " mercurial, automated "
+    plugin_date {
+      style {
+        display :none
+      }
     }
 
-    plugin_date
+    plugin_permalink {
+      style {
+        background_color :transparent
+        left 15.px
+        # margin_right -23.px
+        # margin_top -10.px
+        #display :block
+      }
+    }
+
   }
 
 end

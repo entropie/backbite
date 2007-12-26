@@ -86,7 +86,7 @@ module Backbite
 
         def metadata
           @metadata ||= Post::Metadata.new(@meta,
-                                           :component => component.name,
+                                           :component => component,
                                            :way => self.class.to_s)
         end
         

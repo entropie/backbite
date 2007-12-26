@@ -34,7 +34,7 @@ module Backbite
     def export(way = nil, params = { })
       return dup.extend(Export) unless way
       params[:path_deep] ||= './'
-      params[:title] ||= "[no title]"
+      params[:title] ||= tlog.title
       dup.extend(Export).export(way, params)
     end
 
@@ -48,9 +48,6 @@ module Backbite
       }
       
     end
-
-
-    #def to_s end
 
 
     # Return a list of Posts

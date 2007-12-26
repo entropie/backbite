@@ -11,6 +11,10 @@ module Backbite
   class Posts < Array
     
     attr_reader :tlog
+
+    def next_id
+      self.size+1
+    end
     
     def initialize(tlog)
       @tlog = tlog
@@ -42,8 +46,8 @@ module Backbite
       read
     end
 
-    def read
-      postfiles = (par = tlog.repository.join('spool')).entries.
+    def read(what = :spool)
+      postfiles = (par = tlog.repository.join(what)).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
       postfiles.inject(self) { |mem, f|
         postway = Post::Ways.dispatch(:yaml) { |way|
@@ -56,10 +60,10 @@ module Backbite
     private :read
 
     def with_ids
-      i = -1
-      replace(self.map{ |pst| pst.pid = i+=1 and pst })
-      each(&blk) if block_given?
-      self
+      # i = -1
+      # replace(self.map{ |pst| pst.pid = i+=1 and pst })
+      # each(&blk) if block_given?
+      # self
     end
   end
   
@@ -81,7 +85,6 @@ module Backbite
     attr_reader   :pid
     attr_accessor :neighbors
 
-
     def author
        metadata[:author] or tlog.author
     end
@@ -91,11 +94,15 @@ module Backbite
       npost.setup!(params)
       npost
     end
-    
-    def pid=(pid)
-      @pid = pid
-      identifier and pid
+
+    def pid
+      metadata[:pid]
     end
+    
+    # def pid=(pid)
+    #   @pid = pid
+    #   identifier and pid
+    # end
     
     def <=>(o)
       metadata[:date] <=> o.date
@@ -182,6 +189,10 @@ module Backbite
 
       # +params+ must include <tt>:component</tt> and <tt>:way</tt>
       def initialize(meta, params = { })
+        # we only need the name
+        @component = params.delete(:component)
+        params[:component] = @component.name
+
         @meta = meta
         params.extend(ParamHash).
           process!(:component => :required, :way => :required)
@@ -199,6 +210,7 @@ module Backbite
           Info << "Meta: merging #{ @meta.map{ |k,v| "#{k}=#{v}"}}"
           merge!(@meta)
         end
+        self[:pid]  = @component.tlog.posts.next_id
         self[:date] ||= Time.now
       end
     end

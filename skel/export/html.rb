@@ -65,6 +65,7 @@ module Backbite
         @file = 'index.html'
         title!
         meta!
+        bstyles!(params)
         styles!(params)
         files!(params)
         body_nodes(params)
@@ -139,9 +140,8 @@ module Backbite
             with_export(:html, params.merge(:tree => self, :target => name))
 
           if(mi = cfg[:items][:max]).kind_of?(Fixnum)
-            psts = psts[0..(mi+1)]
+            psts = psts.first(mi)
           end
-          
           psts.each do |post|
             next if name != post.config[:target]
             phtml = Cache("%s%s" % [@params[:path_deep], post.identifier]) {
@@ -200,25 +200,45 @@ module Backbite
         alternate = tlog.http_path('atom.xml')
         
         (r=(@hpricot/:head)).append do |h|
-          h << " "*4          
+          h << " "*4         
           h.meta('http-equiv' => "Content-Type",
                  :content => 'text/html; charset=utf-8')
           h << "\n"
+          h << " "*4
           h.script(:charset => 'utf-8', :type => 'text-javascript')
           h << "\n"
+          h << " "*4          
           h.link(:type => 'application/atom+XML', :rel => 'alternate', :href => alternate)
           h << "\n"
+        end
+      end
+
+
+      def bstyles!(params)
+        tl = tlog
+        (@hpricot/:head).append do |h|
+          dfs = [
+                 [:base     , { :media => :screen } ],
+                 [:generated, { :media => :screen } ]
+          ]
+          dfs.each{ |n, v|
+            h << " "*4
+            link(:href  => "#{params[:path_deep]}include/#{n}.css",
+                 :media => v[:media],
+                 :type  => "text/css",
+                 :rel   => "stylesheet")
+            h << "\n"
+          }
         end
       end
 
       def styles!(params)
         tl = tlog
         (@hpricot/:head).append do |h|
-          dfs = { :generated => { :media => :screen }, :base => { :media => :screen}}
-          dfs.merge(tl.config[:stylesheets][:files]).each_pair{ |n, v|
+          tl.config[:stylesheets][:screen].each{ |n|
             h << " "*4
             link(:href  => "#{params[:path_deep]}include/#{n}.css",
-                 :media => v[:media],
+                 :media => :screen,
                  :type  => "text/css",
                  :rel   => "stylesheet")
             h << "\n"
@@ -231,7 +251,7 @@ module Backbite
         (@hpricot/:head).append do |h|
           tl.config[:javascript][:files].each{ |n|
             h << " "*4
-            script(:src => "#{params[:path_deep]}include/#{n.first}.js",
+            script(:src => "#{params[:path_deep]}include/#{n}.js",
                    :type => "text/javascript" )
             h << "\n"
           }

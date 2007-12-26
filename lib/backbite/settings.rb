@@ -72,7 +72,7 @@ module Backbite
       
       def cleanup
         class << self
-          [:replace, :id, :clear].each do |m|
+          [:replace, :id, :clear, :display].each do |m|
             self.send(:undef_method, m)
           end
         end

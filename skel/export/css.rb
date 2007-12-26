@@ -11,9 +11,15 @@ module Backbite
     def self.export(tlog, params)
       ret = []
       retstr = ''
-      dfs = { :generated => { :media => :screen }, :base => { :media => :screen}}
-      dfs.merge(tlog.config[:stylesheets][:files]).each_pair { |ftype, m|
-        #p ftype
+      dfs = {
+        :generated => { :media => :screen },
+        :base => { :media => :screen }
+      }
+
+      tlog.config[:stylesheets][:screen].each do |n|
+        dfs.merge!(n => { :media => :screen})
+      end
+      dfs.each_pair { |ftype, m|
         tree = Tree.new(ftype, tlog, params)
         tree.write
         ret << tree

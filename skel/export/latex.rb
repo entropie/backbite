@@ -68,6 +68,8 @@ module Backbite
 
   module Repository::Export::LATEX
 
+    
+    
     def self.clean!(tlog, params)
       (td = tlog.repository.join('tmp')).entries.grep(/latex\.out/).each do |tf|
         td.join(tf).unlink

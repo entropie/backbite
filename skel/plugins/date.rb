@@ -14,18 +14,18 @@ class Date < Plugin
   end
 
   def filter
-    field.value.strftime("%Y/%m/%d-%H:%M %Z")
+    field.value.strftime("%d%b%Y %H:%M %Z")
   end
 
   def html_filter
     f = []
-    nbs = neighbors.each_with_index{ |po, i|
-      unless po then f << ''; next end
-      t = if i.zero? then 'previous entry' else 'next entry' end
-      f << %(<a style="rellink" title="#{t}" href="##{po.identifier}">&nbsp;#{i == 0 ? '&lt;' : '&gt;'}&nbsp;</a>)
-    }
+    # nbs = neighbors.each_with_index{ |po, i|
+    #   unless po then f << ''; next end
+    #   t = if i.zero? then 'previous entry' else 'next entry' end
+    #   f << %(<a style="rellink" title="#{t}" href="##{po.identifier}">&nbsp;#{i == 0 ? '&lt;' : '&gt;'}&nbsp;</a>)
+    # }
     #f.first + filter + f.last
-    filter.gsub(/\-/, '&mdash;')
+    field.value.strftime("<span class=\"d\">%d</span>%b%y</span> <span class=\"hour\">%H</span><span class=\"minute\">%M</span> %Z</span>")
   end
 
   def latex_filter
