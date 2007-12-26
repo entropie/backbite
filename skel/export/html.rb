@@ -196,10 +196,17 @@ module Backbite
       end
 
       def meta!
+        #ways = repository.export.ways
+        alternate = tlog.http_path('atom.xml')
+        
         (r=(@hpricot/:head)).append do |h|
           h << " "*4          
           h.meta('http-equiv' => "Content-Type",
                  :content => 'text/html; charset=utf-8')
+          h << "\n"
+          h.script(:charset => 'utf-8', :type => 'text-javascript')
+          h << "\n"
+          h.link(:type => 'application/atom+XML', :rel => 'alternate', :href => alternate)
           h << "\n"
         end
       end

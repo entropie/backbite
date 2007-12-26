@@ -14,11 +14,15 @@ module Backbite
   module Post::Export::LATEX
 
     def convert_lang(str)
-      str.gsub!(/([öüä])/) do |r|
-        w = "\\\"" << r.to_s
-        r = Iconv.iconv("ascii//translit", "ISO-8859-1", w)
-        r
-      end
+      str.gsub!(/#/, '\#')
+      str.gsub!(/_/, '\_')
+      #pp str
+      # str.gsub!(/([öüä])/i) do |r|
+      #   w = "\\\"" << r.to_s
+      #   r = Iconv.iconv("ascii//translit", "ISO-8859-1", w)
+      #   r
+      # end
+      # puts str
       str
     end
     
@@ -50,8 +54,8 @@ module Backbite
       ordered.each do |field|
         next if field.to_sym == :permalink
         filtered = field.apply_filter(:latex)
-        filtered = convert_lang(filtered)
         filtered = convert_field(filtered, field)
+        filtered = convert_lang(filtered)
         res << "\\item[#{field.to_sym}:] #{filtered}\n"
       end
       res << "\\end{enumerate}\n"
