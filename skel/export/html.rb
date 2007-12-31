@@ -112,7 +112,7 @@ module Backbite
         ord.each do |o|
           if indyp = (cnf=@tlog.config[:html][:body][o])[:plugin] and
               not indyp.kind_of?(Hash)
-            Info << "Independent plugin #{indyp} for #{o}"
+            Debug << "Independent plugin #{indyp} for #{o}"
             Plugins.independent(@hpricot, @tlog, { indyp => cnf}, @params) do |a|
               thash[o] << a.content
             end

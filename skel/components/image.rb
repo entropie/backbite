@@ -6,6 +6,10 @@ define(:image) do
   }
 
   fields {
+    plugin_image
+    input_desc
+    plugin_tags
+    plugin_date
   }
 
 end

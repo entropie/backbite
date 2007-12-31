@@ -16,7 +16,7 @@ describe Backbite::Tumblelog do
   
   it "should respond with non nil on various attributes" do
     [:repository, :config, :name, :root, :path,
-     :author, :url, :components, :posts, :post].each do |attr|
+     :author, :url, :components, :posts, :post,:data_dir].each do |attr|
       @target.should.respond_to?(attr)
     end
   end

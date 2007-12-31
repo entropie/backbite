@@ -28,12 +28,18 @@ module Backbite
         config[:defaults][:register].empty?
       @register
     end
+    
 
     def http_path(path = '')
       URI.join(@config[:defaults][:base_href], path)
     end
     
 
+    def data_dir
+      root.join('data')
+    end
+
+    
     def author(what = 0)
       case what
       when 0
@@ -47,7 +53,6 @@ module Backbite
         @config[:defaults][:author].to_s
       end
     end
-
 
 
     def title
@@ -80,6 +85,7 @@ module Backbite
       @repository.valid?
     end
 
+    
     def components
       @components ||= @repository.components
     end

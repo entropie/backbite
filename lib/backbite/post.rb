@@ -119,7 +119,6 @@ module Backbite
     def identifier
       @identifier ||= "#{component.name}#{pid}"
     end
-    
 
     # setup! sets various attributes on our Plugin instances.
     def setup!(params)

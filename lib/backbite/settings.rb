@@ -72,7 +72,7 @@ module Backbite
       
       def cleanup
         class << self
-          [:replace, :id, :clear, :display].each do |m|
+          [:p, :replace, :id, :clear, :display].each do |m|
             self.send(:undef_method, m)
           end
         end
@@ -107,7 +107,7 @@ module Backbite
 
       def method_missing(m, v = Parser.config_hash, &b)
         m = m.to_s.gsub(/=$/, '').to_sym
-        unless self.keys.include?(m)
+        if not self.keys.include?(m)
           order << m
           self[m] = v
         end

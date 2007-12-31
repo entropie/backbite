@@ -15,16 +15,14 @@ module Backbite
 
     attr_reader :directory, :name
 
-
     attr_accessor :tlog
     
     IgnoredBodyFields = [:style, :independent]
-    
-    # Basically a list of names
-    BaseDirs = %w(export plugins components htdocs tmp spool misc)
 
+    BaseDirs = %w( export plugins components htdocs tmp spool misc data lib)
 
     SubDirs  = { :htdocs => [:include], :tmp => ['.work'] }
+
 
     def initialize(name, directory)
       @name, @directory = name.to_sym, Pathname.new(directory)

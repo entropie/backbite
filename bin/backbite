@@ -117,7 +117,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
             { }
           end
 
-          handler.filter(nargs) do |r|
+          handler.filter(nargs).by_id!.each do |r|
             puts r
             puts
           end

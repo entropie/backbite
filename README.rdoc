@@ -11,11 +11,23 @@ called *Component* in Backbite terminology.
 
 Example: http://ackro.ath.cx/~mit/polis
 
+Backbite is *highly* customizable. During setup, some default files
+will be copied to your repos, like exporter, plugins and components,
+so you can edit 'em for your needs, but only for a single repository.
+Even the commandline arguments are directly connected to your tumblog.
+
+Once you have a valid repository, it's like a sandbox which only needs
+to use the Backbite backend.
+
 == The Tumblelog
 
 Your Tumblelog is basically defined by a single configuration file.
 It's totaly open to edit -- means, you can add and use options if you
-need it in your export/component/plugin.
+need it in your export/component/plugin. The options are parsed within
+a DSL, so you don't need much effort to build complex configurations.
+Examples speak more than words:
+  Backbite::Config[:name].setup{ bar { b :a}; batz [1,2,3]; qux { anotherbar 3.px; foo[:hihi] = 23} }
+  # => {:bar=>{:b=>:a}, :batz=>[1, 2, 3], :qux=>{:anotherbar=>"3px", :foo=>{:hihi=>23}}}
 
 You are able to control everything in your repos via commandline.
 You can create posts, list and search in your posts, export your

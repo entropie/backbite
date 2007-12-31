@@ -36,18 +36,18 @@ module Backbite
         super(tlog, params)
         @file = "include/#{file}.css"
         @str = ''
-        definition_for(file)
+        definition_for
         @__result__ = @str
       end
 
-      def definition_for(file)
+      def definition_for
         @str <<
-          case file
+          case @ofile
           when :generated
             generated_definitions << "\n/* EOF: #{@filename} */\n\n\n"
           when :base
             generated_base << "\n/* EOF: #{@filename} */\n\n\n"
-          when /\.haml/
+          when /\.(haml|sass)$/
             file = tlog.repository.join("misc", @ofile)
             if file.exist?
               Sass::Engine.new(file.readlines.join).render
