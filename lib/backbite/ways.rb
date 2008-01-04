@@ -231,14 +231,14 @@ module Backbite
           file
         end
 
-        def yes_no?(text = 'Done? %s/%s', y = 'Y', n = 'n', &blk)
-          loop {
+        def yes_no?(text = 'Done? %s/%s', p = 'Y', s = 'n', &blk)
+          loop do
             ret = blk.call
-            r = Readline.readline((text.to_s + " ") % [y,n]).strip
-            r = y if r.empty?
+            r = Readline.readline((text.to_s + " ") % [p, ]).strip
+            r = p if r.empty?
             false
-            return ret if r =~ /^#{y}/i
-          }
+            return ret if r =~ /^#{p}/i
+          end
         end
 
         def edit!

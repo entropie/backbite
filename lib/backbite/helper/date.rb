@@ -9,16 +9,14 @@ module Backbite
 
     module HumanEyes
 
-      module Time
-
-        def number_format(n, delimiter = ',')
+        def self.number_format(n, delimiter = ',')
           delim_l, delim_r = delimiter == ',' ? %w[, .] : %w[. ,]
           h, r = n.to_s.split('.')
           [h.reverse.scan(/\d{1,3}/).join(delim_l).reverse, r].compact.join(delim_r)
         end
 
         # stolen and adapted from rails / ramaze ;)
-        def time_diff from_time, to_time = Time.now, include_seconds = false
+        def self.time_diff from_time, to_time = Time.now, include_seconds = false
           distance_in_minutes = (((to_time - from_time).abs)/60).round
           distance_in_seconds = ((to_time - from_time).abs).round if include_seconds
 
@@ -46,7 +44,6 @@ module Backbite
           end
         end
 
-      end
     end
 
   end

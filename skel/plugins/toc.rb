@@ -14,7 +14,9 @@ class Toc < Plugin
   #ID = :toc  # optional
   
   def content
-    entries = tlog.repository.working_dir('archive').
+    wd = tlog.repository.working_dir('archive')
+    return '' unless wd.exist?
+    entries = wd.
       entries.grep(/^[^\.]/).map{ |ar| Time.parse(ar.to_s)}
 
     hk =  Hash.new{ |hash, key| hash[key] = 0 }
@@ -42,15 +44,17 @@ class Toc < Plugin
             val = h[key]
             lpath = "#{path}#{key}"
             nv = val.sort.reject{ |v| v.strftime("%Y%m") != key }
-            li {
+            li(:class => "head") {
               strong("#{key.gsub(/^(\d\d\d\d)/, '\1/')}")
               i(" (#{nv.size})")
             }
-            ul {
-              nv.each{ |v|
-                li{
-                  a(:href=> "#{path}#{v.strftime('%Y%m%d')}/index.html") {
-                    v.strftime('%d')
+            li { 
+              ul {
+                nv.each{ |v|
+                  li{
+                    a(:href=> "#{path}#{v.strftime('%Y%m%d')}/index.html") {
+                      v.strftime('%d')
+                    }
                   }
                 }
               }
@@ -61,17 +65,15 @@ class Toc < Plugin
       h2 "Tags"
       
       div(:class => 'node tags') {
-        p {
-          ul {        
-            tcs.each { |name, val|
-              so = tcs.sort_by{ |a,b| b }
-              mi,ma = so.first.last,so.last.last
-              s = Toc.mk_tagcloud_tag(val, mi, ma)+0.7
-              s = s.to_s[0..3]
-              li{
-                a(:style => "font-size:#{s}em", :href=> "#{tagpath}#{name}/index.html"){ name }
-                #              i(" (#{val})")
-              }
+        ul {        
+          tcs.each { |name, val|
+            so = tcs.sort_by{ |a,b| b }
+            mi,ma = so.first.last,so.last.last
+            s = Toc.mk_tagcloud_tag(val, mi, ma)+0.7
+            s = s.to_s[0..3]
+            li{
+              a(:style => "font-size:#{s}em", :href=> "#{tagpath}#{name}/index.html"){ name }
+              #              i(" (#{val})")
             }
           }
         }

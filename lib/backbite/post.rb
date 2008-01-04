@@ -237,7 +237,7 @@ module Backbite
         target.component = comp
         target
       end
-      
+
       def self.input_fields(org)
         InputFields.new(org)
       end

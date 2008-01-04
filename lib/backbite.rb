@@ -46,7 +46,6 @@ module Backbite
     @register ||= Register.new
   end
   module_function :register
-  
   def self.require_libs
     wo_debug do
       begin

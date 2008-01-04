@@ -25,7 +25,9 @@ class Date < Plugin
     #   f << %(<a style="rellink" title="#{t}" href="##{po.identifier}">&nbsp;#{i == 0 ? '&lt;' : '&gt;'}&nbsp;</a>)
     # }
     #f.first + filter + f.last
-    field.value.strftime("<span class=\"d\">%d</span>%b%y <span class=\"hour\">%H</span><span class=\"minute\">%M</span> %Z")
+    extd = Helper::HumanEyes.time_diff(field.value)
+    extd.gsub!(/(\d+)/, '<span class="d">\1</span>')
+    field.value.strftime("<span class=\"ext\">#{extd.capitalize} ago</span> &mdash; <span class=\"d\">%d</span>%b%y <span class=\"hour\">%H</span><span class=\"minute\">%M</span> %Z")
   end
 
   def latex_filter
