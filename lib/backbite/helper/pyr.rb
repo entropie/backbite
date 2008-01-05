@@ -10,72 +10,11 @@ module Backbite
   module Helper
 
     module Builder
-      # == Example
-      #  pyr = Backbite::Helper::Builder::Pyr.new.build do
-      #    html {
-      #      head {
-      #        title 'mytitle'
-      #      }
-      #      body {
-      #        h1("topic", :class => :bla)
-      #        p(:deine => 'mama'){
-      #          a 'lorem', :href => 'foo', :class => :foo
-      #        }
-      #        div(:id => :footer) {
-      #          p{
-      #            ul {
-      #              li { a "la", :href => "bar" }
-      #              li "lu"
-      #            }
-      #          }
-      #          p "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.j"
-      #        }
-      #      }
-      #    }
-      #  end
-      #
-      #  pyr['/body/h1'].first.value                 # => "topic"
-      #  pyr['/head/title'].value = 'foobar'         # => "foobar"
-      #  pyr['/body/'].last.append{ div("world", :id => "hello" ) }
-      #  pyr['/body/div/p'].last.value = "to long"   # => "to long"
-      #  pyr['/body/'].last.append{ pa("good bye!") }
-      #  puts pyr.to_html
-      #
-      #  <html>
-      #    <head>
-      #      <title>foobar</title>
-      #  </head>
-      #
-      #    <body>
-      #      <h1 class="bla">topic</h1>
-      #
-      #      <p deine="mama">
-      #        <a class="foo" href="foo">lorem</a>
-      #  </p>
-      #
-      #      <div id="footer">
-      #        <p>
-      #          <ul>
-      #            <li>
-      #              <a href="bar">la</a>
-      #  </li>
-      #
-      #            <li>lu</li>
-      #  </ul>
-      #  </p>
-      #
-      #        <p>to long</p>
-      #  </div>
-      #
-      #      <div id="hello">world</div>
-      #
-      #      <pa>good bye!</pa>
-      #  </body>
-      #  </html>
+      # :include:../../../doc/pyr.rdoc
       class Pyr
 
         module Outputter
-
+          
           def fmt_args(args)
             return ['', ''] unless args
             rh = { }
@@ -132,7 +71,7 @@ module Backbite
         end
         
         module Transformer
-
+          
           def append(&blk)
             set(:push, &blk)
           end
@@ -142,17 +81,14 @@ module Backbite
           end
 
           def set(where, &blk)
-            ret = dup.extend(Builder).build(&blk)
+            ret = Pyr.new.build(&blk)
             case self
             when Elements
               send(where, ret)
             when Element
               send(where, ret)
               self
-            else
-              pp self.class
             end
-            ret
           end
         end
         
@@ -207,7 +143,8 @@ module Backbite
           
           attr_accessor :parent
 
-          def data(o = nil)
+          def data(reset = false)
+            @data = nil if reset
             @data ||= Helper::Dictionary.new
           end
           alias :children :data
@@ -299,12 +236,25 @@ module Backbite
           attr_reader  :name
 
           def unshift(o)
-            o
+            data.unshift(o.name, o)
           end
 
           def push(o)
             data.push(o.name, o)
-            o
+          end
+
+          def reset!
+            data(true)
+          end
+          
+          def replace(ele = nil, &blk)
+            reset!
+            if block_given?
+              instance_eval(&blk)
+            else
+              @data[ele.name] = ele
+            end
+            self
           end
           
           def value=(o)

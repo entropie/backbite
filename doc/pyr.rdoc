@@ -1,0 +1,67 @@
+=begin
+
+  pyr = Backbite::Helper::Builder::Pyr.new.build do
+    html {
+      head {
+        title 'mytitle'
+      }
+      body {
+        h1("topic", :class => :bla)
+        p(:deine => 'mama'){
+          a 'lorem', :href => 'foo', :class => :foo
+        }
+        div(:id => :footer) {
+          p{
+            ul {
+              li { a "la", :href => "bar" }
+              li "lu"
+            }
+          }
+          p "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.j"
+        }
+      }
+    }
+  end
+  
+  pyr['/body/h1'].first.value                 # => "topic"
+  pyr['/head/title'].value = 'foobar'         # => "foobar"
+  pyr['/body/p'].last.append{ div("world", :id => "hello") }
+  pyr['/body/div/p'].last.value = "to long"   # => "to long"
+  pyr['/body/'].last.prepend{ pa("good bye!") }
+  pyr[:head].first.replace{ title "something new"; meta("lala") }
+  pyr.to_html                     # =>
+  
+  <html>
+    <head>
+      <title>something new</title>
+  
+      <meta>lala</meta>
+  </head>
+  
+    <body>
+  <pa>good bye!</pa>
+  
+      <h1 class="bla">topic</h1>
+  
+      <p deine="mama">
+        <a class="foo" href="foo">lorem</a>
+  
+  <div id="hello">world</div>
+  </p>
+  
+      <div id="footer">
+        <p>
+          <ul>
+            <li>
+              <a href="bar">la</a>
+  </li>
+  
+            <li>lu</li>
+  </ul>
+  </p>
+  
+        <p>to long</p>
+  </div>
+  </body>
+  </html>
+=end

@@ -3,6 +3,8 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
+include Backbite::Helper::Builder
+
 default = proc{
   html {
     head {
@@ -33,6 +35,10 @@ default = proc{
 }
 
 
+def nospaces(str, ostr)
+  str.gsub(/\s/, '').should == ostr.gsub(/\s/, '')
+end
+
 describe Backbite::Helper::Builder::Pyr do
   
   before(:each) do
@@ -59,7 +65,7 @@ describe Backbite::Helper::Builder::Pyr do
     @std['/body/']['/p'].size == 3
   end
 
-  it "should be accessible via symbols" do
+  it "should accessible through symbols" do
     @std['/body'][:p].size.should == 3
     @std['/body'][:div].size.should == 1
   end
@@ -70,11 +76,11 @@ describe Backbite::Helper::Builder::Pyr do
     @std['/head'].children.size == 1
   end
 
-  it "should respond on #parent" do
+  it "should respond to #parent" do
     @std['/head/title'].first.parent.name.should == :head
   end
 
-  it "should able to recive new content" do
+  it "should be possible to replace the inner_text" do
     @std['/head/title'].value = 23
     @std['/head/title'].value.should == "23"
   end
@@ -85,34 +91,34 @@ describe Backbite::Helper::Builder::Pyr do
     #@std['/body/div/p/ul'].path_length.should == 4
   end
 
-  it "should be able to inner prepend elements (Elements)" do
-    a=@std['/head'].prepend{ meta(:foo => :bar) { 'a' } }
-    a.keys.map{ |a| a.name}.should == [:meta, :head]
-  end
-  it "should be able to inner append elements (Element)" do
-    @std['/head'].first.append{ bar(:foo => :bar) { 'a' } }
-    @std.keys.should == [:head, :body, :bar]
-  end
-  it "should be able to inner append/prepend multible elements (Element)" do
-    @std['/head'].first.append{ bar(:foo => :bar) { 'a' } }
-    @std.keys.should == [:head, :body, :bar]
-    a=@std['/body'].prepend{ meta(:foo => :bar) { 'a' } }
-    a.keys.map{ |a| a.name}.should == [:meta, :body]
-  end
-  it "should be able to append elements" do
-    a = @std['/body'].append { meta(:foo => :bar) { 'a' } }
-    @std['/body'].keys.map(&:name).should == [:body, :meta]
+  it "should be possible to prepend/append elements (Elements)" do
+    @std['/head'].first.prepend{ meta(:foo => :bar) { 'a' } }
+    a=@std['/head'].last.append{ bum(:foo => :bar) { 'a' } }
+    nospaces(a.to_html, "\n  <head>\n<meta foo=\"bar\"></meta>\n\n    <title>mytitle</title>\n\n<bum foo=\"bar\"></bum>\n</head>\n")
   end
 
-  it "should respond to #to_s" do
-    @std['/head'].to_s.strip.should == %(<head>
-  <title>
-    mytitle
-  </title>
- </head>)
-    @std['/body/div'].to_s.strip.should == "<div>\n   <p>\n    <ul>\n      la\n    </ul>\n   </p>\n  </div>"
-
+  it "should be possible to append elements the simple way(Element)" do
+    @std['/head'].first.foobar{ d "asd"}
+    @std['/head'].first.keys.should == [:title, :foobar]
   end
+
+  it "should be possible to replace elements by Pyr::Element" do
+    html = Pyr.new.build{
+      html { 
+        title "foobaaaar"
+        batz "bum"
+        miao "buma"
+      }
+    }
+    @std[:head].first.replace(html)
+    nospaces(@std[:head].to_html, "\n  <head>\n<html>\n  <title>foobaaaar</title>\n\n  <batz>bum</batz>\n\n  <miao>buma</miao>\n</html>\n</head>\n")
+  end
+
+  it "should be possible to replace elements by block" do
+    @std[:head].first.replace{ title 'asdfg'; meta 'bzmm'  }
+    nospaces(@std[:head].to_html, "\n  <head>\n    <title>asdfg</title>\n\n    <meta>bzmm</meta>\n</head>\n")
+  end
+
   
 end
 
