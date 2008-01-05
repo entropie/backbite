@@ -234,7 +234,7 @@ module Backbite
         def yes_no?(text = 'Done? %s/%s', p = 'Y', s = 'n', &blk)
           loop do
             ret = blk.call
-            r = Readline.readline((text.to_s + " ") % [p, ]).strip
+            r = Readline.readline((text.to_s + " ") % [p, s]).strip
             r = p if r.empty?
             false
             return ret if r =~ /^#{p}/i

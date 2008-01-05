@@ -3,9 +3,8 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
+
 $:.unshift(File.dirname(__FILE__))
-
-
 require 'pp'
 require 'pathname'
 require 'fileutils'

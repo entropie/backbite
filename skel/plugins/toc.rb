@@ -5,8 +5,8 @@
 
 class Toc < Plugin
 
-  def self.mk_tagcloud_tag(val, tmi, tma)
-    f = 1.5
+  def self.mk_tagcloud_tagsize(val, tmi, tma)
+    f = 2.0
     ((f* (val-tmi)) / (tma - tmi))
   end
   
@@ -26,6 +26,7 @@ class Toc < Plugin
         hk[t] += 1
       }
     end
+    pd = path_deep
     tcs = hk #.sort_by{ |h,k| k }.reverse
     hk = nil
     
@@ -37,8 +38,9 @@ class Toc < Plugin
     keys, path = h.keys.sort.reverse, tlog.http_path('archive/')
     tagpath = tlog.http_path('tags/')
     str = Gestalt.build do
-      h2 "Archive"
-      div(:class => 'archive node') { 
+      
+      div(:class => 'archive node') {
+        h2 "Archive"
         ul {
           keys.each { |key|
             val = h[key]
@@ -62,22 +64,25 @@ class Toc < Plugin
           }
         }
       }
-      h2 "Tags"
       
       div(:class => 'node tags') {
+        h2 "Tags"
         ul {        
           tcs.each { |name, val|
             so = tcs.sort_by{ |a,b| b }
             mi,ma = so.first.last,so.last.last
-            s = Toc.mk_tagcloud_tag(val, mi, ma)+0.7
+            #$stdout.puts mi,ma
+            s = Toc.mk_tagcloud_tagsize(val, mi-2, ma)+0.5
             s = s.to_s[0..3]
             li{
-              a(:style => "font-size:#{s}em", :href=> "#{tagpath}#{name}/index.html"){ name }
+              a(:style => "font-size:#{s}em", :href=> "#{pd}tags/#{name}.html"){ name }
               #              i(" (#{val})")
             }
           }
         }
+        p ""
       }
+
       
     end
     str
