@@ -14,15 +14,19 @@ module Backbite
       class Pyr
 
         module Outputter
+
+          ELEMENTS = {
+            :blocklevel => %w(ul p table div body html head),
+            :inline     => %w(a title li span bold i accronym strong)
+          }
           
-          def fmt_args(args)
+          def Outputter.fmt_args(args)
             return ['', ''] unless args
             rh = { }
             args.each do |arg|
               case arg
               when String
               else
-                #pp arg
                 rh.merge!(arg)
               end
             end
@@ -30,66 +34,62 @@ module Backbite
             args.empty? ? '' : " "+args
           end
 
-          def prefix
-            "#{"  "*(path_length)}"
+          def Outputter.inline_element?(ele)
+            case ele.to_s
+            when *ELEMENTS[:inline]
+              true
+            when *ELEMENTS[:blocklevel]
+              false
+            end
           end
           
-          def to_tag
+          def __prefix__(first = false)
+            if respond_to?(:name) and Outputter.inline_element?(name)
+              return '' unless first
+            end
+            "\n#{"  "*(path_length)}"
+          end
+          
+          def to_html
             childs, ret = nil, ''
-            prfx = ''
             case self
+            when Elements
+              childs = children
             when Element
-              nargs = fmt_args(args)
-              ret << "\n" << prefix << "<#{self.name}#{nargs}>"
+              nargs = Outputter.fmt_args(args)
+              ret << "" << __prefix__(true) << "<#{self.name}#{nargs}>"
               ret << value
               childs = children
-            when Elements
-              childs = children
             end
+            
             childs.each do |mab, ele|
               t = if mab.kind_of?(Symbol) then ele else mab end
-              ret << t.to_tag
+              ret << t.to_html
             end if childs
-            ret << "</#{self.name}>\n" if self.kind_of?(Element)
+
+            ret << "#{__prefix__}</#{self.name}>" if self.kind_of?(Element)
+            #ret << (Outputter.inline_element?(name) ? "" : "\n")
             ret
           end
-          
-          def to_html            
-            to_tag
-            #parent.data.first.to_tag
-          end
-          
-          def to_s
-            case self
-            when Elements
-              to_tag
-            when Element
-              to_html
-            else
-            end
-          end
+          alias :to_s :to_html
         end
         
         module Transformer
           
           def append(&blk)
-            set(:push, &blk)
+            __set__(:push, &blk)
           end
 
           def prepend(&blk)
-            set(:unshift, &blk)
+            __set__(:unshift, &blk)
           end
 
-          def set(where, &blk)
+          def __set__(where, &blk)
             ret = Pyr.new.build(&blk)
-            case self
-            when Elements
-              send(where, ret)
-            when Element
-              send(where, ret)
-              self
-            end
+            send(where, ret)
+            self
           end
+          private :__set__
         end
         
         # handles ways to fetch things
@@ -156,7 +156,8 @@ module Backbite
 
           def clean!
             class << self
-              [:p, :id, :clear].each do |m|
+              [:p, :id, :clean!].each do |m|
+                alias_method("__#{m}__", m)
                 undef_method(m) rescue nil 
               end
             end
@@ -169,8 +170,8 @@ module Backbite
           def closed?
             @closed or false
           end
-          
-          def method_missing(m, *args, &blk)
+
+          def __append_node__(m, *args, &blk)
             unless closed?
               ele = Element[m]
               if args.first.kind_of?(String)
@@ -180,9 +181,14 @@ module Backbite
               ele.build(&blk)
               data[m] ||= Elements.new
               data[m] << ele
+              ele
             else
-              super
+              false
             end
+          end
+          
+          def method_missing(m, *args, &blk)
+            super unless ele = __append_node__(m, *args, &blk)
             ele
           end
         end

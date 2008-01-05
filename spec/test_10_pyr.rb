@@ -27,7 +27,10 @@ default = proc{
 
       div {
         p{
-          ul "la"
+          ul {
+            li "la"
+            li "lu"
+          }
         }
       }
     }
@@ -59,10 +62,10 @@ describe Backbite::Helper::Builder::Pyr do
     @std['/body/div'].size.should == 1
     @std['/body/div/p'].size.should == 1
     @std['/body/div/p/ul/'].size.should == 1
-    @std['/body/div/p/ul/'].first.value.should == "la"
     @std['/body/div/p/ul/'].first.parent.name.should == :p
     @std['/body/div/p/../'].name == :div
     @std['/body/']['/p'].size == 3
+    #puts @std.to_html
   end
 
   it "should accessible through symbols" do
@@ -88,7 +91,7 @@ describe Backbite::Helper::Builder::Pyr do
   it "should have a path length" do
     @std.first.path_length.should == 1
     @std['/head/title'].first.path_length.should == 2
-    #@std['/body/div/p/ul'].path_length.should == 4
+    @std['/body/div/p/ul'].path_length.should == 4
   end
 
   it "should be possible to prepend/append elements (Elements)" do
