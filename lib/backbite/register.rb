@@ -13,20 +13,26 @@ module Backbite
       self.file = RegisterFile
     end
 
+    # <tt>default=</tt> wants an tumblog object and safes a
+    # <tt>{:DEFAULT => "name:cfgfile"}</tt>.
     def default=(tlog)
-      self[:DEFAULT] = "#{tlog.name}:#{self[tlog.name]}"
+      cfgf = self.fetch(tlog.name)
+      self[:DEFAULT] = "#{tlog.name}:#{cfgf}"
     end
 
+    # returns true if there is a default tumblog
     def default?
       not self[:DEFAULT].nil?
     end
 
+    # returns default tumblog
     def default
       if default?
         self[:DEFAULT]
       end
     end
-    
+
+    # sets registerfile
     def file=(regfile)
       @register = Pathname.new(regfile)
       reload

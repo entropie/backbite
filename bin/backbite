@@ -12,7 +12,7 @@ ARGV << 'help' if ARGV.empty?
 
 if af = ARGV.first and r = Backbite.register[af.to_sym]
   Info << "Using #{af}"
-  tlog = Backbite.register[af.to_sym]
+  tlog = Backbite.register[ARGV.shift.to_sym]
 end
 
 if tlog.nil? and Backbite.register.default?
@@ -20,7 +20,7 @@ if tlog.nil? and Backbite.register.default?
   warn "#{tlog.name} is not a valid repository." unless tlog.valid?
 elsif Backbite.register.empty?
   warn "no tumblogs known"
-else
+elsif not tlog
   warn "there's no default tumblog"
 end
 
@@ -126,12 +126,14 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
     end
   end
 
-  op.keyword(:register, tlog.register) do |op, handler|
-    op.desc "basically a set of tumblogs and maybe a default"
+  if tlog and tlog.register
+    op.keyword(:register, tlog.register) do |op, handler|
+      op.desc "basically a set of tumblogs and maybe a default"
 
-    op.declare(:ls, "lists registers"){
-      puts handler
-    }
+      op.declare(:ls, "lists registers"){
+        puts handler
+      }
+    end
   end
   
   op.keyword(:tlog, tlog) do |op, handler|
@@ -165,10 +167,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
     op.declare(:default, "set <default> tumblog"){ |*default|
       unless default.empty?
         default = default.shift
-        
-        d = default.to_sym
-        cfg = Backbite.register[d]
-        tlog = Tumblelog.new(default.to_sym, cfg)
+        tlog = Backbite.register[default.to_sym]
         Backbite.register.default = tlog
       end
       puts register
@@ -208,6 +207,3 @@ begin
 rescue GetReal => e
   puts e.inspect
 end
-
-
-

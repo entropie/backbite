@@ -8,17 +8,16 @@ define(:mercurial) do
   target :box
 
   style {
-    #background_image 'url(../images/l_bg.png)'
     position :relative
-    padding_left 50.px
-    padding_right 40.px
+    backround_color :red
+    padding 0.px
+    margin 0.px
   }
 
   fields {
 
     plugin_changeset {
       style {
-        float :left
         padding_right 20.px
       }
     }
@@ -51,10 +50,9 @@ define(:mercurial) do
     plugin_permalink {
       style {
         background_color :transparent
-        left 15.px
-        # margin_right -23.px
+        margin_right -23.px
         # margin_top -10.px
-        #display :block
+        display :block
       }
     }
 

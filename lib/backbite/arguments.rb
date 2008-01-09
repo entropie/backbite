@@ -91,6 +91,7 @@ module Backbite
     def keyword(kw, handler = Object)
       @current_keyword = kw
       @definition = @responder[@current_keyword]
+      handler = Object unless handler
       yield(self, handler.dup)
     end
     

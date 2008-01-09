@@ -98,6 +98,7 @@ module Backbite
 
     AutoFieldNames = [:before, :content, :after]
 
+    include Helper::Builder
 
     # The params
     attr_accessor :params

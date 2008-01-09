@@ -13,13 +13,21 @@ module Backbite
       # :include:../../../doc/pyr.rdoc
       class Pyr
 
+        def indent=(o)
+          @indent = o
+        end
+        
+        def self.build(ind = 0, &blk)
+          new.build(ind, &blk)
+        end
+        
         module Outputter
 
           ELEMENTS = {
             :blocklevel => %w(ul p table div body html head),
-            :inline     => %w(a title li span bold i accronym strong)
+            :inline     => %w(a title li span bold i accronym strong img)
           }
-          
+
           def Outputter.fmt_args(args)
             return ['', ''] unless args
             rh = { }
@@ -47,7 +55,7 @@ module Backbite
             if respond_to?(:name) and Outputter.inline_element?(name)
               return '' unless first
             end
-            "\n#{"  "*(path_length)}"
+            "\n#{"  "*(indent + path_length)}"
           end
           
           def to_html
@@ -76,23 +84,22 @@ module Backbite
         
         module Transformer
           
-          def append(&blk)
-            __set__(:push, &blk)
+          def append(index = 0, &blk)
+            __set__(:push, ind, &blk)
           end
 
-          def prepend(&blk)
-            __set__(:unshift, &blk)
+          def prepend(index = 0, &blk)
+            __set__(:unshift, ind, &blk)
           end
 
-          def __set__(where, &blk)
-            ret = Pyr.new.build(&blk)
+          def __set__(where, index = 0, &blk)
+            ret = Pyr.build(path_length + indent, &blk)
             send(where, ret)
             self
           end
           private :__set__
         end
         
-        # handles ways to fetch things
         module Accessor
           
           def children
@@ -149,8 +156,9 @@ module Backbite
           end
           alias :children :data
           
-          def build(&blk)
+          def build(ind = 0, &blk)
             builder = extend(Builder)
+            self.indent = builder.indent = ind
             builder.instance_eval(&blk) if block_given?
           end
 
@@ -178,6 +186,7 @@ module Backbite
                 ele.value = args.shift
               end
               ele.parent, ele.args = self, args
+              ele.indent = @indent
               ele.build(&blk)
               data[m] ||= Elements.new
               data[m] << ele
@@ -230,7 +239,6 @@ module Backbite
 
         end
 
-
         class Element
           
           include Accessor
@@ -238,7 +246,7 @@ module Backbite
           include Outputter
           
           attr_accessor :args
-
+          attr_accessor :indent
           attr_reader  :name
 
           def unshift(o)
@@ -292,11 +300,6 @@ module Backbite
             ele
           end
 
-          def build(&blk)
-            instance_eval(&blk) if block_given?
-            self
-          end
-          
           def path_length
             i = -1
             if respond_to?(:parent)
