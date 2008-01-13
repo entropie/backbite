@@ -92,6 +92,13 @@ task :rdoc do
   system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)"')
 end
 
+task :stakeout do
+  ARGV.shift
+  cmd = "spec #{ARGV.join(' ')} -r lib/backbite"
+  sh 'stakeout "%s" skel/export/* lib/backbite/* lib/backbite/post/* lib/backbite/helper/* lib/backbite/ruby_ext/*' % cmd
+end
+
+
 task :advance do
   file = File.open(tf = Backbite::Source.join('lib/backbite.rb'))
   fcs = file.readlines

@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-Config[:rspec].setup do
+Settings[:rspec].setup do
 
   defaults do
 
@@ -31,7 +31,7 @@ Config[:rspec].setup do
       plugins { 
         tags
         date 
-        permalink { value lambda{ style{ background_color :silver } } }
+        #permalink { value lambda{ style{ background_color :silver } } }
       }
     end
     

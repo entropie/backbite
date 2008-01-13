@@ -267,14 +267,18 @@ module Backbite
           @predefined = definitions[:value] || ''
         end
 
-        def apply_markup(markup, str)
-          case markup
-          when :redcloth
-            require 'redcloth'
-            RedCloth.new(str).to_html
-          else
-            str
+        def apply_markup(type, str)
+          # markup
+          if definitions[:markup] and markup = definitions[:markup][type]
+            return case markup
+                   when :redcloth
+                     require 'redcloth'
+                     RedCloth.new(str).to_html
+                   else
+                     str
+                   end
           end
+          str
         end
 
         def has_filter?(filter)
@@ -348,19 +352,9 @@ module Backbite
         end
       end
 
-      class Inputs < Hash
+      class Inputs < Helper::Dictionary
+
         attr_reader :config
-        def initialize(org)
-          @config = org
-        end
-
-        def order
-          @config.ordered
-        end
-
-        def sort
-          @config.sort
-        end
       end
 
       class InputFields < Inputs # :nodoc: All

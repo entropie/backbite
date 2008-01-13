@@ -35,7 +35,7 @@ module Backbite
       
       def make(name)
         efile = Backbite::Source.join('doc', 'exampleconfig.rb')
-        cfg = Config.read(efile)
+        cfg = Settings.read(efile)
         tlroot = cfg[:defaults][:root]
         
         econts = efile.readlines.join

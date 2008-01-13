@@ -16,14 +16,12 @@ module Backbite
       r
     end
 
-
+    
     # loads all plugins for +comp+
     def self.load_for_component(comp)
       tlog = comp.tlog
       tld = tlog.repository.join('plugins')
-      plugin_fields = comp.config[:fields].map{ |f|
-        f.first
-      }.compact
+      plugin_fields = comp.config[:fields].keys
       plugins = tld.entries.map do |pl|
         next if pl.to_s =~ /^\.+/
         npl = ("plugin_" + pl.to_s[0..-4]).to_sym
@@ -49,9 +47,11 @@ module Backbite
     
 
     def self.result_for_independent(tree, tlog, conf, params = { })
-      conf.map{ |plname, plvals|
-        load_for_independent(tlog, plname)
-      }.flatten.map do |ip|
+      tars = []
+      conf.each{ |plname, plvals|
+        tars << load_for_independent(tlog, plname)
+      }
+      tars.flatten.map do |ip|
         ip = ip.new(tlog)
         ip.tree = tree
         ip.tlog = tlog
@@ -95,7 +95,7 @@ module Backbite
   # * filter   -- overall filter to modify contents during export
   # * *_filter -- filter which will be only applied for corresponding export variant, for example +html_filter+
   class Plugin
-
+    
     AutoFieldNames = [:before, :content, :after]
 
     include Helper::Builder

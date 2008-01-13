@@ -1,5 +1,4 @@
 =begin
-
   pyr = Backbite::Helper::Builder::Pyr.new.build do
     html {
       head {
@@ -23,45 +22,41 @@
     }
   end
   
-  pyr['/body/h1'].first.value                 # => "topic"
-  pyr['/head/title'].value = 'foobar'         # => "foobar"
+  pyr['/body/h1'].first.value     # => "topic"
+  pyr['/head/title'].value = 'foobar' # => "foobar"
   pyr['/body/p'].last.append{ div("world", :id => "hello") }
-  pyr['/body/div/p'].last.value = "to long"   # => "to long"
-  pyr['/body/'].last.prepend{ pa("good bye!") }
+  pyr['/body/div/p'].last.value = "to long" # => "to long"
+  pyr['/body/div/'].last.append{ link "la"}
+  pyr['/body/'].last.prepend{ div("good bye!") }
   pyr[:head].first.replace{ title "something new"; meta("lala") }
-  pyr.to_html                     # =>
-  
-  <html>
-    <head>
-      <title>something new</title>
-  
-      <meta>lala</meta>
-  </head>
-  
-    <body>
-  <pa>good bye!</pa>
-  
-      <h1 class="bla">topic</h1>
-  
-      <p deine="mama">
-        <a class="foo" href="foo">lorem</a>
-  
-  <div id="hello">world</div>
-  </p>
-  
-      <div id="footer">
-        <p>
-          <ul>
-            <li>
-              <a href="bar">la</a>
-  </li>
-  
-            <li>lu</li>
-  </ul>
-  </p>
-  
-        <p>to long</p>
-  </div>
-  </body>
-  </html>
+  pyr['/body/h1'].first.value     # => "topic"
+  puts pyr.to_html                
+  # >> 
+  # >> <html>
+  # >> <head>
+  # >>   <title>something new</title>
+  # >>   <meta>lala</meta>
+  # >> </head>
+  # >> <body>
+  # >>   <h1 class="bla">topic</h1>
+  # >>   <p deine="mama">
+  # >>     <a class="foo" href="foo">lorem</a>
+  # >>     <div id="hello">world
+  # >>     </div>
+  # >>   </p>
+  # >>   <div id="footer">
+  # >>     <p>
+  # >>       <ul>
+  # >>         <li>
+  # >>           <a href="bar">la</a></li>
+  # >>         <li>lu</li>
+  # >>       </ul>
+  # >>     </p>
+  # >>     <p>to long
+  # >>     </p>
+  # >>     <link>la</link>
+  # >>   </div>
+  # >> </body>
+  # >> </html>
+
 =end

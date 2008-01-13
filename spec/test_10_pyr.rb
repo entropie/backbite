@@ -95,9 +95,9 @@ describe Backbite::Helper::Builder::Pyr do
   end
 
   it "should be possible to prepend/append elements (Elements)" do
-    @std['/head'].first.prepend{ meta(:foo => :bar) { 'a' } }
-    a=@std['/head'].last.append{ bum(:foo => :bar) { 'a' } }
-    nospaces(a.to_html, "\n  <head>\n<meta foo=\"bar\"></meta>\n\n    <title>mytitle</title>\n\n<bum foo=\"bar\"></bum>\n</head>\n")
+    @std['/head/'].prepend(1){ meta(:foo => :bar) { 'a' } }
+    @std['/head/'].inner_append(1){ bum(:foo => :bar) { a'a' } }
+    nospaces(@std[:head].to_html, "\n  <meta foo=\"bar\">\n  </meta>\n  <head>\n    <title>mytitle</title>\n  <bum foo=\"bar\">\n  <a>a</a>\n  </bum>\n  </head>")
   end
 
   it "should be possible to append elements the simple way(Element)" do
@@ -122,6 +122,16 @@ describe Backbite::Helper::Builder::Pyr do
     nospaces(@std[:head].to_html, "\n  <head>\n    <title>asdfg</title>\n\n    <meta>bzmm</meta>\n</head>\n")
   end
 
+  it "should be possible to append elements" do
+    @std['/body/'].inner_prepend{ bla "alx" }
+    @std['/body/'].inner_append{ keke "lala" }
+    @std['/body/'].first[:bla].value.should == "alx"
+    @std['/body/'].last[:keke].value.should == "lala"
+  end
+  it "should be possible to access parent element" do
+    @std['/body/'].parent.name.should == :html
+    @std['/head/title'].first.parent.name.should == :head
+  end
   
 end
 

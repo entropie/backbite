@@ -13,27 +13,37 @@ module Backbite
       # :include:../../../doc/pyr.rdoc
       class Pyr
 
-        def indent=(o)
-          @indent = o
+        attr_reader :indent
+        def initialize
+          @indent = 0
         end
-        
+
         def self.build(ind = 0, &blk)
           new.build(ind, &blk)
         end
-        
-        module Outputter
 
+        def indent=(o)
+          @indent = o
+        end
+
+        module Outputter
+          
           ELEMENTS = {
             :blocklevel => %w(ul p table div body html head),
-            :inline     => %w(a title li span bold i accronym strong img)
+            :inline     => %w(a title li span bold i accronym strong img link meta h1 h2 h3 h4 h5 h6 script)
           }
 
-          def Outputter.fmt_args(args)
-            return ['', ''] unless args
+          def Outputter.fmt_args(args, ind = 0)
+            return '' unless args
             rh = { }
             args.each do |arg|
               case arg
               when String
+              when Pyr, Element, Elements
+              when Array
+                if arg.all?{ |a| a.kind_of?(Element) }
+                  arg.map!{ |a| a.indent = ind }
+                end
               else
                 rh.merge!(arg)
               end
@@ -55,19 +65,18 @@ module Backbite
             if respond_to?(:name) and Outputter.inline_element?(name)
               return '' unless first
             end
-            "\n#{"  "*(indent + path_length)}"
+            "\n#{"  "*indent}"
           end
           
+
           def to_html
-            childs, ret = nil, ''
+            childs, ret = children, ''
             case self
             when Elements
-              childs = children
             when Element
-              nargs = Outputter.fmt_args(args)
+              nargs = Outputter.fmt_args(args, @indent+1)
               ret << "" << __prefix__(true) << "<#{self.name}#{nargs}>"
               ret << value
-              childs = children
             end
             
             childs.each do |mab, ele|
@@ -76,27 +85,40 @@ module Backbite
             end if childs
 
             ret << "#{__prefix__}</#{self.name}>" if self.kind_of?(Element)
-            #ret << (Outputter.inline_element?(name) ? "" : "\n")
             ret
           end
           alias :to_s :to_html
         end
         
         module Transformer
-          
-          def append(index = 0, &blk)
+
+          def inner_append(ind = 0, &blk)
+            ret = Pyr.build(last.path_length + ind, &blk)
+            last.data.push(ret.name, ret)
+            self
+          end
+
+          def inner_prepend(ind = 0, &blk)
+            ret = Pyr.build(first.path_length + ind, &blk)
+            first.data.push(ret.name, ret)
+            self
+          end
+
+          def append(ind = 0, &blk)
             __set__(:push, ind, &blk)
           end
 
-          def prepend(index = 0, &blk)
+          def prepend(ind = 0, &blk)
             __set__(:unshift, ind, &blk)
           end
 
-          def __set__(where, index = 0, &blk)
-            ret = Pyr.build(path_length + indent, &blk)
+          def __set__(where, ind = 0, &blk)
+            pl = respond_to?(:path_length) ? path_length : 0
+            ret = Pyr.build(pl + ind, &blk)
             send(where, ret)
             self
           end
+
           private :__set__
         end
         
@@ -150,18 +172,19 @@ module Backbite
           
           attr_accessor :parent
 
+          def build(ind = 0, &blk)
+            builder = extend(Builder)
+            builder.indent = ind
+            builder.instance_eval(&blk) if block_given?
+          end
+
+
           def data(reset = false)
             @data = nil if reset
             @data ||= Helper::Dictionary.new
           end
           alias :children :data
           
-          def build(ind = 0, &blk)
-            builder = extend(Builder)
-            self.indent = builder.indent = ind
-            builder.instance_eval(&blk) if block_given?
-          end
-
           def clean!
             class << self
               [:p, :id, :clean!].each do |m|
@@ -182,13 +205,15 @@ module Backbite
           def __append_node__(m, *args, &blk)
             unless closed?
               ele = Element[m]
-              if args.first.kind_of?(String)
+              if (arg = args.first and (arg.kind_of?(String) or arg.kind_of?(Symbol)))
                 ele.value = args.shift
               end
               ele.parent, ele.args = self, args
-              ele.indent = @indent
               ele.build(&blk)
               data[m] ||= Elements.new
+              data[m].parent = self
+              data[m].indent = respond_to?(:path_length) ? path_length : @indent
+              #data[m].indent = path_length
               data[m] << ele
               ele
             else
@@ -196,8 +221,8 @@ module Backbite
             end
           end
           
-          def method_missing(m, *args, &blk)
-            super unless ele = __append_node__(m, *args, &blk)
+          def method_missing(*args, &blk)
+            super unless ele = __append_node__(*args, &blk)
             ele
           end
         end
@@ -208,7 +233,16 @@ module Backbite
           
           include Accessor
           include Outputter
+          #include Builder
 
+          attr_accessor :indent
+          attr_accessor :parent
+          
+          def <<(o)
+            o.indent = @indent
+            super
+          end
+          
           def keys
             self
           end

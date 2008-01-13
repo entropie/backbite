@@ -34,6 +34,19 @@ module Backbite
         end
         posto
       end
+
+      module NodeFilter
+
+        RespondsTo = :node
+
+        def filter(params, &blk)
+          name = params[:name]
+          itemss = params[:node][:items]
+          reject!{ |post|
+            not post.config[:target].include?(name)
+          }
+        end
+      end
       
       module IdsFilter
 
@@ -56,7 +69,7 @@ module Backbite
           target = params[:target]
           target = target.to_sym
           reject!{ |p|
-            target != p.config[:target]
+            target != p.config[:target].first
           }
         end
       end

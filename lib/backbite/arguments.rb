@@ -12,8 +12,10 @@ module Backbite
     options = Optionparser.new
     begin
       yield options if block_given?
-    rescue NoMethodError
-      Warn << $!
+      # rescue NoMethodError
+      #   p 11
+      #   Warn << $!
+      # end
     end
     options
   end
@@ -22,7 +24,7 @@ module Backbite
 
     include Helper::Text
     
-    UnknownArgument = Backbite::NastyDream(self)
+    UnknownArgument = Backbite::NastyDream(self) unless defined? UnknownArgument
 
     def banner(text)
       @banner = text << "\n"

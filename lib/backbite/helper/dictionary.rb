@@ -201,6 +201,10 @@ module Backbite
       #  super hsh2
       #end
 
+      def to_hash
+        @hash.dup
+      end
+      
       def ==( hsh2 )
         if hsh2.is_a?( Dictionary )
           @order == hsh2.order &&
@@ -304,7 +308,7 @@ module Backbite
         @order = hsh2.order
         @hash = hsh2.hash
       end
-
+      
       def shift
         key = order.first
         key ? [key,delete(key)] : super

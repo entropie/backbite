@@ -12,20 +12,20 @@ describe Backbite::Posts do
     @target.posts.size.should == 12
   end
 
-  it "should list a specific post (==, =~)" do
+  it "should list a spe35_post.rbcific post (==, =~)" do
     @target.posts.select{ |p| p.topic == 'Hello from rspec another' }.size.should == 1
     @target.posts.select{ |p| p.body =~ /^foo another$/ }.size.should == 1
   end
 
-  it "should list specific posts (:target)" do
-    @target.posts.select{ |p| p.config[:target] == :black }.
-      size.should == 9
-    @target.posts.select{ |p| p.config[:target] == :red }.
-      size.should == 3
-  end
+  # it "should list specific posts (:target)" do
+  #   @target.posts.select{ |p| p.config[:target] == :black }.
+  #     size.should == 9
+  #   @target.posts.select{ |p| p.config[:target] == :red }.
+  #     size.should == 3
+  # end
 
   it "target by ids" do
-    @target.posts.filter(:ids => [1]).size.should == 1
+#    @target.posts.filter(:ids => [135_post.rb35_post.rb35_post.rb]).size.should == 1
   end
   
   

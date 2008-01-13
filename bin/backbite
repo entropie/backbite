@@ -25,7 +25,7 @@ elsif not tlog
 end
 
 op = Backbite.optionparser do |op|
-
+  
   op.banner %Q(
 This is Backbite [#{Backbite.version}]
 

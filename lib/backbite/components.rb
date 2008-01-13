@@ -56,6 +56,8 @@ module Backbite
     # A component is a file with some declarations for fields and
     # plugins, and some default behaviors.
     class Component
+
+      include Settings
       
       attr_accessor :tlog
 
@@ -94,14 +96,14 @@ module Backbite
         @fields = nil if force
         if not @fields
           @fields ||= Post::Fields.new
-          fields = @config[:fields].map do |field, defi|
+          @config[:fields].each do |field, defi|
             result = Post::Fields.select(field, defi, self)
             if @source and value = @source[field]
               result.value = value
             end
-            result
+            @fields.push(result)
           end
-          @fields.push(*fields)
+          #@fields.push(*fields)
         end
         #puts @fields.map{ |f| f.name}.join(',')
         @fields
@@ -178,7 +180,6 @@ module Backbite
       end
 
       def setup!
-        @order = @config[:fields].order
         @config = with_default_plugins(config)
         reread!
       end
@@ -186,6 +187,7 @@ module Backbite
       # Wraps the config values to somewhat we can understand better here.
       def reread!
         @config.each do |ident, values|
+          values = values.to_hash if values.kind_of?(Helper::Dictionary)
           case ident
           when :fields
             (@config[ident] = Post::Fields.input_fields(values)).merge!(values)
@@ -197,26 +199,20 @@ module Backbite
 
       
       def read!(&blk)
-        config = Config::Configuration.new(@name)
+        config = Configuration.new(@name)
         config.setup(&blk)
         @config = config
         self
       end
 
-      def order
-        @order
-      end
-      
       def with_default_plugins(cfg)
         aplugins = tlog.config[:defaults][:automatic][:plugins]
-        aplugins.order.each do |plugin|
+        aplugins.each do |plugin, value|
           name = "plugin_#{plugin.to_s}".to_sym
-          value = aplugins[plugin][:value]
           unless value.kind_of?(Proc)
             value = lambda{ }
           end
-          @order = order.push(name).uniq
-          cfg[:fields][name].read(&value)
+          cfg[:fields][name].read(&value) if cfg[:fields][:name]
         end
         cfg
       end

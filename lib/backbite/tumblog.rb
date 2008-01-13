@@ -7,8 +7,8 @@ module Backbite
 
   class Tumblelog
 
-
     include Helper
+    include Settings
 
 
     attr_reader :repository, :config, :name, :options
@@ -24,8 +24,8 @@ module Backbite
 
     def register
       @register ||= Register.new
-      @register.file = config[:defaults][:register].to_s unless
-        config[:defaults][:register].empty?
+      @register.file = config[:defaults][:register].to_s if
+        config[:defaults][:register]
       @register
     end
     
@@ -74,7 +74,7 @@ module Backbite
     def initialize(name, fdata)
       @name = name
       @configfile = fdata
-      @config = Config.read(fdata)
+      @config = Settings.read(fdata)
       @repository = Repository.new(@name, root)
       Helper::CacheAble.cachefile = @repository.join("#{ @name }.pstore")
       @repository.tlog = self

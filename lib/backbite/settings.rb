@@ -6,7 +6,7 @@
 module Backbite
 
   # A dummy which returns a Configurations instance with the name set.
-  class Config
+  module Settings
 
 
     def self.[](obj)
@@ -17,6 +17,23 @@ module Backbite
     def self.read(data)
       Configuration.read(data)
     end
+
+
+    def self.load(name, &blk)
+      Configuration.new(name).setup(&blk)
+    end
+    
+
+    module Accessor
+
+      def [](obj)
+        ret = super
+        return ret.first if ret.kind_of?(Array) and ret.size == 1
+        ret
+      end
+      
+    end
+
 
     module Replacer
       
@@ -86,30 +103,11 @@ module Backbite
       end
 
 
-      # Returns an array containing the keys of the current Hash in the
-      # order of inserting.
-      def order
-        @order ||= []
-      end
-      
-
-      # Returns an Array of nodes, ordered, first element is the name of
-      # the node, second the ordered values array.
-      def sort
-        ret = []
-        order.each do |o|
-          t = if self[o].kind_of?(Hash) then self[o].ordered else self[o] end
-          ret << [o,t]
-        end
-        ret
-      end
-      
-
-      def method_missing(m, v = Parser.config_hash, &b)
+      def method_missing(m, *args, &b)
+        args = Parser.config_hash if args.empty?
         m = m.to_s.gsub(/=$/, '').to_sym
         if not self.keys.include?(m)
-          order << m
-          self[m] = v
+          self[m] = args
         end
         self[m].read(&b) if block_given? #and self[m].respond_to?(:read)
         self[m]
@@ -117,7 +115,10 @@ module Backbite
 
 
       def self.config_hash
-        Hash.new{ |h,k| h[k] = config_hash }.extend(Parser).cleanup
+        dict = Helper::Dictionary.new
+        dict.extend(Parser)
+        dict.extend(Accessor)
+        dict.cleanup
       end
     end
 
