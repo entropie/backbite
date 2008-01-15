@@ -1,6 +1,6 @@
 define(:image) do
   
-  target :content_node # edit me!
+  target :red # edit me!
 
   style {
   }

@@ -11,15 +11,17 @@ module Backbite
     def self.export(tlog, params)
       ret = []
       retstr = ''
-      dfs = {
+      stylesheets = {
         :generated => { :media => :screen },
         :base => { :media => :screen }
       }
-
-      tlog.config[:stylesheets][:screen].each do |n|
-        dfs.merge!(n => { :media => :screen})
+      tlog.config[:stylesheets].each do |media, value|
+        tlog.config[:stylesheets][media].each do |m|
+          stylesheets[m] = { :media => :screen}
+        end
       end
-      dfs.each_pair { |ftype, m|
+      
+      stylesheets.each_pair { |ftype, m|
         tree = Tree.new(ftype, tlog, params)
         tree.write
         ret << tree
@@ -28,10 +30,27 @@ module Backbite
       retstr
     end
 
-    class Tree < Repository::ExportTree # :nodoc: All
+    def self.sanitize_def(name)
+      name.to_s.gsub(/_/, '-')
+    end
+
+    def self.sanitize_val(value)
+      value
+    end
+    
+    def self.mk_css_definitions(name, hash, indent = 2)
+      ret = "#{name} {\n"
+      hash.each_pair do |field, value|
+        ret << (" "*indent) << "#{sanitize_def(field)}:#{sanitize_val(value)};\n"
+      end
+      ret << "}\n\n"
+    end
+
+    
+    class Tree < Repository::ExportTree
 
       def initialize(file, tlog, params)
-        @ofile = file
+        @out_file = file
         @filename = tlog.http_path("include/%s.css" % file).to_s
         super(tlog, params)
         @file = "include/#{file}.css"
@@ -40,15 +59,20 @@ module Backbite
         @__result__ = @str
       end
 
+      def to_s
+        @__result__
+      end
+
+      
       def definition_for
         @str <<
-          case @ofile
+          case @out_file
           when :generated
-            generated_definitions << "\n/* EOF: #{@filename} */\n\n\n"
+            generated_definitions
           when :base
-            generated_base << "\n/* EOF: #{@filename} */\n\n\n"
+            generated_base
           when /\.(haml|sass)$/
-            file = tlog.repository.join("misc", @ofile)
+            file = tlog.repository.join("misc", @out_file)
             if file.exist?
               Sass::Engine.new(file.readlines.join).render
             else
@@ -61,17 +85,42 @@ module Backbite
           end
       end
 
-      def self.sanitize_fieldname(fname)
-        fname.to_s.gsub(/_/, '-')
+      # generate definitions for components
+      def generated_definitions
+        ret = ''
+        components = tlog.components.each do |co|
+          target, style = co.config[:target].first, co.config[:style]
+          ret << Repository::Export::CSS.mk_css_definitions("#{target} > .#{co.name}", style)
+          co.fields.each do |field|
+            name = "#{target} > .#{co.name} > .#{field.to_sym}"
+            if field.respond_to?(:definitions) and field.definitions[:style]
+              ret << Repository::Export::CSS.mk_css_definitions("##{name}", field.definitions[:style])
+            end
+          end
+        end
+        
+        ret
       end
-
+      
+      # generate definitions for body{} and for each html node
+      def generated_base
+        ret = ''
+        if tlog.config[:html] and tlog.config[:html][:body] and style = tlog.config[:html][:body][:style]
+          ret << Repository::Export::CSS.mk_css_definitions('body', style)
+        end
+        nodes = tlog.config[:html][:body][:style]
+        nodes = tlog.config[:html][:body].select{ |k,v| not Repository::IgnoredBodyFields.include?(k.to_sym)}
+        styles = nodes.map{ |name, values| [name, values[:style]]}
+        styles.each do |name, style|
+          ret << Repository::Export::CSS.mk_css_definitions("##{name}", style)
+        end
+        ret
+      end
       
     end
     
   end
 end
-
-
 
 
 =begin

@@ -9,7 +9,7 @@ know what I'm talking about, you see that a Tumblelog may consist of
 quotes, images, videos or simply blog Posts. Each of this parts is
 called *Component* in Backbite terminology.
 
-Example: http://ackro.ath.cx/~mit/polis
+Example: http://ackro.ath.cx/~mit/blog
 
 Backbite is *highly* customizable. During setup, some default files
 will be copied to your repos, like exporter, plugins and components,

@@ -353,7 +353,6 @@ module Backbite
       end
 
       class Inputs < Helper::Dictionary
-
         attr_reader :config
       end
 

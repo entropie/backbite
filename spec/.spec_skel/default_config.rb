@@ -77,17 +77,20 @@ Settings[:rspec].setup do
         margin 0.px
         padding 0.px
         color :navy
-        background_color '%colors_bg_body%'
+        background_color 'black'
         font_family 'verdena courier arial'
       end
 
       red do
+        before {
+          lambda{ div "23" }
+        }
         items.max = 100
         items.min = 10
         style do
-          background_color '%colors_bg_red%'
+          background_color 'green'
           width '42%'
-          float :left
+          float :right
           margin 40.px
           border_top '3px solid navy'
           border_right '3px solid navy'
