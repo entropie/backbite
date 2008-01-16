@@ -26,7 +26,7 @@ module Backbite
           @indent = o
         end
 
-        module Outputter
+        module Outputter  # :nodoc: All
           
           ELEMENTS = {
             :blocklevel => %w(ul p table div body html head),
@@ -90,7 +90,7 @@ module Backbite
           alias :to_s :to_html
         end
         
-        module Transformer
+        module Transformer # :nodoc: All
 
           def inner_append(ind = 0, &blk)
             ret = Pyr.build(last.path_length + ind, &blk)
@@ -122,7 +122,7 @@ module Backbite
           private :__set__
         end
         
-        module Accessor
+        module Accessor # :nodoc: All
           
           def children
             data
@@ -168,7 +168,7 @@ module Backbite
 
         end
         
-        module Builder
+        module Builder # :nodoc: All
           
           attr_accessor :parent
 
@@ -229,7 +229,7 @@ module Backbite
 
         include Builder
 
-        class Elements < Array
+        class Elements < Array  # :nodoc: All
           
           include Accessor
           include Outputter
@@ -273,7 +273,7 @@ module Backbite
 
         end
 
-        class Element
+        class Element  # :nodoc: All
           
           include Accessor
           include Transformer

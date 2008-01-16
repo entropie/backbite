@@ -90,7 +90,7 @@ Settings[:rspec].setup do
         style do
           background_color 'green'
           width '42%'
-          float :right
+          float :left
           margin 40.px
           border_top '3px solid navy'
           border_right '3px solid navy'

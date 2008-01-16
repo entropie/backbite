@@ -7,6 +7,23 @@ module Backbite
 
   class Posts < Array
 
+    # Filter is used to select specific posts from the list,
+    # known Filter atm:
+    # * NodeFilter -- filter by node (responds to :node)
+    # * IdsFilter -- filter by id (responds to :ids)
+    # * TargetFilter -- filter by tags (responds to :tags)
+    # * RangeFilter -- filter by a given Date range (responds to :between)
+    #
+    # Additional there are descrutive methods for sorting defined
+    # in Posts.
+    # * by_id! -- sort by id
+    # * by_date! -- sort by date
+    #
+    # == Example
+    #
+    #  tlog.posts.filter(:target => name.to_sym).by_date!.reverse
+    #  tlog.posts.filter(:between => 4.days..3.days)
+    #
     module Filter
 
       def self.select(params, posto)
@@ -21,7 +38,7 @@ module Backbite
               t = [t] unless t.kind_of?(Array)
               t.include?(param)
             else
-              Warn << "#{c}: No RepsondTo attribute, module is useles."
+              Warn << "#{c}: No RepsondTo attribute, module is useless."
               false
             end
           }.each do |co|
@@ -35,7 +52,7 @@ module Backbite
         posto
       end
 
-      module NodeFilter
+      module NodeFilter # :nodoc: All
 
         RespondsTo = :node
 
@@ -48,7 +65,7 @@ module Backbite
         end
       end
       
-      module IdsFilter
+      module IdsFilter  # :nodoc: All
 
         RespondsTo = :ids
 
@@ -61,7 +78,7 @@ module Backbite
         end
       end
 
-      module TargetFilter
+      module TargetFilter  # :nodoc: All
 
         RespondsTo = :target
 
@@ -74,7 +91,7 @@ module Backbite
         end
       end
 
-      module TagsFilter
+      module TagsFilter  # :nodoc: All
 
         RespondsTo = :tags
 
@@ -86,7 +103,7 @@ module Backbite
         end
       end
 
-      module RangeFilter
+      module RangeFilter # :nodoc: All
 
         RespondsTo = [:range, :between]
 
@@ -106,16 +123,7 @@ module Backbite
           end
         end
       end
-
-      module DateFilter
-
-        RespondsTo = :date
-
-        def filter(params, &blk)
-        end
-        
-      end
-
+      
     end
   end
 end

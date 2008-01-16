@@ -5,10 +5,12 @@
 
 module Backbite
 
+  # use this method to define you error Constants
   def Backbite::NastyDream(what)
     Class.new(GetReal)
   end
 
+  # Basic exception handler class
   class GetReal < Exception
     def inspect
       res = "[#{"Wake up".underline}:#{self.class.to_s.split('::').last(2).join('::').red}] #{message.to_s.white}"

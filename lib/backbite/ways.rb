@@ -272,7 +272,7 @@ module Backbite
           super(field, result)
         end
       end
-   
+      
     end
     
   end

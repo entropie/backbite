@@ -46,7 +46,6 @@ define :test do
 
     plugin_date do # optional
       style do
-        background_color '#3076C8'
         color            '#0F59B8'
         padding 3.px
         text_align :right

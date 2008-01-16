@@ -5,6 +5,7 @@
 
 module Backbite
 
+  # Generate file skeletons  for Tumblelog, Components and Plugins
   module Generators
 
     UnknownGenerator = Backbite::NastyDream(self)
@@ -28,7 +29,7 @@ module Backbite
       end
     end
 
-    module Tumblelog
+    module Tumblelog # :nodoc: All
       def load_tlog(name, file)
         Tumblelog.new(name, file)
       end
@@ -44,7 +45,7 @@ module Backbite
       end
     end
     
-    module Components
+    module Components # :nodoc: All
       def make(name)
         res = ''
         res << "define(:#{name}) do\n"
@@ -56,7 +57,7 @@ module Backbite
       end
     end
 
-    module Plugins
+    module Plugins # :nodoc: All
       def make(name)
         res = ''
         res << "class #{name.to_s.capitalize} < Plugin\n\n"

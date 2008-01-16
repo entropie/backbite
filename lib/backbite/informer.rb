@@ -20,7 +20,7 @@ module Backbite
   # * Fatal
   class Informer
 
-    class Formatter < Log4r::Formatter
+    class Formatter < Log4r::Formatter # :nodoc: All
       def format(event)
         t, buff = Time.now, ''
         lvl = Log4r::LNAMES[event.level]

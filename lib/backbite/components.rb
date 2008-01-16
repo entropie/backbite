@@ -13,7 +13,7 @@ module Backbite
     
     # YAMLComponent is uesed to extend the component class to set the values for
     # we're getting from the YAML source.
-    module YAMLComponent
+    module YAMLComponent  # :nodoc: All
       def read(*a);    raise "read not available in YAML"    end
       def reread!(*a) ; raise "reread! not available in YAML" end
       #def post(*a);    raise "post not available in YAML"    end
@@ -52,7 +52,7 @@ module Backbite
     def [](obj)
       select { |comp| comp == obj }.first
     end
-    
+
     # A component is a file with some declarations for fields and
     # plugins, and some default behaviors.
     class Component
@@ -187,7 +187,7 @@ module Backbite
       # Wraps the config values to somewhat we can understand better here.
       def reread!
         @config.each do |ident, values|
-          values = values.to_hash if values.kind_of?(Helper::Dictionary)
+          #values = values.to_hash if values.kind_of?(Helper::Dictionary)
           case ident
           when :fields
             (@config[ident] = Post::Fields.input_fields(values)).merge!(values)
@@ -218,8 +218,7 @@ module Backbite
       end
       
     end
-    
-  end
+  end  
 end
 
 =begin

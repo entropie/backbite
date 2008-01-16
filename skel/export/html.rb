@@ -13,15 +13,15 @@ module Backbite
       target = tlog.components[self.metadata[:component]]
       nam, fs, ident = self.name, fields, identifier
       res = proc {
-        div(:class => "post #{nam}", :id => "#{ident}") { 
-          target.fields.each do |field|
-            name = field.to_sym
-            field = fs[name.to_sym]
+        div(:class => "post #{nam}", :id => "#{ident}") {
+          target.config.config[:fields].each_pair do |n,field|
+            name = n.to_s.split('_').last.to_sym
+            nfield = fs[name.to_sym]
 
-            opts, filtered = { }, field.apply_filter(:html)
-            filtered = field.apply_markup(:html, filtered)
+            opts, filtered = { }, nfield.apply_filter(:html)
+            filtered = nfield.apply_markup(:html, filtered)
 
-            tag = field.definitions[:tag] unless field.definitions[:tag].to_s.empty?
+            tag = field[:tag]
             tag ||= :div
 
             send(tag, filtered.to_s, :class => "field #{name}")
