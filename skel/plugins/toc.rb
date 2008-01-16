@@ -10,12 +10,9 @@ class Toc < Plugin
     ((f* (val-tmi)) / (tma - tmi))
   end
   
-  include Helper::Builder
-  #ID = :toc  # optional
-  
   def content
     wd = tlog.repository.working_dir('archive')
-    return '' unless wd.exist?
+    return proc{ } unless wd.exist?
     entries = wd.
       entries.grep(/^[^\.]/).map{ |ar| Time.parse(ar.to_s)}
 
@@ -37,8 +34,7 @@ class Toc < Plugin
     end
     keys, path = h.keys.sort.reverse, tlog.http_path('archive/')
     tagpath = tlog.http_path('tags/')
-    str = Gestalt.build do
-      
+    lambda do
       div(:class => 'archive node') {
         h2 "Archive"
         ul {
@@ -82,10 +78,7 @@ class Toc < Plugin
         }
         p ""
       }
-
-      
     end
-    str
   end
 end
 

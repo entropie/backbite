@@ -106,13 +106,30 @@ module Backbite
         }
       end
 
+      def automate(where, node, &blk)
+        if target = node[where]
+          yield(target)
+        end
+      end
+
+      def mkindy(where, node)
+        return nil unless node
+        if target = node[where]
+          nam = target.keys.first
+          Plugins.independent(self, tlog, target) do |indy|
+            yield(indy.content)
+          end
+        end
+      end
+      
       # builds contents of a content node +node+ with name +name+.
       def mknode(name, node)
-        posts = tlog.posts.filter(:target => name.to_sym).by_date!.reverse
-        posts = posts.with_export(:html, @params.merge(:tree => self, :target => name))
+        posts = tlog.posts.filter(:target => name.to_sym).by_date!.
+          reverse.
+          with_export(:html, @params.merge(:tree => self, :target => name))
 
         posts.each do |post|
-          tag = (node[:tag] or :div)
+          tag = node[:tag] or :div
           pyr = lambda{
             build(&post.to_html(name))
           }
@@ -123,16 +140,26 @@ module Backbite
       # builds entire body
       def mkbody
         target, bdys = self, tlog.config[:html][:body]
+        indy = bdys[:independent]
+        
         pyr[:head].append{
           body {
             bdys.each do |name, node|
               next if Repository::IgnoredBodyFields.include?(name)
               tag = node[:tag] || :div
+              
+              target.automate(:before, node){ |pyr| build(&pyr) }
+              target.mkindy(:before, indy)  { |pyr| build(&pyr) }
+
               send(tag, :id => name) do
+                target.automate(:inner_before, node){ |pyr| build(&pyr) }
                 target.mknode(name, node) do |ele, pyr|
                   build(&pyr)
                 end
+                target.automate(:inner_append, node){ |pyr| build(&pyr) }
               end
+              target.mkindy(:append, indy)  { |pyr| build(&pyr) }
+              target.automate(:append, node){ |pyr| build(&pyr) }
             end
           }
         }

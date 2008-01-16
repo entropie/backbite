@@ -68,6 +68,7 @@ Settings[:rspec].setup do
           toc {
             style {
               color :red
+              background_color :yellow
             }
           }
         end
@@ -82,9 +83,8 @@ Settings[:rspec].setup do
       end
 
       red do
-        before {
-          lambda{ div "23" }
-        }
+        before lambda{ div "23" }
+        inner_append lambda{ div "59" }
         items.max = 100
         items.min = 10
         style do
@@ -95,7 +95,8 @@ Settings[:rspec].setup do
           border_top '3px solid navy'
           border_right '3px solid navy'
           padding 10.px
-        end
+        end        
+
       end
       
       black do
