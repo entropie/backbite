@@ -11,11 +11,23 @@ class Backbite::Post
       select{ |f| f.to_sym == name.to_sym }.first
     end
 
+    def field_order(&blk)
+      @field_order ||= []
+      @field_order.each(&blk) if block_given?
+      @field_order
+    end
+
+    def push(*fields)
+      field_order.push(*fields)
+      super
+    end
+    
     def include?(name)
       not self[name].nil?
     end
     
     def self.select(field, defi, comp)
+      #field_order << field
       target =
         case field.to_s
         when /^plugin_(.*)/
@@ -30,6 +42,7 @@ class Backbite::Post
     end
 
     def self.input_fields(org)
+      #pp org i
       InputFields.new(org)
     end
 
@@ -55,7 +68,7 @@ class Backbite::Post
       end
 
       def predefined
-        @predefined = definitions[:value] || ''
+        @predefined = definitions[:value] or ''
       end
 
       def apply_markup(type, str)

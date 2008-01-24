@@ -12,7 +12,7 @@ class Toc < Plugin
   
   def content
     wd = tlog.repository.working_dir('archive')
-    return proc{ } unless wd.exist?
+    return nil unless wd.exist?
     entries = wd.
       entries.grep(/^[^\.]/).map{ |ar| Time.parse(ar.to_s)}
 
@@ -34,7 +34,8 @@ class Toc < Plugin
     end
     keys, path = h.keys.sort.reverse, tlog.http_path('archive/')
     tagpath = tlog.http_path('tags/')
-    lambda do
+
+    Pyr.new.build do
       div(:class => 'archive node') {
         h2 "Archive"
         ul {
@@ -71,7 +72,7 @@ class Toc < Plugin
             s = Toc.mk_tagcloud_tagsize(val, mi-2, ma)+0.5
             s = s.to_s[0..3]
             li{
-              a(:style => "font-size:#{s}em", :href=> "#{pd}tags/#{name}.html"){ name }
+              a(name, :style => "font-size:#{s}em", :href=> "#{pd}tags/#{name}.html")
               #              i(" (#{val})")
             }
           }

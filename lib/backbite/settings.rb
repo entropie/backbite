@@ -28,7 +28,9 @@ module Backbite
 
       def [](obj)
         ret = super
-        return ret.first if ret.kind_of?(Array) and ret.size == 1
+        if ret.kind_of?(Array) and ret.size == 1
+          ret = ret.first
+        end
         ret
       end
       
@@ -36,15 +38,15 @@ module Backbite
 
 
     module Replacer
-      
+    
       attr_reader :root
-
+    
       def root=(obj)
         @root = obj
         self
       end
-
-
+    
+    
       # Walks the entire hash and substitutes every %replace_thing%
       # for our values. It needs the toplevel element, <tt>:defaults</tt> to
       # get the values to replace from <tt>config[:defaults][:replace]</tt>
@@ -53,7 +55,7 @@ module Backbite
         rpfr = rpo.keys.map{ |k| "%#{k.to_s}%"}
         ret = self
         each do |a, b|
-          if b.kind_of?(Hash)
+          if b.kind_of?(Hash) or b.kind_of?(Helper::Dictionary)
             rp = b.extend(Replacer)
             rp.root = @root
             ret[a] = rp.replace!
@@ -69,7 +71,7 @@ module Backbite
         end
         ret
       end
-      
+    
     end
 
     

@@ -25,10 +25,25 @@ module Backbite
       @tlog = tlog
       read
     end
+
+    def limit!(max, min, archived = Posts.new(tlog))
+      if max
+        replace(self[0...max]) if max
+      else
+        self
+      end
+    end
     
     def with_export(type, params = { })
       const = Post::Export.const_get(type.to_s.upcase)
       map{ |post|
+        post.with_export(const, params)
+      }
+    end
+
+    def with_export!(type, params = { })
+      const = Post::Export.const_get(type.to_s.upcase)
+      map!{ |post|
         post.with_export(const, params)
       }
     end
@@ -106,11 +121,6 @@ module Backbite
     def pid
       metadata[:pid]
     end
-    
-    # def pid=(pid)
-    #   @pid = pid
-    #   identifier and pid
-    # end
     
     def <=>(o)
       metadata[:date] <=> o.date

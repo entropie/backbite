@@ -12,9 +12,10 @@ module Backbite
     def to_html(name)
       target = tlog.components[self.metadata[:component]]
       nam, fs, ident = self.name, fields, identifier
-      res = proc {
+      res = lambda {
         div(:class => "post #{nam}", :id => "#{ident}") {
-          target.config.config[:fields].each_pair do |n,field|
+          target.fields.field_order do |field|
+            n, field = field.to_sym, target.config.config[:fields][n]
             name = n.to_s.split('_').last.to_sym
             nfield = fs[name.to_sym]
 
@@ -115,25 +116,60 @@ module Backbite
       def mkindy(where, node)
         return nil unless node
         if target = node[where]
-          nam = target.keys.first
           Plugins.independent(self, tlog, target) do |indy|
-            yield(indy.content)
+            case cont = indy.content
+            when nil
+            when Proc
+              yield(cont)
+            when Backbite::Helper::Builder::Pyr::Element
+              yield(cont.build_block)
+            end
           end
         end
+
       end
+
+      def mkplugin_node_maybe(which, node, &blk)
+        if plugin = node[:plugin] and plugin == which
+          Plugins.independent(pyr, tlog, { which => node}) do |iplugin|
+            res =
+              case nt = iplugin.result.first
+              when Backbite::Helper::Builder::Pyr::Element
+                nt.build_block
+              when String
+                tag = iplugin.class.const_defined?(:TAG) ? iplugin.class.const_get(:TAG) : :div
+                lambda { send(tag, nt)}
+              end
+            yield res
+          end
+        else
+          yield nil
+        end
+      end
+      private :mkplugin_node_maybe
+
       
       # builds contents of a content node +node+ with name +name+.
       def mknode(name, node)
-        posts = tlog.posts.filter(:target => name.to_sym).by_date!.
-          reverse.
-          with_export(:html, @params.merge(:tree => self, :target => name))
-
-        posts.each do |post|
-          tag = node[:tag] or :div
-          pyr = lambda{
-            build(&post.to_html(name))
-          }
-          yield(tag, pyr)
+        mkplugin_node_maybe(name, node) do |pcontents|
+          if pcontents
+#            pp name
+            yield lambda{ build(&pcontents) }
+          else
+            posts = tlog.posts.filter(:target => name.to_sym).by_date!.reverse
+            if node[:items]
+              posts.limit!(node[:items][:max], node[:items][:min])
+            end
+            posts.with_export!(:html, @params.merge(:tree => self, :target => name))
+            
+            posts.each do |post|
+              tag = node[:tag] or :div
+              pyr = lambda{
+                build(&post.to_html(name))
+              }
+              yield pyr
+            end
+          end
         end
       end
       
@@ -144,23 +180,24 @@ module Backbite
         
         pyr[:head].append{
           body {
+            target.mkindy(  :before, indy) { |pyr| build(&pyr) }
             bdys.each do |name, node|
               next if Repository::IgnoredBodyFields.include?(name)
               tag = node[:tag] || :div
               
-              target.automate(:before, node){ |pyr| build(&pyr) }
-              target.mkindy(:before, indy)  { |pyr| build(&pyr) }
-
+              target.automate(:before, node) { |pyr| build(&pyr) }
+              
               send(tag, :id => name) do
-                target.automate(:inner_before, node){ |pyr| build(&pyr) }
-                target.mknode(name, node) do |ele, pyr|
+                target.automate(:inner_before, node) { |pyr| build(&pyr) }
+                target.mknode(name, node) do |pyr|
                   build(&pyr)
                 end
-                target.automate(:inner_append, node){ |pyr| build(&pyr) }
+                target.automate(:inner_append, node) { |pyr| build(&pyr) }
               end
-              target.mkindy(:append, indy)  { |pyr| build(&pyr) }
-              target.automate(:append, node){ |pyr| build(&pyr) }
+              target.automate(:append, node) { |pyr| build(&pyr) }
+              
             end
+            target.mkindy(  :append, indy) { |pyr| build(&pyr) }
           }
         }
       end

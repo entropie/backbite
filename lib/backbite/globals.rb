@@ -30,6 +30,7 @@ module Backbite
             when "0", "false", "no" then false
             when "1", "true", "yes" then true
             else
+              Error << "#{glbl} is unknown"
               Backbite::GlobalDefaults[glbl] || false
             end
           self[glbl] = value

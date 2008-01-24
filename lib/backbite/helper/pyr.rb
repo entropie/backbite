@@ -10,16 +10,33 @@ module Backbite
   module Helper
 
     module Builder
+
       # :include:../../../doc/pyr.rdoc
       class Pyr
 
-        attr_reader :indent
+        PYR_OPTIONS=[[:indentation,true]]
+        class << self
+          PYR_OPTIONS.each do |pyro, val|
+            const = pyro.to_s.upcase
+            # getter
+            Pyr.const_set(const, val)
+            meth = %Q(def self.#{pyro}\nPyr.const_get(:#{const})\nend)
+            Pyr.module_eval(meth)
+            # setter
+            meth = %Q(def self.#{pyro}=(o)\nPyr.send(:remove_const, :#{const})\nPyr.const_set(:#{const}, o)\nend)
+            Pyr.module_eval(meth)
+          end
+        end
+        
+        attr_accessor :build_block
+        attr_reader   :indent
+        
         def initialize
           @indent = 0
         end
 
         def self.build(ind = 0, &blk)
-          new.build(ind, &blk)
+          Elements.new.build(ind, &blk)
         end
 
         def indent=(o)
@@ -83,9 +100,8 @@ module Backbite
               t = if mab.kind_of?(Symbol) then ele else mab end
               ret << t.to_html
             end if childs
-
             ret << "#{__prefix__}</#{self.name}>" if self.kind_of?(Element)
-            ret
+            ret.strip
           end
           alias :to_s :to_html
         end
@@ -171,8 +187,10 @@ module Backbite
         module Builder # :nodoc: All
           
           attr_accessor :parent
-
+          attr_accessor :build_block
+          
           def build(ind = 0, &blk)
+            @build_block = blk
             builder = extend(Builder)
             builder.indent = ind
             builder.instance_eval(&blk) if block_given?
@@ -210,12 +228,12 @@ module Backbite
               end
               ele.parent, ele.args = self, args
               ele.build(&blk)
+              ele.build_block = blk
               data[m] ||= Elements.new
               data[m].parent = self
               data[m].indent = respond_to?(:path_length) ? path_length : @indent
-              #data[m].indent = path_length
               data[m] << ele
-              ele
+              data
             else
               false
             end
@@ -227,13 +245,13 @@ module Backbite
           end
         end
 
-        include Builder
+        #include Builder
 
         class Elements < Array  # :nodoc: All
           
           include Accessor
           include Outputter
-          #include Builder
+          include Builder
 
           attr_accessor :indent
           attr_accessor :parent
@@ -324,7 +342,7 @@ module Backbite
           
           def inspect
             par = parent.respond_to?(:name) ? parent.name : ':'
-            "\n#{"  "*path_length}(Ele: #{name.to_s.upcase}:#{data.inspect})[\"#{value}\"]"
+            "\n#{" "*indent}(Ele: #{name.to_s.upcase}:#{value.dump} #{data.inspect})"
           end
 
           def self.[](obj)

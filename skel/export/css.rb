@@ -88,9 +88,21 @@ module Backbite
       # generate definitions for components
       def generated_definitions
         ret = ''
+
+
+        # build definitions defined as default
+        if auto = tlog.config[:defaults][:automatic] and 
+            plugins = auto[:plugins]
+          plugins.each_pair do |pl, prc|
+            next unless prc[:value]
+            value = prc[:value].call
+            ret << Repository::Export::CSS.mk_css_definitions("body .#{pl}", value)
+          end
+        end
+        
         components = tlog.components.each do |co|
           target, style = co.config[:target].first, co.config[:style]
-          ret << Repository::Export::CSS.mk_css_definitions("#{target} > .#{co.name}", style)
+          ret << Repository::Export::CSS.mk_css_definitions("##{target} > .#{co.name}", style)
           co.fields.each do |field|
             name = "#{target} > .#{co.name} > .#{field.to_sym}"
             if field.respond_to?(:definitions) and field.definitions[:style]
@@ -108,7 +120,6 @@ module Backbite
         if tlog.config[:html] and tlog.config[:html][:body] and style = tlog.config[:html][:body][:style]
           ret << Repository::Export::CSS.mk_css_definitions('body', style)
         end
-        nodes = tlog.config[:html][:body][:style]
         nodes = tlog.config[:html][:body].select{ |k,v| not Repository::IgnoredBodyFields.include?(k.to_sym)}
         styles = nodes.map{ |name, values| [name, values[:style]]}
         styles.each do |name, style|
