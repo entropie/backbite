@@ -62,7 +62,7 @@ module Backbite
       end
     end
 
-    %w(globals ruby_ext informer exception settings helper ways post components
+    %w(globals ruby_ext informer exception settings contrib helper ways post components
      plugins repos export tumblog arguments generator register).each do |lfile|
       #Debug << lfile if defined?(:Debug)
       require "backbite/" + lfile

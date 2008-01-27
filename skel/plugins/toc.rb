@@ -77,7 +77,7 @@ class Toc < Plugin
             }
           }
         }
-        p ""
+        #p ""
       }
     end
   end

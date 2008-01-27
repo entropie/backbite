@@ -42,6 +42,7 @@ module Backbite
     end
 
     class Tree < Repository::ExportTree
+      include Contrib[:Pyr]
 
       include Helper::Builder
       #include Helper::CacheAble
@@ -66,11 +67,10 @@ module Backbite
         @file = 'index.html'
         @pyr = mktree
         mkbody
-        @__result__ = to_html
       end
-
+      
       def to_s
-        encoding + "\n" + doctype + "\n\n" + timestamp + "\n" + @pyr.tidy
+        encoding + "\n" + doctype + "\n\n" + timestamp + "\n" + @pyr.to_html
       end
       alias :to_html :to_s
       
@@ -116,13 +116,15 @@ module Backbite
       def mkindy(where, node)
         return nil unless node
         if target = node[where]
-          Plugins.independent(self, tlog, target) do |indy|
+          Plugins.independent(self, tlog, target, @params) do |indy|
             case cont = indy.content
             when nil
             when Proc
               yield(cont)
-            when Backbite::Helper::Builder::Pyr::Element
+            when Pyr::Element, Pyr::Elements
               yield(cont.build_block)
+            else
+              raise "?"
             end
           end
         end
@@ -134,7 +136,7 @@ module Backbite
           Plugins.independent(pyr, tlog, { which => node}) do |iplugin|
             res =
               case nt = iplugin.result.first
-              when Backbite::Helper::Builder::Pyr::Element
+              when Pyr::Element
                 nt.build_block
               when String
                 tag = iplugin.class.const_defined?(:TAG) ? iplugin.class.const_get(:TAG) : :div
@@ -148,20 +150,18 @@ module Backbite
       end
       private :mkplugin_node_maybe
 
-      
       # builds contents of a content node +node+ with name +name+.
       def mknode(name, node)
         mkplugin_node_maybe(name, node) do |pcontents|
           if pcontents
-#            pp name
             yield lambda{ build(&pcontents) }
           else
-            posts = tlog.posts.filter(:target => name.to_sym).by_date!.reverse
+            ps = @params.merge( :tree => self, :target => name )
+            posts = tlog.posts.filter(ps).by_date!.reverse
             if node[:items]
               posts.limit!(node[:items][:max], node[:items][:min])
             end
-            posts.with_export!(:html, @params.merge(:tree => self, :target => name))
-            
+            posts.with_export!(:html, @params.merge(ps))
             posts.each do |post|
               tag = node[:tag] or :div
               pyr = lambda{
@@ -177,7 +177,8 @@ module Backbite
       def mkbody
         target, bdys = self, tlog.config[:html][:body]
         indy = bdys[:independent]
-        lambda{
+        
+        bdy = Pyr.build {
           body {
             target.mkindy(  :before, indy) { |pyr| build(&pyr) }
             bdys.each do |name, node|
@@ -199,6 +200,7 @@ module Backbite
             target.mkindy(  :append, indy) { |pyr| build(&pyr) }
           }
         }
+        @pyr[:html].push(bdy)
       end
     end
     

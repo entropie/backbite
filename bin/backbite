@@ -194,7 +194,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         nhow.map(&:to_sym).each do |h|
           handler.repository.export(h)
         end
-        
+        handler.repository.export.commit!
       }
     end
   end

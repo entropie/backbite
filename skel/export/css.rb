@@ -56,11 +56,10 @@ module Backbite
         @file = "include/#{file}.css"
         @str = ''
         definition_for
-        @__result__ = @str
       end
 
       def to_s
-        @__result__
+        @str
       end
 
       

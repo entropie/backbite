@@ -14,7 +14,6 @@ module Backbite
       def initialize(tlog, params)
         @tlog, @params = tlog, params.dup
         @timestamp = Time.new
-        @__result__ = ''
         @written = false
       end
 
@@ -27,16 +26,16 @@ module Backbite
       end
       
       def write
+        raise "#{class_name}: need non nil #to_s" unless to_s
         raise "#{class_name}: need @file to write contents" unless @file
-        raise "#{class_name}: need @__result__ to be set to write contents" unless @__result__
         wdir = tlog.repository.working_dir
         wdir.mkdir unless wdir.exist?
         file = wdir.join(@file)
-        Info << "#{"%-15s" % class_name} #{"%10i" % @__result__.size} Bytes to #{file}"
+        Info << "#{"%-15s" % class_name} #{"%10i" % to_s.size} Bytes to #{file}"
         file.dirname.mkdir unless file.dirname.exist?
-        file.open('w+'){ |f| f.write(@__result__)}
+        file.open('w+'){ |f| f.write(to_s)}
         @written = true
-        @__result__
+        to_s
       end
       
     end
@@ -110,12 +109,10 @@ module Backbite
           else
             Warn << "#{way} is unknown"
           end
-        move!
         ret
       end
-
       
-      def move!
+      def commit!
         Info << "copy working dir to repository"
         system("cp -r #{working_dir}/* #{join('htdocs')}/")
       end

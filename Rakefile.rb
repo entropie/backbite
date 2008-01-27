@@ -87,6 +87,14 @@ task :spechtml do
   system "spec #{sp.join(' ')} -r lib/backbite -f h:#{file}"
 end
 
+
+task :update => [:update_contrib] do
+end
+
+task :update_contrib do
+  sh 'cd scripts && ruby cpcontrib.rb'
+end
+
 task :rdoc do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
   system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)"')

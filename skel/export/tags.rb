@@ -42,14 +42,18 @@ module Backbite
         @tag = tag
       end
 
+      def to_s
+        @result
+      end
+      
       def export_tag
         phash = {
           :title => "Tag: #{@tag}",
-          :postopts => { :tags => [@tag], :norenumber => true},
+          :tags => [@tag], :norenumber => true,
           :nowrite => true,
           :path_deep => '../'
         }
-        @__result__ = tlog.repository.export(:html, phash).to_s
+        @result = tlog.repository.export(:html, phash).to_s
       end
       
     end

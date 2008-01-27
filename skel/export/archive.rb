@@ -30,8 +30,6 @@ module Backbite
       result
     end
 
-    # Tree makes the basic (and valid) HTML frame and handles
-    # the hpricot access.
     class Tree < Repository::ExportTree # :nodoc: All
 
       def initialize(date, filename, tlog, params)
@@ -40,20 +38,18 @@ module Backbite
         @file = filename
       end
 
-      def write
-        @__result__ = @result.to_html
-        super
+      def to_s
+        @result
       end
       
       def export_date(*pids)
         h = {
           :title => "Archive: @#{@date}",
-          :postopts => { :ids => pids },
+          :ids => pids,
           :nowrite => true,
           :path_deep => '../../'
         }
-        #tlog.repository.export(:html, h).to_s
-        @result = tlog.repository.export(:html, h)
+        @result = tlog.repository.export(:html, h).to_s
         self
       end
       
