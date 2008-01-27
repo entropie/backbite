@@ -70,7 +70,7 @@ module Backbite
       end
 
       def to_s
-        encoding + "\n" + doctype + "\n\n" + timestamp + "\n" + @pyr.to_s
+        encoding + "\n" + doctype + "\n\n" + timestamp + "\n" + @pyr.tidy
       end
       alias :to_html :to_s
       
@@ -177,8 +177,7 @@ module Backbite
       def mkbody
         target, bdys = self, tlog.config[:html][:body]
         indy = bdys[:independent]
-        
-        pyr[:head].append{
+        lambda{
           body {
             target.mkindy(  :before, indy) { |pyr| build(&pyr) }
             bdys.each do |name, node|

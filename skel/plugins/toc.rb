@@ -35,7 +35,7 @@ class Toc < Plugin
     keys, path = h.keys.sort.reverse, tlog.http_path('archive/')
     tagpath = tlog.http_path('tags/')
 
-    Pyr.new.build do
+    Pyr.build do
       div(:class => 'archive node') {
         h2 "Archive"
         ul {
