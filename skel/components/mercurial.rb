@@ -12,6 +12,7 @@ define(:mercurial) do
     backround_color :red
     padding 0.px
     margin 0.px
+    margin_bottom 10.px
   }
 
   fields {
@@ -30,7 +31,12 @@ define(:mercurial) do
     }
 
     
-    plugin_author    
+    plugin_author {
+      style {
+        float :left
+        padding_right 7.px
+      }
+    }
     input_hg {
       tag :p
       style {
@@ -49,10 +55,9 @@ define(:mercurial) do
 
     plugin_permalink {
       style {
-        background_color :transparent
-        margin_right -23.px
+        #margin_right -.px
+        left -50.px
         # margin_top -10.px
-        display :block
       }
     }
 

@@ -97,7 +97,7 @@ end
 
 task :rdoc do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel)"')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|skel|lib/contrib)"')
 end
 
 task :stakeout do
@@ -127,14 +127,14 @@ end
 
 task :rdia do
   system('rm ~/public_html/doc/backbite/rdoc -rf')
-  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec)" -d')
+  system('rdoc -T rubyavailable -a -I png -S -m Backbite -o ~/public_html/doc/backbite/rdoc -x "(spec|lib/contrib)" -d')
 end
 
 
 task :console do
   puts "You may want to to @a an ready to use tumblog object"
   ENV['DEBUG'] = '1'
-  system("irb -r spec/default_config.rb")
+  system("irb -r lib/backbite.rb")
 end
 
 

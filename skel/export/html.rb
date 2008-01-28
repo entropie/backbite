@@ -132,15 +132,17 @@ module Backbite
       end
 
       def mkplugin_node_maybe(which, node, &blk)
-        if plugin = node[:plugin] and plugin == which
+        if plugin = node[:plugin] # and plugin == which
           Plugins.independent(pyr, tlog, { which => node}) do |iplugin|
             res =
               case nt = iplugin.result.first
-              when Pyr::Element
+              when Pyr::Element, Pyr::Elements
                 nt.build_block
               when String
                 tag = iplugin.class.const_defined?(:TAG) ? iplugin.class.const_get(:TAG) : :div
                 lambda { send(tag, nt)}
+              else
+                warn "?"
               end
             yield res
           end

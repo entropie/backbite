@@ -37,7 +37,6 @@ module Backbite
     def self.load_for_independent(tlog, name)
       tlg = tlog.repository.join('plugins').entries
       files = tlg.map(&:to_s).grep(/#{name}\.rb$/)
-      
       ret = []
       files.each do |f|
         ret << Plugin.load(tlog.repository.join('plugins', f))
