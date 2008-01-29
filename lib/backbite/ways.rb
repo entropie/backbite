@@ -170,7 +170,8 @@ module Backbite
       class Yaml < Way
         
         attr_accessor :source
-
+        attr_accessor :file
+        
         def metadata
           source[:metadata]
         end
@@ -181,7 +182,9 @@ module Backbite
             extend(Components::YAMLComponent)
           @component.map(source)
           @component.metadata = metadata
-          @component.to_post
+          post = @component.to_post
+          post.file = self.file
+          post
         end
         
         def run(field, params); raise "no need to run a YAML Way"; end

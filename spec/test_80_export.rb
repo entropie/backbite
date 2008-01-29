@@ -8,11 +8,9 @@ describe "Backbite::Repository::Export::CSS" do
   before(:all) do
     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
     @result = target.repository.export(:css).to_s
+    @result = target.repository.export.commit!
   end
 
-  it "a" do
-  end
-  
   # it "should include basic tlog style definitions" do
   #   @result.should =~ /CSS file:.*\/base\.css/
   #   @result.should =~ /body \{/
@@ -55,8 +53,9 @@ describe "Backbite::Repository::Export::HTML" do
   before(:all) do
     target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
     @result = target.repository.export(:html, :title => :foobar)
+    @result = target.repository.export.commit!
   end
-  
+
   # it "result should have a doctype" do
   #   @result.to_s.split("\n").first.should =~ /^<!DOCTYPE/
   # end

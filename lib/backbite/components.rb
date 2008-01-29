@@ -8,7 +8,7 @@ module Backbite
   # Components is a place to hold the tumblog specific component files
   # (and load them if necessary).
   class Components < Array
-
+    
     include Post::Ways
     
     # YAMLComponent is uesed to extend the component class to set the values for
@@ -72,7 +72,10 @@ module Backbite
         comp = Component.new(name)
         comp.read!(&blk)
       end
-      
+
+      def target
+        config[:target].first
+      end
       
       # eval +what+
       def self.read(what, tlog)

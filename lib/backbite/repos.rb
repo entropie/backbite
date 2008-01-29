@@ -19,7 +19,7 @@ module Backbite
     
     IgnoredBodyFields = [:style, :independent]
 
-    BaseDirs = %w( export plugins components htdocs tmp spool misc data lib)
+    BaseDirs = %w(archive export plugins components htdocs tmp spool misc data lib)
 
     SubDirs  = { :htdocs => [:include], :tmp => ['.work'] }
 
@@ -32,7 +32,7 @@ module Backbite
     def export(way = nil, params = { })
       return dup.extend(Export) unless way
       params[:path_deep] ||= './'
-      params[:title] ||= tlog.title
+      params[:title]     ||= tlog.title
       dup.extend(Export).export(way, params)
     end
 
@@ -46,7 +46,7 @@ module Backbite
       }
       
     end
-
+    
 
     # Return a list of Posts
     def posts(params = { }, &blk)
@@ -60,6 +60,10 @@ module Backbite
       @components ||= Components.load(join(:components), tlog)
     end
 
+    def archive_dir(*other)
+      join('archive', *other)
+    end
+    
 
     # returns pathname instance of working dir
     def working_dir(*other)
@@ -75,7 +79,7 @@ module Backbite
 
 
     # unlinks everthing in our repos directory
-    # FIXME
+    # FIXME: system()
     def remove!
       Info << "say bye to your repos in 5 seconds..."
       sleep 5 unless $DEBUG
@@ -126,7 +130,7 @@ module Backbite
       self
     end
 
-
+    
     # Copy defaults to repos.
     def populate!
       Info << "populating directory structure with defaults for `#{name}`"
@@ -138,13 +142,7 @@ module Backbite
         end
       sources = [Backbite::Source.join('skel'), sources].compact
 
-      # additional =
-      #   if defined?(Spec)
-      #     %w'misc/rspec.haml'
-      #   else
-      #     %w'misc/backbite.tex'
-      #   end
-      %w'plugins components export misc'.each do |w|
+      %w'plugins components export misc archive'.each do |w|
         sources.each do |source|
           (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
             t = @directory.join(w)
@@ -156,9 +154,6 @@ module Backbite
             Info << " cp #{st.join(e)} to #{w}/#{e}"            
             system("mkdir -p #{t} && cp #{st.join(e).to_s} #{t}/")
           end
-          # additional.each do |a|
-          #   p("cp #{source.join(a)} #{@directory} 2>/dev/null")
-          # end
         end
       end
     end
@@ -168,8 +163,10 @@ module Backbite
     # Checks wheter our actual repos is valid or not.
     def valid?
       @directory.exist? and
-        @directory.entries.reject{ |d| d.to_s =~ /^\.+/ or not @directory.join(d).directory? }.
-        map{ |d| d.to_s } == BaseDirs
+        (@directory.entries.reject{
+           |d| d.to_s =~ /^\.+/ or not @directory.join(d).directory?
+         }.map{ |d| d.to_s } & BaseDirs).
+        size == BaseDirs.size
     end
     
   end

@@ -3,31 +3,20 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-describe Backbite::Posts do
+describe Backbite::Posts::Filter do
+
   before(:all) do
     @target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
   end
   
-  it "should have a corresponding size" do
-    @target.posts.size.should == 12
+  it "should list specific posts (:target)" do
+    @target.posts.filter(:target => :black).size.should == 9
+    @target.posts.filter(:target => :red).size.should == 3
   end
-
-  it "should list a spe35_post.rbcific post (==, =~)" do
-    @target.posts.select{ |p| p.topic == 'Hello from rspec another' }.size.should == 1
-    @target.posts.select{ |p| p.body =~ /^foo another$/ }.size.should == 1
-  end
-
-  # it "should list specific posts (:target)" do
-  #   @target.posts.select{ |p| p.config[:target] == :black }.
-  #     size.should == 9
-  #   @target.posts.select{ |p| p.config[:target] == :red }.
-  #     size.should == 3
-  # end
 
   it "target by ids" do
-#    @target.posts.filter(:ids => [135_post.rb35_post.rb35_post.rb]).size.should == 1
+    @target.posts.filter(:ids => [1,2,3]).size.should == 3
   end
-  
   
   it "should list a specific post (:between) " do
     @target.posts.filter(:between => 4.days..3.days).size.should == 1
@@ -40,14 +29,24 @@ describe Backbite::Posts do
     @target.posts.filter(:tags => %w(ahash another)).size.should == 8
   end
   
-  it "should list posts" do
-    @target.posts do |po|
-      po.class.should == Backbite::Post
-      po.fields[:topic].value.should =~ /^Hello from rspec/
-      po.fields[:tags].value[0..-2].should == ["batz", "bar", "bumm"] if po.component.name != :bar
-    end
+end
+
+describe Backbite::Posts do
+  before(:all) do
+    @target = Backbite::Tumblelog.new(:rspec, 'spec/.spec_skel/default_config.rb')
+  end
+  
+  it "should have a corresponding size" do
+    @target.posts.size.should == 12
   end
 
+  it "should archive posts" do
+    @target.posts.archive!
+  end
+
+  it "should have archived posts" do
+    @target.posts.size.should == 7
+  end
 end
 
 

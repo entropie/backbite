@@ -25,6 +25,8 @@ Settings[:rspec].setup do
       shell "ftpsync --user %ftpuser% --password %password% %localdir% %target%"
     end
 
+    archive_limit 10
+    
     archive_date_format  '%Y%m%d'
     
     automatic do
@@ -40,7 +42,7 @@ Settings[:rspec].setup do
       title       'foobar title'
       description
       password    'foobarbatz'
-      ftpuser     'ftp27676'
+      ftpuser     'bumbidei'
       target      'ftp://ftp.ackro.com/www.ackro.de/tlog'
 
       colors_bg_body     '#105099'
@@ -85,8 +87,7 @@ Settings[:rspec].setup do
       red do
         before lambda{ div "23" }
         inner_append lambda{ div "59" }
-        items.max = 100
-        items.min = 10
+        items.max = 2
         style do
           background_color 'green'
           width '42%'
@@ -100,7 +101,7 @@ Settings[:rspec].setup do
       end
       
       black do
-        items.min = 10
+        items.max = 5
         style do
           padding_right 40.px
           padding_top 42.px

@@ -17,6 +17,30 @@ module Backbite
     
     attr_reader :tlog
 
+    def group_by(target = :target, &blk)
+      inject([]){ |m, post|
+        m << post.send(target)
+      }.uniq.each do |t|
+        yield t, dup.replace(select{ |post| post.send(target) == t })
+      end
+    end
+    
+    def archive!
+      limits = { }
+      group_by { |target, posts|
+        limit = tlog.config[:html][:body][target][:items]
+        #min = limit[:min] or tlog.config[:defaults][:archive_limit]
+        max = (limit && limit[:max] or tlog.config[:defaults][:archive_limit])
+        target_posts = posts.sort
+        to_archive = target_posts.partition{ |post|
+          target_posts.index(post)+1 > max
+        }.first.each do |post|
+          post.archive!
+        end
+      }
+    end
+    
+    # FIXME: just sux
     def next_id
       self.size+1
     end
@@ -25,7 +49,7 @@ module Backbite
       @tlog = tlog
       read
     end
-
+    
     def limit!(max, min, archived = Posts.new(tlog))
       if max
         replace(self[0...max]) if max
@@ -72,19 +96,14 @@ module Backbite
       postfiles.inject(self) { |mem, f|
         postway = Post::Ways.dispatch(:yaml) { |way|
           way.tlog   = self.tlog
-          way.source = YAML::load(par.join(f).readlines.join)
+          way.file   = par.join(f)
+          way.source = YAML::load(way.file.readlines.join)
         }.process
         mem << postway
-      }.with_ids
+      }
     end
     private :read
 
-    def with_ids
-      # i = -1
-      # replace(self.map{ |pst| pst.pid = i+=1 and pst })
-      # each(&blk) if block_given?
-      # self
-    end
   end
   
   class Post < Delegator
@@ -107,7 +126,9 @@ module Backbite
     attr_reader   :component
     attr_reader   :pid
     attr_accessor :neighbors
+    attr_accessor :file
 
+    
     def author
       metadata[:author] or tlog.author
     end
@@ -134,6 +155,15 @@ module Backbite
       @identifier ||= "#{component.name}#{pid}"
     end
 
+    def archive!
+      adir = tlog.repository.archive_dir(date.year, "%02i" % date.month)
+      fname = "#{"%02i" % date.day}-#{file.basename}"
+      tdir = adir.join(fname)
+      Backbite.wo_debug{ FileUtils.mkdir_p(adir) }
+      Info << "archiving #{identifier} to #{tdir.to_s.split('/')[-4..-1].join('/')}"
+      file.rename(tdir)
+    end
+    
     # setup! sets various attributes on our Plugin instances.
     def setup!(params)
       params.extend(Helper::ParamHash).
@@ -156,7 +186,6 @@ module Backbite
         end
       end
     end
-    
 
     def method_missing(m, *args, &blk)
       if @component.fields.include?(m)
@@ -165,7 +194,6 @@ module Backbite
         super
       end
     end
-
     
     def inspect
       ret = "<Post::#{name.to_s.capitalize} #{metadata.inspect} [" <<
@@ -175,8 +203,8 @@ module Backbite
     end
 
     def url
-      df = metadata[:date].strftime(tlog.config[:defaults][:archive_date_format])
-      "/archive/#{df}/##{identifier}"
+      adf = metadata[:date].strftime(tlog.config[:defaults][:archive_date_format])
+      "/archive/#{adf}/##{identifier}"
     end
     
     def to_s
@@ -191,6 +219,8 @@ module Backbite
     
   end
 end
+
+
 =begin
 Local Variables:
   mode:ruby

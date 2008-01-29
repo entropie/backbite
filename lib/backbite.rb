@@ -51,7 +51,6 @@ module Backbite
       begin
         require 'pstore'
         require 'abbrev'
-        require 'hpricot'
         require 'delegate'
         require 'uri'
         require 'yaml'
@@ -78,13 +77,6 @@ module Backbite
   end
 
 end
-
-
-
-
-# Dir['lib/ruby_ext/*.rb'].each do |re|
-#   require re
-# end
 
 
 =begin
