@@ -50,9 +50,13 @@ module Backbite
 
     # Return a list of Posts
     def posts(params = { }, &blk)
-      Posts.new(@tlog).filter(params, &blk)
+      Posts.new(@tlog).read.filter(params, &blk)
     end
 
+    def archive(params = { }, &blk)
+      @archive = nil if params[:force]
+      @archive ||= Archive.new(@tlog).read.filter(params, &blk)
+    end
 
     # Returns a list of every known Component
     def components

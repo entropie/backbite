@@ -47,7 +47,6 @@ module Backbite
     
     def initialize(tlog)
       @tlog = tlog
-      read
     end
     
     def limit!(max, min, archived = Posts.new(tlog))
@@ -101,8 +100,8 @@ module Backbite
         }.process
         mem << postway
       }
+      self
     end
-    private :read
 
   end
   
@@ -156,12 +155,7 @@ module Backbite
     end
 
     def archive!
-      adir = tlog.repository.archive_dir(date.year, "%02i" % date.month)
-      fname = "#{"%02i" % date.day}-#{file.basename}"
-      tdir = adir.join(fname)
-      Backbite.wo_debug{ FileUtils.mkdir_p(adir) }
-      Info << "archiving #{identifier} to #{tdir.to_s.split('/')[-4..-1].join('/')}"
-      file.rename(tdir)
+      Archive.archive_post(tlog, self)
     end
     
     # setup! sets various attributes on our Plugin instances.

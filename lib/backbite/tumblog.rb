@@ -91,7 +91,10 @@ module Backbite
       @components ||= @repository.components
     end
 
-
+    def archive(params = { }, &blk)
+      @repository.archive(params, &blk)
+    end
+    
     def posts(params = { }, &blk)
       @repository.posts(params, &blk)
     end
