@@ -8,14 +8,36 @@
 module Backbite
 
   require 'backbite/post/postfilter'
-  
   require 'backbite/post/metadata'
   require 'backbite/post/fields'
   
   # Posts handles access to the different Posts in our Repository.
   class Posts < Array
-    
+
     attr_reader :tlog
+
+    def self.parse_args(args)
+      case args
+      when nil
+        { }
+      when /(\d+)\.\.(\d+)/
+        { :ids => Range.new($1.to_i, $2.to_i).to_a }
+      when /(\d+)/
+        { :ids => $1.to_i }
+      when /^(\w+)/
+        { :tags =>
+          if args.include?(',')
+            args.split(',')
+          else
+            [$1]
+          end
+        }
+      when /^:(\w+)/
+        { :target => $1.to_sym }
+      else
+        { }
+      end
+    end
 
     def group_by(target = :target, &blk)
       inject([]){ |m, post|
@@ -106,7 +128,7 @@ module Backbite
   end
   
   class Post < Delegator
-    
+
     # Export contains a list of Modules to extend the Post class. E.g.
     # to use the +:html+ way to export the Repository, you first need
     # to define a Repository::Export sublcass, named HTML, which
@@ -127,7 +149,6 @@ module Backbite
     attr_accessor :neighbors
     attr_accessor :file
 
-    
     def author
       metadata[:author] or tlog.author
     end
@@ -203,8 +224,8 @@ module Backbite
     
     def to_s
       prfx = "\n  "
-      adds = [[:pid, pid], [:ident, identifier], [:url, url]]
-      adds = adds.map{ |an,av| "#{an.to_s.upcase.yellow}: #{av.to_s.cyan}"}.join(";  #{"".bold.green}")
+      adds = [["$", pid], [:I, identifier], ['#', url], ['', file]]
+      adds = adds.map{ |an,av| "#{an.to_s.upcase.yellow} #{av.to_s.cyan}"}.join(";  #{"".bold.green}")
       ret = "#{name.to_s.capitalize.white.bold} #{"[".red} #{prfx}" <<
         fields.inject([]) { |m, field|
         m << if field.value.to_s.empty? then nil else field.to_s(10) end
