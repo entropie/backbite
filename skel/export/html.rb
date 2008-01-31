@@ -21,10 +21,8 @@ module Backbite
 
             opts, filtered = { }, nfield.apply_filter(:html)
             filtered = nfield.apply_markup(:html, filtered)
-
-            tag = field[:tag]
+            tag = nfield.definitions[:tag]
             tag ||= :div
-
             send(tag, filtered.to_s, :class => "field #{name}")
           end
         }
