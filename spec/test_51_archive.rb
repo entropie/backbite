@@ -10,7 +10,11 @@ describe Backbite::Archive do
   
   it "should have archived posts" do
     @target.archive.size.should == 5
+    # @target.archive.days(2008).map{ |pf|
+    #   p Backbite::Post.read(@target, pf)
+    # }
   end
+
 end
 
 

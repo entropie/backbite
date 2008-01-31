@@ -20,20 +20,30 @@ module Backbite
       super(tlog)
       @archive = @tlog.repository.archive_dir
     end
+
+    def days(year = nil, month = nil)
+      months(year).map do |amonth|
+        @tlog.root.join(amonth).entries.grep(/^[^\.]+/).map{ |file|
+          @tlog.root.join(amonth, file)
+        }
+      end.flatten.sort
+    end
     
-    def months
+    def months(year = nil)
       ret = []
-      years.each do |year|
+      ys = years
+      ys.reject!{ |y| y.to_s != year.to_s } if year
+      ys.each do |year|
         yeardir = Pathname.new('archive').join(year)
         @archive.join(year).entries.grep(/^[^\.]+/).each do |month|
           ret << yeardir.join(month)
         end
       end
-      ret
+      ret.sort
     end
     
     def years
-      @archive.entries.grep(/^[^\.]+/).map{ |entry| entry.to_s }
+      @archive.entries.grep(/^[^\.]+/).map{ |entry| entry.to_s }.sort
     end
     
     def read

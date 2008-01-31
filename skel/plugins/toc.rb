@@ -5,79 +5,58 @@
 
 class Toc < Plugin
 
-  def self.mk_tagcloud_tagsize(val, tmi, tma)
+  def self.mk_tagcloud_tagsize(i, tmi, tma)
     f = 2.0
-    ((f* (val-tmi)) / (tma - tmi))
+    ((f* (i-tmi)) / (tma - tmi))
   end
   
   def content
-    wd = tlog.repository.working_dir('archive')
-    return nil unless wd.exist?
-    entries = wd.
-      entries.grep(/^[^\.]/).map{ |ar| Time.parse(ar.to_s)}
-
-    hk =  Hash.new{ |hash, key| hash[key] = 0 }
-    
-    tlog.posts do |po|
-      po.tags.each { |t|
-        hk[t] += 1
-      }
-    end
+    archive, tags = tlog.archive, Backbite::Posts.tags(tlog)
     pd = path_deep
-    tcs = hk #.sort_by{ |h,k| k }.reverse
-    hk = nil
-    
-    h = { }
-
-    entries.each do |e|
-      (h[e.strftime("%Y%m")] ||= []) << e
-    end
-    keys, path = h.keys.sort.reverse, tlog.http_path('archive/')
-    tagpath = tlog.http_path('tags/')
-
+    all = tlog.posts + tlog.archive
+    is = tags.map{ |k,v| v}
+    t = tlog
     Pyr.build do
-      div(:class => 'archive node') {
+      div(:class => 'node archive') {
         h2 "Archive"
         ul {
-          keys.each { |key|
-            val = h[key]
-            lpath = "#{path}#{key}"
-            nv = val.sort.reject{ |v| v.strftime("%Y%m") != key }
-            li(:class => "head") {
-              strong("#{key.gsub(/^(\d\d\d\d)/, '\1/')}")
-              i(" (#{nv.size})")
-            }
-            li { 
+          archive.years.reverse.each do |year|
+            li(year, :class => :head)
+            li {
               ul {
-                nv.each{ |v|
+                archive.months(year).each do |month|
+                  li(month.to_s.split('/').last, :class => 'month')
                   li{
-                    a(:href=> "#{path}#{v.strftime('%Y%m%d')}/index.html") {
-                      v.strftime('%d')
+                    ul{
+                      archive.days(year, month).map{ |p|
+                        Backbite::Post.read(t, p).date.strftime('%Y%m%d')
+                      }.uniq.each do |ad|
+                        li{
+                          a(ad[-2..-1],
+                            :href => "#{pd}archive/#{ad}/index.html")
+                        }
+                      end
                     }
                   }
-                }
+                end
               }
             }
-          }
+          end
         }
       }
       
-      div(:class => 'node tags') {
+      div(:class => 'node ttags') {
         h2 "Tags"
-        ul {        
-          tcs.each { |name, val|
-            so = tcs.sort_by{ |a,b| b }
-            mi,ma = so.first.last,so.last.last
-            #$stdout.puts mi,ma
-            s = Toc.mk_tagcloud_tagsize(val, mi-2, ma)+0.5
-            s = s.to_s[0..3]
+        ul {
+          tags.each_pair do |name, o|
+            s = Toc.mk_tagcloud_tagsize(o, is.min-2, is.max)+0.5
             li{
-              a(name, :style => "font-size:#{s}em", :href=> "#{pd}tags/#{name}.html")
-              #              i(" (#{val})")
+              a(name,
+                :style => "font-size:#{s.to_s[0..3]}em",
+                :href=> "#{pd}tags/#{name}.html")
             }
-          }
+          end
         }
-        #p ""
       }
     end
   end

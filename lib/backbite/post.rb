@@ -16,6 +16,17 @@ module Backbite
 
     attr_reader :tlog
 
+    def +(posts)
+      dup.push(*posts)
+    end
+
+    def self.tags(tlog)
+      all = tlog.posts + tlog.archive
+      hs = Hash.new { |hash, key| hash[key] = 0 }
+      all.each{ |post| post.tags.each{ |t| hs[t]+=1 }}
+      hs
+    end
+    
     def self.parse_args(args)
       case args
       when nil
@@ -114,13 +125,9 @@ module Backbite
     def read(what = :spool)
       postfiles = (par = tlog.repository.join(what)).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
-      postfiles.inject(self) { |mem, f|
-        postway = Post::Ways.dispatch(:yaml) { |way|
-          way.tlog   = self.tlog
-          way.file   = par.join(f)
-          way.source = YAML::load(way.file.readlines.join)
-        }.process
-        mem << postway
+      postfiles.inject(self) { |mem, file|
+        post = Post.read(tlog, par.join(file))
+        mem << post
       }
       self
     end
@@ -128,7 +135,7 @@ module Backbite
   end
   
   class Post < Delegator
-
+    
     # Export contains a list of Modules to extend the Post class. E.g.
     # to use the +:html+ way to export the Repository, you first need
     # to define a Repository::Export sublcass, named HTML, which
@@ -142,6 +149,14 @@ module Backbite
 
     def __getobj__
       @component
+    end
+
+    def self.read(tlog, file)
+      Post::Ways.dispatch(:yaml) do |way|
+        way.tlog = tlog
+        way.file = Pathname.new(file.to_s)
+        way.source = YAML::load(way.file.readlines.join)
+      end.process
     end
     
     attr_reader   :component
