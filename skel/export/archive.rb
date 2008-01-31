@@ -66,7 +66,8 @@ module Backbite
           :ids => pids,
           :nowrite => true,
           :path_deep => '../' * pd,
-          :nolimit => true
+          :nolimit => true,
+          :archive => true
         }
         @result = tlog.repository.export(:html, h).to_s
         self

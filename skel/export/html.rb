@@ -157,10 +157,18 @@ module Backbite
             yield lambda{ build(&pcontents) }
           else
             ps = @params.merge( :tree => self, :target => name )
-            posts = tlog.posts.filter(ps).by_date!.reverse
-            if node[:items]
+
+            posts = tlog.posts.filter(ps)
+            
+            if @params[:archive]
+              posts = posts + tlog.archive.filter(ps)
+            end
+            posts = posts.by_date!.reverse
+
+            if node[:items] and not @params[:nolimit]
               posts.limit!(node[:items][:max], node[:items][:min])
             end
+
             posts.with_export!(:html, @params.merge(ps))
             posts.each do |post|
               tag = node[:tag] or :div
