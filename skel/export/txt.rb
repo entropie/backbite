@@ -6,7 +6,14 @@
 module Backbite
 
   class Post
-
+    # Export contains a list of Modules to extend the Post class. E.g.
+    # to use the +:html+ way to export the Repository, you first need
+    # to define a Repository::Export sublcass, named HTML, which
+    # responds to :export, therein your ExportTree will be evaluated
+    # and uses via +with_export+ the +to_foo+ method of the extend
+    # Post instance.
+    # 
+    # Got it? nope? see lib/export/*.rb for examples.
     class Export
 
       module TXT
@@ -15,15 +22,10 @@ module Backbite
 
         def to_txt
           str = "#{metadata[:component].to_s.capitalize} {"
-          ordered = tlog.components[metadata[:component]].order.dup
-          ordered.map!{ |o|
-            fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
-            fields[fname]
-          }
-          ordered.inject(str) do |m, field|
+          fields.each do |field|
             f, filtered = field.to_sym, field.apply_filter(:txt)
             filtered = paragraphify(filtered)
-            m << "\n %-10s %s" % [f.to_s+':', filtered]
+            str << "\n %-10s %s" % [f.to_s+':', filtered]
           end
           str << "\n}\n"
         end
@@ -47,15 +49,15 @@ module Backbite
             @file = 'plain.txt'
             from = tlog.author
             @str = "#\n# Title: #{params[:title]}\n# Generated at: #{timestamp}\n# By: #{from}\n#\n# URL: #{tlog.http_path}\n#\n\n"
-            posts = @tlog.posts.by_date!.reverse.filter(params)
-            posts.with_export(:txt, :tree => self).each{ |post|
-              @str << post.to_txt << "\n"
-            }
-            @__result__ = @str
+            tlog.posts.by_date!.reverse.each do |post|
+              post = post.with_export(:txt, params.merge(:tree => self))
+              @str << post.to_txt
+            end
+            @str
           end
 
           def to_s
-            @__result__
+            @str.to_s
           end
         end
         
