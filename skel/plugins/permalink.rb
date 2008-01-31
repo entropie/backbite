@@ -6,7 +6,7 @@
 class Permalink < Plugin
 
   def filter
-    component.metadata[:date].strftime(Repository::Export::ARCHIVE::DateFormat)
+    component.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format])
   end
 
   def url(pd = 0)
