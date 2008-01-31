@@ -64,30 +64,32 @@ module Backbite
         limit = tlog.config[:html][:body][target][:items]
         #min = limit[:min] or tlog.config[:defaults][:archive_limit]
         max = (limit && limit[:max] or tlog.config[:defaults][:archive_limit])
-        target_posts = posts.sort
-        to_archive = target_posts.reverse.partition{ |post|
-          target_posts.index(post)+1 > max
-        }.first.each do |post|
-          post.archive!
+        target_posts = posts.by_id!.reverse
+
+        if posts.size > max
+          posts[0..(posts.size - max)-1].each do |post|
+            post.archive!
+          end
         end
       }
     end
     
     def next_id
       update!
-      aps = tlog.archive + self
-      return 0 if aps.empty?
+      aps = tlog.archive(:force => true) + self
+      return 1 if aps.empty?
       id = aps.map{ |post| post.pid }
-      id.max+1
+      pid = id.max+1
+      pid
     end
     
     def initialize(tlog)
       @tlog = tlog
     end
     
-    def limit!(max, min, archived = Posts.new(tlog))
+    def limit!(max, min = nil, archived = Posts.new(tlog))
       if max
-        replace(self[0...max]) if max
+        replace(self[0...max])
       else
         self
       end
