@@ -23,10 +23,14 @@ module Backbite
 
     def days(year = nil, month = nil)
       months(year).map do |amonth|
+        if month
+          next if month.to_s.to_i != amonth.to_s.split('/').last.to_i
+        end
+        
         @tlog.root.join(amonth).entries.grep(/^[^\.]+/).map{ |file|
           @tlog.root.join(amonth, file)
         }
-      end.flatten.sort
+      end.compact.flatten.sort
     end
     
     def months(year = nil)
