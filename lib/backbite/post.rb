@@ -21,10 +21,10 @@ module Backbite
     end
 
     def self.tags(tlog)
-      all = tlog.posts + tlog.archive
-      hs = Hash.new { |hash, key| hash[key] = 0 }
-      all.each{ |post| post.tags.each{ |t| hs[t]+=1 }}
-      hs
+      tags = Hash.new { |hash, key| hash[key] = 0 }
+      (tlog.posts + tlog.archive).
+        each{ |post| post.tags.each{ |t| tags[t]+=1 }}
+      tags
     end
     
     def self.parse_args(args)
@@ -65,7 +65,7 @@ module Backbite
         #min = limit[:min] or tlog.config[:defaults][:archive_limit]
         max = (limit && limit[:max] or tlog.config[:defaults][:archive_limit])
         target_posts = posts.sort
-        to_archive = target_posts.partition{ |post|
+        to_archive = target_posts.reverse.partition{ |post|
           target_posts.index(post)+1 > max
         }.first.each do |post|
           post.archive!
@@ -73,9 +73,12 @@ module Backbite
       }
     end
     
-    # FIXME: just sux
     def next_id
-      self.size+1
+      update!
+      aps = tlog.archive + self
+      return 0 if aps.empty?
+      id = aps.map{ |post| post.pid }
+      id.max+1
     end
     
     def initialize(tlog)
@@ -91,14 +94,14 @@ module Backbite
     end
     
     def with_export(type, params = { })
-      const = Post::Export.const_get(type.to_s.upcase)
+      const = Post::Export[type]
       map{ |post|
         post.with_export(const, params)
       }
     end
-
+    
     def with_export!(type, params = { })
-      const = Post::Export.const_get(type.to_s.upcase)
+      const = Post::Export[type]
       map!{ |post|
         post.with_export(const, params)
       }
@@ -119,6 +122,7 @@ module Backbite
     end
     
     def update!
+      clear
       read
     end
 
@@ -136,17 +140,6 @@ module Backbite
   
   class Post < Delegator
     
-    # Export contains a list of Modules to extend the Post class. E.g.
-    # to use the +:html+ way to export the Repository, you first need
-    # to define a Repository::Export sublcass, named HTML, which
-    # responds to :export, therein your ExportTree will be evaluated
-    # and uses via +with_export+ the +to_foo+ method of the extend
-    # Post instance.
-    # 
-    # Got it? nope? see lib/export/*.rb for examples.
-    class Export
-    end
-
     def __getobj__
       @component
     end
@@ -169,6 +162,7 @@ module Backbite
     end
 
     def with_export(const, params)
+      const = Post::Export[const] if const.kind_of?(Symbol)
       npost = dup.extend(const)
       npost.setup!(params)
       npost
