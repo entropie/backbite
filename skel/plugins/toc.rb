@@ -21,19 +21,26 @@ class Toc < Plugin
         h2 "Archive"
         ul {
           archive.years.reverse.each do |year|
-            li(year, :class => :head)
+            li{
+              a(year, :class => :year, :href => "#{pd}archive/#{year}")
+            }
             li {
               ul {
                 archive.months(year).each do |month|
-                  li(month.to_s.split('/').last, :class => 'month')
+                  sm = month.to_s.split('/').last
+                  li{ 
+                    a(sm.to_s,
+                      :class => 'month',
+                      :href => "#{pd}archive/#{year}/#{sm}/")
+                  }
                   li{
                     ul{
-                      archive.days(year, month).map{ |p|
-                        Backbite::Post.read(t, p).date.strftime('%Y%m%d')
+                      archive.days(year, sm).map{ |p|
+                        Backbite::Post.read(t, p).date.strftime('%Y/%m/%d')
                       }.uniq.each do |ad|
                         li{
                           a(ad[-2..-1],
-                            :href => "#{pd}archive/#{ad}/index.html")
+                            :href => "#{pd}archive/#{ad}/")
                         }
                       end
                     }
@@ -58,6 +65,7 @@ class Toc < Plugin
           end
         }
       }
+      div(:style => 'clear:both')
     end
   end
 end

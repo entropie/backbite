@@ -1,4 +1,4 @@
-#2
+#
 #
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
@@ -9,35 +9,31 @@ module Backbite
 
   module Post::Export::ATOM
 
-    include Helper::Builder
+    include Contrib[:Pyr]
     
     def to_atom
-      ordered = tlog.components[metadata[:component]].order.dup
-      ordered.map!{ |o|
-        fname = o.to_s.gsub(/\w+_(\w+)/, '\1')
-        fields[fname]
-      }
       po, tl = self, tlog
-      permurl = CGI.escapeHTML(fields[:permalink].plugin.atom_url)
-      
-      res = Gestalt.build do
-        id{ CGI.escapeHTML(permurl) }
-        ct = ordered.map do |field|
+      permurl = fields[:permalink].plugin.url.to_s
+      fs = fields
+      bdy = Pyr.build do
+        ct = fs.each do |field|
           opts = { }
           opts[:tag] = field.definitions[:tag] unless
             field.definitions[:tag].to_s.empty?
           opts[:tag] ||= :div
           f, filtered = field.to_sym, field.apply_filter(:atom)
-          "<#{opts[:tag]}>#{filtered}</#{opts[:tag]}>"
+          send(opts[:tag], filtered)
         end
-
-        title { po.identifier }
-        #author{ name(tl.author(0)) }
-        updated(po.metadata[:date].iso8601)
-        
-        content(:type => :html){ CGI.escapeHTML(ct.to_s) }
       end
-      res
+
+      str = Pyr.build do
+        id(permurl)
+        opts = { }
+        title(po.identifier)
+        author{ name(tl.author(0).to_s) }
+        updated(po.metadata[:date].iso8601)
+        content(CGI.escapeHTML(bdy.to_s), :type => 'html')
+      end
     end
   end
 
@@ -51,12 +47,12 @@ module Backbite
 
     class Tree < Repository::ExportTree
 
-      include Helper::Builder
+      include Contrib[:Pyr]
       
       def initialize(tlog, params)
         super
         @file = 'atom.xml'
-        @__result__ = head << make_body
+        @__result__ = head << make_body.to_s
       end
 
       def to_s
@@ -78,18 +74,18 @@ module Backbite
       
       def make_body
         tlog = @tlog
-        Gestalt.build do
+        Pyr.build do
           feed(:xmlns => "http://www.w3.org/2005/Atom") do
-            title{ tlog.title }
+            title(tlog.title)
             link(:href => tlog.url, :rel => 'alternate', :type => 'text/html')
-            link(:href => tlog.http_path('atom.xml'), :rel => 'self', :type => "application/atom+xml")
-            updated( CGI.escapeHTML(Time.now.iso8601))
-            author{ name(tlog.author(0)) }
+            link(:href => tlog.http_path('atom.xml').to_s, :rel => 'self', :type => "application/atom+xml")
+            updated(CGI.escapeHTML(Time.now.iso8601))
+            #author{ name(tlog.author(0)) }
             id(tlog.http_path.to_s.strip)
             tlog.posts.with_export(:atom, :tree => self).each{ |post|
-              entry do
-                post.to_atom
-              end
+              entry {
+                build(&post.to_atom.build_block)
+              }
             }
           end
         end

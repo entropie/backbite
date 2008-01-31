@@ -5,7 +5,7 @@
 
 class Changeset < Plugin          
 
-  HG_URL = 'http://ackro.ath.cx/~mit/hg/%s/'
+  HG_URL = 'http://www1.ackro.ath.cx/~mit/hg/home/hg/%s/'
   
   def input; end
 

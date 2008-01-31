@@ -58,7 +58,6 @@ module Backbite
 
         def filter(params, &blk)
           name = params[:name]
-          itemss = params[:node][:items]
           reject!{ |post|
             not post.config[:target].include?(name)
           }

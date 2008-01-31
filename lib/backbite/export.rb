@@ -5,6 +5,13 @@
 
 module Backbite
 
+  class Post::Export
+    def self.[](c)
+      Post::Export.const_get(c.to_s.upcase)
+    end
+  end
+
+
   class Repository
 
     class ExportTree

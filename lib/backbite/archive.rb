@@ -20,7 +20,7 @@ module Backbite
       super(tlog)
       @archive = @tlog.repository.archive_dir
     end
-
+    
     def days(year = nil, month = nil)
       months(year).map do |amonth|
         if month
