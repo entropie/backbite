@@ -131,7 +131,7 @@ module Backbite
 
       def mkplugin_node_maybe(which, node, &blk)
         if plugin = node[:plugin] # and plugin == which
-          Plugins.independent(pyr, tlog, { which => node}) do |iplugin|
+          Plugins.independent(pyr, tlog, { which => node}, @params) do |iplugin|
             res =
               case nt = iplugin.result.first
               when Pyr::Element, Pyr::Elements
