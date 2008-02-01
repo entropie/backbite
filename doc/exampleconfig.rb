@@ -6,7 +6,7 @@
 #
 #
 
-Config[:__name__].setup do
+Settings[:__name__].setup do
 
   defaults do
 
@@ -28,11 +28,13 @@ Config[:__name__].setup do
       shell "ftpsync --user %ftpuser% --password %password% %localdir% %target%"
     end
 
-    archive_date_format  '%Y%m%d'
+    archive_limit 10
+    
+    archive_date_format  '%Y/%m/%d'
 
     automatic do
       # this is used to list plugins with definitions which are
-      # atomaticaly added to every component
+      # atomaticaly added to every component, order counts.
       plugins { 
         tags
         date 
@@ -56,28 +58,40 @@ Config[:__name__].setup do
 
   end
 
-  # not mandatory
   stylesheets do
-    # files will parsed in different ways depending on extension
-    # known extensions are: haml, css
-    files['rspec.haml'].media = :screen
+    # files will parsed in different ways depending on extension.
+    # known extensions are: sass, css
+    # screen 'blog.sass'
+    # sass files are located in ROOT/misc/.
   end
 
   # not mandatory
   javascript do
-    # files[:jquery]
-    # files[:foo]
+    # to be placed in ROOT/htdocs/include
+    # files[:jquery, :foo]
   end
 
   # use this to define your html body
   html do
+    
     # mandatory
     body do
+      independent do
+        before do
+          plugin
+          other
+        end
+      end
+      
       style do
+        items.max = 5           # autoarchive / autolimit
         color :black
         background_color '%colors_bg_black%'
       end
 
+      # use this to define nodes where plugins or components may live.
+      # to target a node use the `target :name` declaration in your
+      # component. Define as many nodes you want.
       red do
         # items.max = 100
         # items.min = 10
@@ -93,14 +107,3 @@ Config[:__name__].setup do
     end
   end
 end
-
-
-
-=begin
-Local Variables:
-  mode:ruby
-  fill-column:70
-  indent-tabs-mode:nil
-  ruby-indent-level:2
-End:
-=end
