@@ -56,6 +56,8 @@ module Backbite
       # Parent class for any old way to post to a tumblog.
       class Way
 
+        InputException = Backbite::NastyDream(self)
+        
         attr_accessor :fields
         
         attr_accessor :tlog
@@ -158,8 +160,11 @@ module Backbite
       end
 
       class Hash < Way
-        
+
         def run(field, params)
+          unless params[:hash] or params[:hash][field.to_sym]
+            raise InputException, "invalid input dataset; you posted by #{self}"
+          end
           result = params[:hash][field.to_sym]
           super(field, result)
         end
