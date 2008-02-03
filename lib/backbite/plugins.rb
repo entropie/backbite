@@ -7,7 +7,6 @@ module Backbite
 
   class Plugins < Array
 
-    
     def [](o)
       r = select{|pl|
         nam = o.to_s.gsub!(/^(plugin|input)_/, '') || o
@@ -15,7 +14,6 @@ module Backbite
       }.shift
       r
     end
-
     
     # loads all plugins for +comp+
     def self.load_for_component(comp)
@@ -94,6 +92,8 @@ module Backbite
     # * *_filter -- filter which will be only applied for corresponding export variant, for example +html_filter+
     class Plugin
       
+      PluginLoadException = Backbite::NastyDream(self)      
+
       AutoFieldNames = [:before, :content, :after]
 
       include Helper::Builder
@@ -117,6 +117,14 @@ module Backbite
       
       attr_accessor :neighbors
 
+      def self.require(lib, msg = '')
+        begin
+          super lib
+        rescue LoadError
+          raise PluginLoadException, "lib `#{lib}` not in '$:'; #{msg}".yellow
+        end
+      end
+      
       def interactive?
         not respond_to?(:input)
       end

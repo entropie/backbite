@@ -29,7 +29,7 @@ module Backbite
     def generate(tlog, name)
       file = tlog.repository.join('components', "#{name}.rb")
       res = Generators.generate(name, self.class)
-      File.open(file.to_s, 'w+'){ |f| f.write(res) }
+      ::File.open(file.to_s, 'w+'){ |f| f.write(res) }
       file.to_s
     end
 
@@ -57,6 +57,8 @@ module Backbite
     # plugins, and some default behaviors.
     class Component
 
+      ComponentSyntaxError = Backbite::NastyDream(self)
+      
       include Settings
       
       attr_accessor :tlog
@@ -209,14 +211,18 @@ module Backbite
       end
 
       def with_default_plugins(cfg)
-        aplugins = tlog.config[:defaults][:automatic][:plugins]
-        aplugins.each do |plugin, value|
-          name = "plugin_#{plugin.to_s}".to_sym
-          unless value.kind_of?(Proc)
-            value = lambda{ }
+        if tlog.config[:defaults][:automatic] and
+            aplugins = tlog.config[:defaults][:automatic][:plugins]
+          aplugins = tlog.config[:defaults][:automatic][:plugins]
+          aplugins.each do |plugin, value|
+            name = "plugin_#{plugin.to_s}".to_sym
+            unless value.kind_of?(Proc)
+              value = lambda{ }
+            end
+            cfg[:fields][name].read(&value) if cfg[:fields][:name]
           end
-          cfg[:fields][name].read(&value) if cfg[:fields][:name]
         end
+        
         cfg
       end
       

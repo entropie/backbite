@@ -84,7 +84,6 @@ Settings[:__name__].setup do
       end
       
       style do
-        items.max = 5           # autoarchive / autolimit
         color :black
         background_color '%colors_bg_black%'
       end
@@ -93,8 +92,7 @@ Settings[:__name__].setup do
       # to target a node use the `target :name` declaration in your
       # component. Define as many nodes you want.
       red do
-        # items.max = 100
-        # items.min = 10
+        items.max = 5           # autoarchive / autolimit        
         style do
           background_color '%colors_bg_red%'
           padding 40.px

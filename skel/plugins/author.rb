@@ -14,6 +14,7 @@ class Author < Plugin
   end
 
   def html_filter
+    field.value = tlog.author if field.value.to_s.empty?
     "by <strong>#{make_mailto(field.value.to_s)}</strong>"
   end
 end

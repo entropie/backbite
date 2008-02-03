@@ -11,21 +11,16 @@ module Backbite
 
     def to_html(name)
       target = tlog.components[self.metadata[:component]]
-      nam, fs, ident = self.name, fields, identifier
-      res = lambda {
-        div(:class => "post #{nam}", :id => "#{ident}") {
-          target.fields.field_order do |field|
-            n, field = field.to_sym, target.config.config[:fields][n]
-            name = n.to_s.split('_').last.to_sym
-            nfield = fs[name.to_sym]
-
-            opts, filtered = { }, nfield.apply_filter(:html)
-            filtered = nfield.apply_markup(:html, filtered)
-            tag = nfield.definitions[:tag]
-            tag ||= :div
-            send(tag, filtered.to_s, :class => "field #{name}")
-          end
-        }
+      fields = self.fields
+      ident = identifier
+      res = lambda{
+        fields.each do |field|
+          f, filtered = field.to_sym, field.apply_filter(:html)
+          filtered = field.apply_markup(:html, filtered)
+          tag = field.definitions[:tag]
+          tag ||= :div
+          send(tag, filtered.to_s, :class => "field #{name}")
+        end
       }
     end
   end
@@ -75,7 +70,9 @@ module Backbite
       def mktree
         params = @params
         alternate, _title, = "#{params[:path_deep]}everythingatom.xml", @params[:title]
-        jss, ssheets = tlog.config[:javascript][:files], tlog.config[:stylesheets].dup
+
+        jss = tlog.config[:javascript][:files] rescue { }
+        ssheets = tlog.config[:stylesheets]
         bsheets = { :screen => [:base, :generated] }
         
         Pyr.build{

@@ -43,8 +43,8 @@ module Backbite
     def author(what = 0)
       case what
       when 0
-        "%s mailto:%s" % [@config[:defaults][:author][:name],
-                          @config[:defaults][:author][:email]]
+        "%s <%s>" % [@config[:defaults][:author][:name],
+                     @config[:defaults][:author][:email]]
       when 1
         r="%s <a href=\"mailto:%s\">%s</a>" %
           [ @config[:defaults][:author][:name], @config[:defaults][:author][:email], @config[:defaults][:author][:name]]

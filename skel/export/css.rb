@@ -44,6 +44,8 @@ module Backbite
         ret << (" "*indent) << "#{sanitize_def(field)}:#{sanitize_val(value)};\n"
       end
       ret << "}\n\n"
+    rescue
+      ''
     end
 
     

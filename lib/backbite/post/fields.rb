@@ -53,6 +53,8 @@ class Backbite::Post
     # InputField represents a single field in a post.
     class InputField  # :nodoc: All
 
+      PluginException = Backbite::NastyDream(self)
+      
       attr_accessor :name, :definitions, :component
 
       # <tt>is_a?</tt> accepts a symbol or a Classname, and returns
@@ -112,7 +114,7 @@ class Backbite::Post
       end
 
       def to_sym
-        ret = @name.to_s.gsub(/^(input|plugin)_(\w+)$/, '\2').to_sym
+        ret = @name.to_s.gsub(/^(input|plugin)_(.*)$/, '\2').to_sym
       end
 
       def ==(name)
@@ -148,6 +150,8 @@ class Backbite::Post
       def plugin
         @plugin ||= @component.plugins[@name].new(@component.tlog)
         @plugin
+      rescue NoMethodError
+        raise PluginException, "no plugin named `#{@name.inspect}` in component '#{component.name}' found."
       end
       
       def run(params, tlog)

@@ -29,6 +29,18 @@ module Backbite
     #  end
     module CacheAble
 
+      def http_cache_dir(*dirs)
+        path = (['cache', pid.to_s] + dirs.map(&:to_s)).join('/')
+        cd = tlog.http_path(path)
+      end
+      
+      def cache_dir(*dirs)
+        cd = tlog.repository.working_dir(:cache)
+        cd.mkdir unless cd.exist?
+        cd = cd.join(pid.to_s) and (cd.exist? or cd.mkdir)
+        cd.join(*dirs.map(&:to_s))
+      end
+      
       def Cache(key, &blk)
         cache(self).cache_key(key, &blk)
       end
