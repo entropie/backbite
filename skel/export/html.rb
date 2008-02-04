@@ -13,14 +13,18 @@ module Backbite
       target = tlog.components[self.metadata[:component]]
       fields = self.fields
       ident = identifier
+      nam = self.name
       res = lambda{
-        fields.each do |field|
-          f, filtered = field.to_sym, field.apply_filter(:html)
-          filtered = field.apply_markup(:html, filtered)
-          tag = field.definitions[:tag]
-          tag ||= :div
-          send(tag, filtered.to_s, :class => "field #{name}")
-        end
+        div(:class => "post #{nam}", :id => "#{ident}") {
+          fields.each do |field|
+            f, filtered = field.to_sym, field.apply_filter(:html)
+            filtered = field.apply_markup(:html, filtered)
+            name = f.to_s.split('_').last.to_sym
+            tag = field.definitions[:tag]
+            tag ||= :div
+            send(tag, filtered.to_s, :class => "field #{name}")
+          end
+        }
       }
     end
   end
