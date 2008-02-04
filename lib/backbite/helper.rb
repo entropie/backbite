@@ -3,7 +3,7 @@
 # Author:  Michael 'entropie' Trommer <mictro@gmail.com>
 #
 
-%w(paramhash cache date text gestalt dictionary).each do |l|
+%w(paramhash cache date text gestalt dictionary image).each do |l|
   require "backbite/helper/"+ l
 end
 
