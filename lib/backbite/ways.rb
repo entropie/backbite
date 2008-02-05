@@ -12,16 +12,16 @@ module Backbite
   class Post < Delegator
 
     UnknownWay = Backbite::NastyDream(self)
-    
-    module Ways
 
+    module Ways
+      
       def self.ways
         constants.map{ |c|
           next if c == 'Way'
           const_get(c)
         }.compact
       end
-
+      
       def ways
         Ways.ways
       end
@@ -55,7 +55,7 @@ module Backbite
 
       # Parent class for any old way to post to a tumblog.
       class Way
-
+        
         InputException = Backbite::NastyDream(self)
         
         attr_accessor :fields
@@ -159,127 +159,11 @@ module Backbite
         
       end
 
-      class Hash < Way
-
-        def run(field, params)
-          unless params[:hash] or params[:hash][field.to_sym]
-            raise InputException, "invalid input dataset; you posted by #{self}"
-          end
-          result = params[:hash][field.to_sym]
-          super(field, result)
-        end
-      end
-
-
-      # Yaml is the way to retrive Posts from already saved yaml files.
-      class Yaml < Way
-        
-        attr_accessor :source
-        attr_accessor :file
-        
-        def metadata
-          source[:metadata]
-        end
-        
-        # Reformats to be a valid Post instance.
-        def process
-          @component = tlog.components[metadata[:component]].
-            extend(Components::YAMLComponent)
-          @component.map(source)
-          @component.metadata = metadata
-          post = @component.to_post
-          post.file = self.file
-          post
-        end
-        
-        def run(field, params); raise "no need to run a YAML Way"; end
-
-        def save(*args); raise "cannot save a YAML instance"; end
-        
-      end
-      
-
-      class File < Way
-        
-        def run(field, params)
-          result = params[:file].
-            scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/m).
-            flatten.join
-          super(field, result)
-        end
-      end
-
-
-      class Editor < Way
-        
-        def tfilename
-          tlog.repository.join("tmp", filename.to_s+'.tmp')
-        end
-
-        def header
-          "# #{component.name} for #{filename}\n" +
-            "# #{component.inspect}\n\n"
-        end
-
-        def mkfield(field)
-          ret = ''
-          ret << "# #{field.plugin.input}\n" if field.interactive?
-          ret << "[#{field.to_sym}_start]\n#{field.predefined}\n[#{field.to_sym}_end]\n"
-          ret
-        end
-        
-        def fileskel(comp)
-          file = header
-          comp.fields.each do |field|
-            unless field.interactive?
-              file << mkfield(field) << "\n\n"
-            else
-            end
-          end
-          file
-        end
-
-        def yes_no?(text = 'Done? %s/%s', p = 'Y', s = 'n', &blk)
-          loop do
-            ret = blk.call
-            r = Readline.readline((text.to_s + " ") % [p, s]).strip
-            r = p if r.empty?
-            false
-            return ret if r =~ /^#{p}/i
-          end
-        end
-
-        def edit!
-          system("%s '%s'" % [tlog.config[:defaults][:editor], tfilename])
-          ::File.open(tfilename.to_s).readlines.to_s
-        end
-
-        def process(params, comp)
-          @component = comp
-          tfilename.open('w+'){ |res| res.write(@fcontents = fileskel(component)) }
-          @fcontents = yes_no?{
-            edit!
-          }
-          super
-          self
-        end
-
-        def run(field, params)
-          result = @fcontents.scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/m).
-            flatten.join.strip
-          super(field, result)
-        end
-      end
-
-      
-      # Uses readline to get the field values
-      class Commandline < Way
-        def run(field, params)
-          puts "#{"Predefined".red}: #{field.predefined.dump.white}" unless field.predefined.empty?
-          result = Readline.readline('%20s > ' % field.to_sym.to_s.white)
-          super(field, result)
-        end
-      end
+      require 'backbite/ways/hash'
+      require 'backbite/ways/yaml'
+      require 'backbite/ways/file'
+      require 'backbite/ways/editor'
+      require 'backbite/ways/commandline'
       
     end
     

@@ -51,7 +51,9 @@ module Backbite
           :title => "Tag: #{@tag}",
           :tags => [@tag], :norenumber => true,
           :nowrite => true,
-          :path_deep => '../'
+          :path_deep => '../',
+          :nolimit => true,
+          :archive => true
         }
         @result = tlog.repository.export(:html, phash).to_s
       end

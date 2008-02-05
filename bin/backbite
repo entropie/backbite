@@ -181,10 +181,10 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         nhow = if how.to_s =~ /,/
                  how.to_s.split(',').map(&:strip).flatten
                else [how] end
+        handler.posts.archive!
         nhow.map(&:to_sym).each do |h|
           handler.repository.export(h)
         end
-        handler.posts.archive!
         handler.repository.export.commit!
       }
     end
