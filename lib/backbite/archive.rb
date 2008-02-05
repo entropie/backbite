@@ -6,6 +6,10 @@
 module Backbite
   class Archive < Posts
 
+    def self.unarchive_post(tlog, post)
+      pp post.file
+    end
+    
     def self.archive_post(tlog, post)
       adir = tlog.repository.
         archive_dir(post.date.year, "%02i" % post.date.month)

@@ -124,7 +124,12 @@ class Backbite::Post
       end
       
       def to_s(prfx_size = 0)
-        "%-#{prfx_size+13}s #{ value.to_s.inspect.white }" % name.to_s[/_([a-zA-Z_]+)$/, 1].upcase.yellow.bold
+        n = name.to_s[/_([a-zA-Z_]+)$/, 1].upcase.yellow.bold
+        "#{n.ljust(prfx_size+13)} #{ value.to_s.inspect.white }"
+      rescue
+        puts n
+        Warn << "invalid post #{inspect}"
+        sleep 10
       end
 
       def value

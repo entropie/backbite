@@ -110,6 +110,8 @@ module Backbite
       params[:way] ||= :hash
       params[:to]  ||= @repository.join('spool')
       components[component.to_sym].post(params)
+    rescue NoMethodError
+      raise Components::UnknownComponent, "#{component} is unknown"
     end
 
 

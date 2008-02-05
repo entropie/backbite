@@ -19,7 +19,7 @@ module Backbite
     def +(posts)
       dup.push(*posts)
     end
-
+    
     def self.tags(tlog)
       tags = Hash.new { |hash, key| hash[key] = 0 }
       (tlog.posts + tlog.archive).
@@ -61,7 +61,11 @@ module Backbite
     def archive!
       limits = { }
       group_by { |target, posts|
-        limit = tlog.config[:html][:body][target][:items]
+        limit = begin
+                  tlog.config[:html][:body][target][:items]
+                rescue
+                  nil
+                end
         #min = limit[:min] or tlog.config[:defaults][:archive_limit]
         max = (limit && limit[:max] or tlog.config[:defaults][:archive_limit])
         target_posts = posts.by_id!.reverse
@@ -132,6 +136,7 @@ module Backbite
       postfiles = (par = tlog.repository.join(what)).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
       postfiles.inject(self) { |mem, file|
+        Debug << "read: #{file}"
         post = Post.read(tlog, par.join(file))
         mem << post
       }
@@ -186,8 +191,19 @@ module Backbite
       @identifier ||= "#{component.name}#{pid}"
     end
 
+    def remove!
+      file.unlink
+    end
+    
     def archive!
       Archive.archive_post(tlog, self)
+    end
+    
+    def archived?
+    end
+    
+    def unarchive!
+      Archive.unarchive_post(tlog, self)
     end
     
     # setup! sets various attributes on our Plugin instances.
