@@ -75,43 +75,45 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         }
       end
 
-      op.keyword(:post, tlog.posts) do |op, handler|
-        op.desc "list, post and edit posts"
+      [:posts, :archive].each do |phandler|
+        op.keyword(phandler, tlog.send(phandler)) do |op, handler|
+          op.desc "list, post and edit posts"
 
-        op.declare(:ways, 'list ways to post') {
-          puts tlog.components.ways.map{ |w|
-            w.to_s.split('::').last.bold
-          }.join(', ')
-        }
-        
-        op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
-          way = if not w
-                  tlog.config[:defaults][:post_way]
-                else
-                  tlog.components.select_way_with_abbrev(w)
-                end
-          puts "%s Bytes".red % [tlog.post(c.to_sym, :way => way).save.to_s.yellow]
-        }
-
-        op.declare(:archive, "list archived posts") do |*args|
-          args = args.first if args and not args.empty?
-          nargs = Posts.parse_args(args)
-
-          handler.filter(nargs).by_id!.each do |r|
-            puts r
-            puts
+          op.declare(:ways, 'list ways to post') {
+            puts tlog.components.ways.map{ |w|
+              w.to_s.split('::').last.bold
+            }.join(', ')
+          }
+          
+          op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
+            way = if not w
+                    tlog.config[:defaults][:post_way]
+                  else
+                    tlog.components.select_way_with_abbrev(w)
+                  end
+            puts "%s Bytes".red % [tlog.post(c.to_sym, :way => way).save.to_s.yellow]
+          }
+          op.declare(:rm, "remove posts") do |*args|
+            args = args.first if args and not args.empty?
+            nargs = Posts.parse_args(args)
+            handler.filter(nargs).by_id!.each do |r|
+              puts r
+              puts ("-"*60).white
+              puts "remove me?".red
+              r.remove! if Helper::YN::yn?
+            end
           end
+          
+          op.declare(:ls, "lists posts, accepts ids, ranges, tags(,other) and :targets") {|*args|
+            args = args.first if args and not args.empty?
+            nargs = Posts.parse_args(args)
+
+            handler.filter(nargs).by_id!.each do |r|
+              puts r
+              puts
+            end
+          }
         end
-        
-        op.declare(:ls, "lists pending posts, accepts ids, ranges, tags(,other) and :targets") {|*args|
-          args = args.first if args and not args.empty?
-          nargs = Posts.parse_args(args)
-
-          handler.filter(nargs).by_id!.each do |r|
-            puts r
-            puts
-          end
-        }
       end
     end
   end

@@ -33,6 +33,8 @@ module Backbite
         { }
       when /(\d+)\.\.(\d+)/
         { :ids => Range.new($1.to_i, $2.to_i).to_a }
+      when /\d+,\d+/
+        { :ids => args.to_s.split(',').map{ |k| k.to_i } }
       when /(\d+)/
         { :ids => $1.to_i }
       when /^(\w+)/
@@ -146,7 +148,7 @@ module Backbite
   end
   
   class Post < Delegator
-    
+
     def __getobj__
       @component
     end
