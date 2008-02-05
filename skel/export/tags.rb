@@ -13,7 +13,7 @@ module Backbite
     
     def self.export(tlog, params)
       all = []
-      tags = tlog.posts.map{ |post|
+      tags = (tlog.posts + tlog.archive).map{ |post|
         [post.pid, post.tags]
       }.inject(all) { |m, t|
         m << t.last

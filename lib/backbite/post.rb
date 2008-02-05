@@ -163,7 +163,7 @@ module Backbite
     attr_reader   :pid
     attr_accessor :neighbors
     attr_accessor :file
-
+    attr_accessor :path_deep
     def author
       metadata[:author] or tlog.author
     end
@@ -210,6 +210,7 @@ module Backbite
     def setup!(params)
       params.extend(Helper::ParamHash).
         process!(:tree => :required, :path_deep => :optional)
+      self.path_deep = params[:path_deep]
       self.neighbors = [tlog.posts.filter( :ids => [pid-1] ),
                         tlog.posts.filter( :ids => [pid+1] )].
         map{ |n| n.first }

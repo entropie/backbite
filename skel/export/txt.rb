@@ -24,7 +24,7 @@ module Backbite
           str = "#{metadata[:component].to_s.capitalize} {"
           fields.each do |field|
             f, filtered = field.to_sym, field.apply_filter(:txt)
-            filtered = paragraphify(filtered)
+            filtered = paragraphify(filtered.to_s)
             str << "\n %-10s %s" % [f.to_s+':', filtered]
           end
           str << "\n}\n"

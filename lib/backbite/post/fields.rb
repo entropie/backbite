@@ -84,7 +84,7 @@ class Backbite::Post
                    str
                  end
         end
-        str
+        str.to_s
       end
 
       def has_filter?(filter)
