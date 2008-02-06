@@ -33,6 +33,7 @@ module Backbite
       file
     end
 
+    # FIXME: use helper
     def yes_no?(text = 'Done? %s/%s', p = 'Y', s = 'n', &blk)
       loop do
         ret = blk.call

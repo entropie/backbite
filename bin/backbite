@@ -58,7 +58,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
       Generators.generators do |name, gen|
         op.declare(name.to_sym, "generates a new skelleton for #{name} named <name>") { |name|
           raise "need a name for the generator" unless name
-          puts Generators.generate(name, gen)
+          puts Generators.generate(name, gen, tlog)
         }
       end
     end

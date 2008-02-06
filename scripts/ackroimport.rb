@@ -23,14 +23,21 @@ end.uniq
 a.each do |name, cont|
   c = cont
   case name
-  when :shorto
-    name = :nut
-  when :twoimages
-    name = :multipleimg
-    a = cont.delete(:secimg)
-    b = cont.delete(:lightbox)
-    cont.merge!(:multipleimg => "#{a}\n#{b}")
+  when :lyric
+    cont.merge!(:linewrap => cont.delete(:lyric))
+    cont.merge!(:from => cont.delete(:interpret))
+    pp cont
+  # when :shorto
+  #   name = :nut
+  # when :twoimages
+  #   name = :multipleimg
+  #   a = cont.delete(:secimg)
+  #   b = cont.delete(:lightbox)
+    #   cont.merge!(:multipleimg => "#{a}\n#{b}")
+#    next
   when :ruby, :shell, :wise, :irc, :btw
+    next
+  else
     next
   end
   # puts

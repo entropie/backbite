@@ -59,6 +59,8 @@ module Backbite
     # plugins, and some default behaviors.
     class Component
 
+      ComponentNotKnown = Backbite::NastyDream(self)
+      
       ComponentSyntaxError = Backbite::NastyDream(self)
       
       include Settings

@@ -162,6 +162,7 @@ module Backbite
       require 'backbite/ways/hash'
       require 'backbite/ways/yaml'
       require 'backbite/ways/file'
+      require 'backbite/ways/mail'
       require 'backbite/ways/editor'
       require 'backbite/ways/commandline'
       

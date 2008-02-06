@@ -19,11 +19,11 @@ module Backbite
       }
     end
 
-    def self.generate(name, what)
+    def self.generate(name, what, tlog)
       tconst = if what.class === Class then what else what.class end
       tconst = tconst.to_s.split('::').last
       if const = Generators.const_get(tconst) and const != NilClass
-        return what.extend(const).make(name)
+        return what.extend(const).make(name, tlog)
       else
         raise UnknownGenerator, what
       end
@@ -34,7 +34,7 @@ module Backbite
         Tumblelog.new(name, file)
       end
       
-      def make(name)
+      def make(name, tlog)
         efile = Backbite::Source.join('doc', 'exampleconfig.rb')
         cfg = Settings.read(efile)
         tlroot = cfg[:defaults][:root]
@@ -45,8 +45,8 @@ module Backbite
       end
     end
     
-    module Components # :nodoc: All
-      def make(name)
+    module Component # :nodoc: All
+      def make(name, tlog)
         res = ''
         res << "define(:#{name}) do\n"
         res << (prfx=" "*2) << "\n"
@@ -57,8 +57,8 @@ module Backbite
       end
     end
 
-    module Plugins # :nodoc: All
-      def make(name)
+    module Plugin # :nodoc: All
+      def make(name, tlog)
         res = ''
         res << "class #{name.to_s.capitalize} < Plugin\n\n"
         [:metadata_inject, :input, 'transform!(str)', :content,
@@ -69,6 +69,21 @@ module Backbite
       end
     end
 
+    module Post
+      Fieldskel = "[%field%_start]\n\n[%field%_end]"
+      def make(name, tlog)
+        res = ''
+        comp = tlog.components[name.to_sym]
+        raise Component::ComponentNotKnown, name unless comp
+        comp.fields.each do |fn|
+          next if fn.interactive?
+          name = fn.to_sym
+          str = Fieldskel.gsub(/%(field)%/, name.to_s)
+          res << str << "\n\n\n"
+        end
+        res.strip
+      end
+    end
     
   end
 end
