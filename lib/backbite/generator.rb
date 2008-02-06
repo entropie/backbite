@@ -29,7 +29,7 @@ module Backbite
       end
     end
 
-    module Tumblelog # :nodoc: All
+    module Tumblelog
       def load_tlog(name, file)
         Tumblelog.new(name, file)
       end
@@ -45,7 +45,7 @@ module Backbite
       end
     end
     
-    module Component # :nodoc: All
+    module Component
       def make(name, tlog)
         res = ''
         res << "define(:#{name}) do\n"
@@ -57,7 +57,7 @@ module Backbite
       end
     end
 
-    module Plugin # :nodoc: All
+    module Plugin
       def make(name, tlog)
         res = ''
         res << "class #{name.to_s.capitalize} < Plugin\n\n"
@@ -81,7 +81,7 @@ module Backbite
           str = Fieldskel.gsub(/%(field)%/, name.to_s)
           res << str << "\n\n\n"
         end
-        res.strip
+        res
       end
     end
     
