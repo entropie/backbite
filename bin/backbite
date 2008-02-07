@@ -139,7 +139,10 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
               puts r
               puts ("-"*60).white
               puts "remove me?".red
-              r.remove! if Helper::YN::yn?
+              if Helper::YN::yn?
+                r.remove!
+                tlog.repository.export.commit!
+              end
             end
           end
 
@@ -190,7 +193,9 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
       puts handler.repository.setup!
     }
 
-    op.declare(:clean, 'clean the repository (eg. flushes tempfiles)'){ 
+    op.declare(:clean, 'clean the repository (eg. flushes tempfiles)'){
+      handler.posts.archive!
+      handler.repository.export.commit!
       puts "%i files removed".bold % handler.repository.clean!
     }
     
@@ -226,6 +231,8 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         puts handler.repository.export.ways.map(&:to_s).map(&:bold).join(', ')
       }
 
+      
+      
       op.declare(:export, "export your tumblog <how>") { |*how|
         if not how or how.empty? or how.to_s == 'all'
           how = handler.repository.export.ways.join(',')
@@ -237,7 +244,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         nhow.map(&:to_sym).each do |h|
           handler.repository.export(h)
         end
-        handler.repository.export.commit!
+          handler.repository.export.commit!
       }
     end
   end

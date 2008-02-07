@@ -74,7 +74,7 @@ module Backbite
 
         if posts.size > max
           posts[0..(posts.size - max)-1].each do |post|
-            post.archive!
+            post.archive!(tlog)
           end
         end
       }
@@ -196,14 +196,22 @@ module Backbite
     def remove!
       Info << "rm $ #{pid} #{file}"
       file.unlink
+      tlog.archive.filter(:target => target).by_date!.last.unarchive!
     end
     
-    def archive!
-      Archive.archive_post(tlog, self)
+    def archive!(with_export = true)
+      ret = Archive.archive_post(tlog, self)
+      tlog.repository.export(:html ) if with_export
+      tlog.repository.export(:archive, { :date => date} ) if with_export
+      tlog.repository.export(:tags, { :tags => tags} ) if with_export
+      ret
     end
 
-    def unarchive!
-      Archive.unarchive_post(tlog, self)
+    def unarchive!(with_export = true)
+      ret = Archive.unarchive_post(tlog, self)
+      tlog.repository.export(:html, { :date => date} ) if with_export
+      tlog.repository.export(:tags, { :tags => tags} ) if with_export
+      ret
     end
     
     def archived?

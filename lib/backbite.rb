@@ -36,7 +36,6 @@ module Backbite
   Version = %w'0 4 5'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
-
  
   def self.version
     "backbite-#{Version.join('.')}"

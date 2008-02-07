@@ -12,16 +12,21 @@ module Backbite
     end
     
     def self.export(tlog, params)
-      all = []
-      tags = (tlog.posts + tlog.archive).map{ |post|
-        [post.pid, post.tags]
-      }.inject(all) { |m, t|
-        m << t.last
-      }
-      all = all.flatten.uniq
-
       tag_dir = tlog.repository.working_dir('tags')
       tag_dir.mkdir unless tag_dir.exist?
+      result = ''
+      all = []
+      tags = params[:tags]
+      if tags
+        all = tags
+      else
+        tags = (tlog.posts + tlog.archive).map{ |post|
+          [post.pid, post.tags]
+        }.inject(all) { |m, t|
+          m << t.last
+        }
+        all = all.flatten.uniq
+      end
       result = ''
       all.each do |t|
         filename = tag_dir.join("#{sanitize_tag(t)}.html")

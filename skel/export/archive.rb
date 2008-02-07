@@ -11,6 +11,10 @@ module Backbite
     
     def self.export(tlog, params)
       psts = { }
+      what = params[:date]
+      if what
+        what = params[:date].strftime(tlog.config[:defaults][:archive_date_format])
+      end
       all_posts = tlog.archive + tlog.posts
       all_posts.each do |post|
         y,m,d = post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format]).split('/')
@@ -35,6 +39,7 @@ module Backbite
       result = ''
 
       psts.each_pair do |d, pids|
+        next if what and what != d
         FileUtils.mkdir_p(archive_dir.join(d))
 
         file = archive_dir.join(d, 'index.html')
