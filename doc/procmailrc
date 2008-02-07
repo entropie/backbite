@@ -1,0 +1,18 @@
+# Post to polis
+:0
+* ^Subject:.*polis \/[0-9a-z ]+
+{
+    COMPONENT="$MATCH"
+    :0 abf
+    | backbite polis post to $COMPONENT mail
+}
+
+# Get Postskel and submit to sender
+:0
+* ^Subject:.*polis skel \/[0-9a-z ]+
+{
+    COMPONENT="$MATCH"
+    :0 abf
+    * ^From:.*\/.*
+    | backbite polis mail $COMPONENT `echo $MATCH | sed 's/.*<\(.*\)>.*/\1/g'`
+}
