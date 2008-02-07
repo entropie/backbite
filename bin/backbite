@@ -46,36 +46,34 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
     }
   end
   
-  op.keyword(:plugin, Backbite::Plugins) do |op, handler|
-    op.declare(:generate) { |name|
-      puts Generators.generate(name, handler)
-    }
-  end
+  # op.keyword(:plugin, Backbite::Plugins) do |op, handler|
+  #   op.declare(:generate) { |name|
+  #     puts Generators.generate(name, handler)
+  #   }
+  # end
 
   if tlog
     op.keyword(:mail, Backbite::Helper::Mail) do |op, handler|
       op.desc "mail stuff"
-      tlog.components.each do |comp|
-        op.declare(:about, 'mail info to <receiver>') do |*to|
-          raise "need a Mail To" if to.empty?
-          to.each do |mail|
-            about = handler.about(tlog)
-            handler.mailto("infos about tumblog #{tlog.name}",
-                           about,
-                           mail, tlog)
-          end
+      op.declare(:about, 'mail info to <receiver>') do |to|
+        raise "need a Mail To" unless to.empty?
+        to.each do |mail|
+          about = handler.about(tlog)
+          handler.mailto("infos about tumblog #{tlog.name}",
+                         about,
+                         mail, tlog)
         end
-        
-        op.declare(comp.to_sym, "mail #{comp.to_sym} skelleton") { |*to|
-          raise "need a Mail To" if to.empty?
-          to.each do |mail|
-            gentext = Generators.generate(comp.to_sym, Generators[:post], tlog)
-            handler.mailto("backbite post skelleton #{comp.to_sym} for '#{tlog.name}'",
-                           gentext,
-                           mail)
-          end
-        }
       end
+
+      op.declare(:skel, "mail component skelleton <name> to <receiver>") { |name,to|
+        raise "need a Mail To" unless to
+        raise "need component name" unless name
+        comp = tlog.components[name.to_sym]
+        gentext = Generators.generate(comp.to_sym, Generators[:post], tlog)
+        handler.mailto("backbite post skelleton #{comp.to_sym} for '#{tlog.name}'",
+                       gentext,
+                       to.to_s, tlog)
+      }
     end
     
     op.keyword(:generator) do |op, handler|
@@ -101,23 +99,39 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
       end
 
       [:posts, :archive].each do |phandler|
+
         op.keyword(phandler, tlog.send(phandler)) do |op, handler|
           op.desc "list, post and edit posts"
 
-          op.declare(:ways, 'list ways to post') {
-            puts tlog.components.ways.map{ |w|
-              w.to_s.split('::').last.bold
-            }.join(', ')
+          op.declare(s=((phandler == :posts ? '' : 'un') + 'archive').to_sym,
+                     "#{s} posts") { |args|
+            nargs = Posts.parse_args(args.to_s)
+
+            handler.filter(nargs).by_id!.each do |r|
+              puts r
+              r.send(s.to_s+'!') if Helper::YN::yn?
+            end
           }
           
-          op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
-            way = if not w
-                    tlog.config[:defaults][:post_way]
-                  else
-                    tlog.components.select_way_with_abbrev(w)
-                  end
-            puts "%s Bytes".red % [tlog.post(c.to_sym, :way => way).save.to_s.yellow]
-          }
+          if phandler == :posts
+            op.declare(:ways, 'list ways to post') {
+              puts tlog.components.ways.map{ |w|
+                w.to_s.split('::').last.bold
+              }.join(', ')
+            }
+            
+            tlog.components.each do |comp|
+              op.declare(comp.to_sym, "post to #{comp.to_sym} with [editor]") do |*w|
+                way = unless w.empty? then tlog.way(w.to_s) else tlog.way end
+                tlog.post(comp.to_sym, :way => way).save
+              end
+            end
+            
+            op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
+              way = tlog.way(w)
+              puts "%s Bytes".red % [tlog.post(c.to_sym, :way => way).save.to_s.yellow]
+            }
+          end
           op.declare(:rm, "remove posts") do |*args|
             args = args.first if args and not args.empty?
             nargs = Posts.parse_args(args)
@@ -128,16 +142,27 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
               r.remove! if Helper::YN::yn?
             end
           end
-          
-          op.declare(:ls, "lists posts, accepts ids, ranges, tags(,other) and :targets") {|*args|
+
+          op.declare(:edit, "edit posts") do |*args|
             args = args.first if args and not args.empty?
             nargs = Posts.parse_args(args)
-
             handler.filter(nargs).by_id!.each do |r|
-              puts r
-              puts
+              r.edit!
             end
-          }
+          end
+
+          
+          [:index, :ls].each do |key|
+            op.declare(key, "lists posts, accepts ids, ranges, tags(,other) and :targets") {|*args|
+              args = args.first if args and not args.empty?
+              nargs = Posts.parse_args(args)
+
+              handler.filter(nargs).by_id!.each do |r|
+                puts r
+                puts
+              end
+            }
+          end
         end
       end
     end

@@ -91,6 +91,12 @@ module Backbite
                                            :component => component,
                                            :way => self.class.to_s)
         end
+
+        def src
+          @src ||= YAML::load(file.readlines.join)
+        end
+
+        alias :__source__ :src
         
         # Parses the fields hash, and processes any field according to
         # its class.
@@ -98,6 +104,7 @@ module Backbite
         # If the field's a plugin, we're going to create an instance of
         # it (because we only want to work on a single plugin instance).
         def process(params, component)
+          pp self
           Info << "#{component.name.to_s.upcase} -> #{self.class}"
           @component = component.dup
           @meta = params[:meta]
@@ -114,6 +121,8 @@ module Backbite
                 field.plugin
               end
           end
+          self
+        rescue
           self
         end
         

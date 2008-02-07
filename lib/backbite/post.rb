@@ -157,7 +157,7 @@ module Backbite
       Post::Ways.dispatch(:yaml) do |way|
         way.tlog = tlog
         way.file = Pathname.new(file.to_s)
-        way.source = YAML::load(way.file.readlines.join)
+        way.source = way.src
       end.process
     end
     
@@ -194,20 +194,33 @@ module Backbite
     end
 
     def remove!
+      Info << "rm $ #{pid} #{file}"
       file.unlink
     end
     
     def archive!
       Archive.archive_post(tlog, self)
     end
-    
-    def archived?
-    end
-    
+
     def unarchive!
       Archive.unarchive_post(tlog, self)
     end
     
+    def archived?
+    end
+
+    def edit!(way = :editor)
+      n = nil
+      rw = Ways.dispatch(way) do |w|
+        w.values = YAML::load(open(file.to_s))
+        n = w.fileskel(component)
+        w.tlog = tlog
+        w.fields = fields
+      end.process(n, component)
+      rw.save and remove!
+    end
+    
+   
     # setup! sets various attributes on our Plugin instances.
     def setup!(params)
       params.extend(Helper::ParamHash).

@@ -10,7 +10,7 @@ module Backbite
     
     attr_accessor :source
     attr_accessor :file
-    
+
     def metadata
       source[:metadata]
     end

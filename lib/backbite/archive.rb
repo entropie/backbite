@@ -7,7 +7,11 @@ module Backbite
   class Archive < Posts
 
     def self.unarchive_post(tlog, post)
-      pp post.file
+      adir = tlog.repository.join(:spool)
+      fname = post.file.basename.to_s[3..-1]
+      tdir = adir.join(fname)
+      Info << "unarchiving #{post.identifier} to #{tdir.to_s.split('/')[-4..-1].join('/')}"
+      post.file.rename(tdir)
     end
     
     def self.archive_post(tlog, post)

@@ -5,9 +5,11 @@
 
 module Backbite
   class Post::Ways::Editor < Post::Ways::Way
-    
+    attr_accessor :tfilename
+    attr_accessor :component
+    attr_accessor :values
     def tfilename
-      tlog.repository.join("tmp", filename.to_s+'.tmp')
+      @tfilename ||= tlog.repository.join("tmp", filename.to_s+'.tmp')
     end
 
     def header
@@ -18,11 +20,22 @@ module Backbite
     def mkfield(field)
       ret = ''
       ret << "# #{field.plugin.input}\n" if field.interactive?
-      ret << "[#{field.to_sym}_start]\n#{field.predefined}\n[#{field.to_sym}_end]\n"
+      text = ''
+      if values
+        val = values.select{ |fn, fv| fn.to_s.split('_').last.to_sym == field.to_sym}.last.last
+        text =
+          case val
+          when Array: val.join(' ')
+          else
+            val
+          end
+      end
+      ret << "[#{field.to_sym}_start]\n#{text}#{field.predefined}\n[#{field.to_sym}_end]\n"
       ret
     end
     
     def fileskel(comp)
+      @component = comp
       file = header
       comp.fields.each do |field|
         unless field.interactive?
@@ -30,6 +43,7 @@ module Backbite
         else
         end
       end
+      @fcontents = file
       file
     end
 
@@ -51,7 +65,8 @@ module Backbite
 
     def process(params, comp)
       @component = comp
-      tfilename.open('w+'){ |res| res.write(@fcontents = fileskel(component)) }
+      @params = params
+      tfilename.open('w+'){ |res| res.write(fileskel(component)) }
       @fcontents = yes_no?{
         edit!
       }

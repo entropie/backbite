@@ -22,6 +22,15 @@ module Backbite
     alias :path :root
 
 
+    def way(way = nil)
+      r =
+        unless way
+          config[:defaults][:post_way] or :editor
+        else
+          components.select_way_with_abbrev(way)
+        end
+    end
+    
     def register
       @register ||= Register.new
       @register.file = config[:defaults][:register].to_s if

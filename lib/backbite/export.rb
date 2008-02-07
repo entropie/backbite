@@ -93,7 +93,7 @@ module Backbite
       def self.known?(way)
         const_defined?(way.to_s.upcase)
       end
-
+      
       def self.choose(way)
         const_get(way.to_s.upcase)
       end
