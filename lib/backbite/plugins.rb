@@ -135,7 +135,8 @@ module Backbite
         @result ||= { }
         @result[:content] =
           if respond_to?(:metadata_inject)
-            if field.value.to_s.empty?
+            #pp value.class
+            if value.to_s.empty?
               nam = send(:metadata_inject)
               Info << " - Plugin[#{name}]#metadata_inject: value from #{nam}"
               md = way.metadata[nam]

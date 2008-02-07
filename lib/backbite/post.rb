@@ -193,15 +193,18 @@ module Backbite
       @identifier ||= "#{component.name}#{pid}"
     end
 
-    def remove!
+    def remove!(with_export = true)
       Info << "rm $ #{pid} #{file}"
       file.unlink
       tlog.archive.filter(:target => target).by_date!.last.unarchive!
+      tlog.repository.export(:html) if with_export
+      tlog.repository.export(:archive, { :date => date} ) if with_export
+      tlog.repository.export(:tags, { :tags => tags} ) if with_export
     end
     
     def archive!(with_export = true)
       ret = Archive.archive_post(tlog, self)
-      tlog.repository.export(:html ) if with_export
+      tlog.repository.export(:html) if with_export
       tlog.repository.export(:archive, { :date => date} ) if with_export
       tlog.repository.export(:tags, { :tags => tags} ) if with_export
       ret
@@ -211,6 +214,7 @@ module Backbite
       ret = Archive.unarchive_post(tlog, self)
       tlog.repository.export(:html, { :date => date} ) if with_export
       tlog.repository.export(:tags, { :tags => tags} ) if with_export
+      tlog.repository.export(:archive, { :date => date} ) if with_export      
       ret
     end
     

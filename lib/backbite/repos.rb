@@ -50,7 +50,8 @@ module Backbite
 
     # Return a list of Posts
     def posts(params = { }, &blk)
-      Posts.new(@tlog).read.filter(params, &blk)
+      @posts = nil if params[:force]
+      @posts ||= Posts.new(@tlog).read.filter(params, &blk)
     end
 
     def archive(params = { }, &blk)

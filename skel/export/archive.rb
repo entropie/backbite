@@ -8,41 +8,42 @@ module Backbite
   module Repository::Export::ARCHIVE
 
     DateFormat = '%Y%m%d'
+
+    def self.date(o)
+      if o.include?('/')
+        Date.new(*o.split('/').map{ |i| i.to_i})
+      else
+        Date.new(o.to_i)
+      end
+    end
     
     def self.export(tlog, params)
       psts = { }
       what = params[:date]
-      if what
-        what = params[:date].strftime(tlog.config[:defaults][:archive_date_format])
-      end
-      all_posts = tlog.archive + tlog.posts
+      all_posts = tlog.archive
+      j = 0
       all_posts.each do |post|
-        y,m,d = post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format]).split('/')
+        y,m,d = (dd=post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format]).split('/'))
         [y, "#{y}/#{m}"].each do |sd|
-          date,matcher =
-            begin
-              [Date.parse(sd), lambda{|a| a.metadata[:date].year == date.year and a.metadata[:date].month == date.month }]
-            rescue
-              [Date.new(sd.to_i), lambda{|a| a.metadata[:date].year == date.year }]
-            end
-          psts[sd] ||= []
-          all_posts.select(&matcher).each do |npost|
-            psts[sd] << npost.pid
-          end
-          psts[sd].uniq!
+          date = self.date(sd)
+          psts[date] ||= []
+          psts[date] << post.pid if post.date.year == date.year
+          psts[date].uniq!
         end
         
-        fname = post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format])
-        (psts[fname] ||= []) << post.pid
+        fname = dd
+        (psts[[y,m,d]] ||= []) << post.pid
       end
+
       archive_dir = tlog.repository.working_dir('archive')
       result = ''
 
       psts.each_pair do |d, pids|
         next if what and what != d
-        FileUtils.mkdir_p(archive_dir.join(d))
+        d = d.to_s.split('-') if d.kind_of?(Date)
+        FileUtils.mkdir_p(archive_dir.join(*d))
 
-        file = archive_dir.join(d, 'index.html')
+        file = archive_dir.join(*d).join('index.html')
         tree = Tree.new(d, file, tlog.dup, params)
         Debug << "ARCHIVE: #{d} pids=#{pids.join(',')}"
         tree.export_date(*pids)

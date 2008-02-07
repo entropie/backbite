@@ -104,7 +104,6 @@ module Backbite
         # If the field's a plugin, we're going to create an instance of
         # it (because we only want to work on a single plugin instance).
         def process(params, component)
-          pp self
           Info << "#{component.name.to_s.upcase} -> #{self.class}"
           @component = component.dup
           @meta = params[:meta]
