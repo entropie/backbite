@@ -72,6 +72,8 @@ module Backbite
       attr_accessor :source
 
       attr_accessor :metadata
+
+      alias :to_sym :name
       
       # creates the component
       def self.define(name, &blk)

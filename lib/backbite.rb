@@ -32,11 +32,12 @@ module Backbite
       $DEBUG = s
     end
   end
-
+  
   Version = %w'0 4 3'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
-  
+
+ 
   def self.version
     "backbite-#{Version.join('.')}"
   end
@@ -77,6 +78,8 @@ module Backbite
     globals[:support_haml] = false
   end
 
+  include Helper::Text
+  
 end
 
 

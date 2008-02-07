@@ -53,6 +53,31 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
   end
 
   if tlog
+    op.keyword(:mail, Backbite::Helper::Mail) do |op, handler|
+      op.desc "mail stuff"
+      tlog.components.each do |comp|
+        op.declare(:about, 'mail info to <receiver>') do |*to|
+          raise "need a Mail To" if to.empty?
+          to.each do |mail|
+            about = handler.about(tlog)
+            handler.mailto("infos about tumblog #{tlog.name}",
+                           about,
+                           mail, tlog)
+          end
+        end
+        
+        op.declare(comp.to_sym, "mail #{comp.to_sym} skelleton") { |*to|
+          raise "need a Mail To" if to.empty?
+          to.each do |mail|
+            gentext = Generators.generate(comp.to_sym, Generators[:post], tlog)
+            handler.mailto("backbite post skelleton #{comp.to_sym} for '#{tlog.name}'",
+                           gentext,
+                           mail)
+          end
+        }
+      end
+    end
+    
     op.keyword(:generator) do |op, handler|
       op.desc "generate files"
       Generators.generators do |name, gen|

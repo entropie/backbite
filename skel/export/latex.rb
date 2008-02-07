@@ -26,7 +26,7 @@ module Backbite
       elsif not field.has_filter?(:latex)
         h = SM::ToLaTeX.new
         sm = SM::SimpleMarkup.new
-        return sm.convert(str, h)
+        return sm.convert(str.to_s, h)
       else
         str
       end

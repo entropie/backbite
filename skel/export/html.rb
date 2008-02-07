@@ -31,11 +31,16 @@ module Backbite
   
 
   module Repository::Export::HTML # :nodoc: All
+
+    def self.mkbody(tlog, params)
+      tree = Tree.new(tlog, params.merge(:nobody => true))
+      tree.mktree
+    end
     
     def self.export(tlog, params)
-      @tree = Tree.new(tlog, params)
-      @tree.write unless params[:nowrite]
-      @tree
+      tree = Tree.new(tlog, params)
+      tree.write unless params[:nowrite]
+      tree
     end
 
     class Tree < Repository::ExportTree
@@ -63,7 +68,7 @@ module Backbite
         super
         @file = 'index.html'
         @pyr = mktree
-        mkbody
+        mkbody unless params.include?(:nobody)
       end
       
       def to_s
@@ -129,7 +134,7 @@ module Backbite
         end
 
       end
-
+      
       def mkplugin_node_maybe(which, node, &blk)
         if plugin = node[:plugin] # and plugin == which
           Plugins.independent(pyr, tlog, { which => node}, @params) do |iplugin|

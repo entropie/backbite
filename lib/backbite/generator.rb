@@ -9,6 +9,13 @@ module Backbite
   module Generators
 
     UnknownGenerator = Backbite::NastyDream(self)
+
+    def self.[](obj)
+      generators do |name, gen|
+        return gen if obj.to_sym == name.to_sym
+      end
+      nil
+    end
     
     def self.generators
       Generators.constants.map{ |const|

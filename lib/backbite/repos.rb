@@ -27,7 +27,7 @@ module Backbite
     def initialize(name, directory)
       @name, @directory = name.to_sym, Pathname.new(directory)
     end
-
+    
 
     def export(way = nil, params = { })
       return dup.extend(Export) unless way
