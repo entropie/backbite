@@ -6,6 +6,10 @@
 module Backbite
   class Archive < Posts
 
+    def self.archived?(tlog, post)
+      post.file.to_s.split('/')[-4..-1].first == 'archive'
+    end
+
     def self.unarchive_post(tlog, post)
       adir = tlog.repository.join(:spool)
       fname = post.file.basename.to_s[3..-1]

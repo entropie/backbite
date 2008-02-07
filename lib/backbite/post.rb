@@ -207,6 +207,7 @@ module Backbite
     end
     
     def archived?
+      Archive.archived?(tlog, self)
     end
 
     def edit!(way = :editor)
@@ -269,7 +270,8 @@ module Backbite
       prfx = "\n  "
       adds = [["$", pid], [:I, identifier], ['#', url], ['', file]]
       adds = adds.map{ |an,av| "#{an.to_s.upcase.yellow} #{av.to_s.cyan}"}.join(";  #{"".bold.green}")
-      ret = "#{name.to_s.capitalize.white.bold} #{"[".red} #{prfx}" <<
+      clr = archived? ? :cyan : :white
+      ret = "#{name.to_s.capitalize.send(clr).bold} #{"[".red} #{prfx}" <<
         fields.inject([]) { |m, field|
         m << if field.value.to_s.empty? then nil else field.to_s(10) end
       }.compact.join("#{prfx}") << "\n#{"]".red} #{"".bold.green}#{adds}"
