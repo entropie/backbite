@@ -12,7 +12,7 @@ module Backbite
 
       require 'RMagick'
       
-      def thumbnail_and_safe(img)
+      def thumbnail_and_safe(img, geo = '320x240')
 
         result =
           Cache(img) {
@@ -22,7 +22,7 @@ module Backbite
             bimg.dup.write(cache_dir.join(b_imgname = File.basename(URI.parse(url).path)))
             img =
               if x > 320 or y > 400
-                bimg.change_geometry!('320x240') { |cols, rows, img|
+                bimg.change_geometry!(geo) { |cols, rows, img|
                 bimg.resize!(cols, rows)
               }
               else

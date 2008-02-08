@@ -56,7 +56,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
     op.keyword(:mail, Backbite::Helper::Mail) do |op, handler|
       op.desc "mail stuff"
       op.declare(:about, 'mail info to <receiver>') do |to|
-        raise "need a Mail To" unless to.empty?
+        raise "need a Mail To" if to.empty?
         to.each do |mail|
           about = handler.about(tlog)
           handler.mailto("infos about tumblog #{tlog.name}",

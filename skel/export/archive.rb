@@ -20,8 +20,7 @@ module Backbite
     def self.export(tlog, params)
       psts = { }
       what = params[:date]
-      all_posts = tlog.archive
-      j = 0
+      all_posts = tlog.archive + tlog.posts
       all_posts.each do |post|
         y,m,d = (dd=post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format]).split('/'))
         [y, "#{y}/#{m}"].each do |sd|
