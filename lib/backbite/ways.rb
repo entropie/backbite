@@ -66,6 +66,7 @@ module Backbite
         
         attr_reader   :component
         
+
         def initialize
           @result = { }
         end
@@ -111,7 +112,8 @@ module Backbite
             @result[hand.name.to_sym] =
               if hand.is_a?(:field)
                 value = run(hand, params)
-                hand.run( value, params, tlog )
+                ret = hand.run( value, params, tlog )
+                ret
               elsif hand.is_a?(:plugin)
                 # create plugin instance
                 field = hand.run(params, tlog)
@@ -156,7 +158,7 @@ module Backbite
             result[nam] = value
           }
           result[:metadata] = metadata
-          result.to_yaml
+          tlog.textfilter.apply(:yaml, result).to_yaml
         end
         private :to_yaml
 
