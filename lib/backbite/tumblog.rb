@@ -95,6 +95,9 @@ module Backbite
       @repository.valid?
     end
 
+    def textfilter
+      @textfilter ||= Textfilter.read(self)
+    end
     
     def components
       @components ||= @repository.components

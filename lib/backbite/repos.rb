@@ -19,7 +19,7 @@ module Backbite
     
     IgnoredBodyFields = [:style, :independent]
 
-    BaseDirs = %w(archive export plugins components htdocs tmp spool misc data lib)
+    BaseDirs = %w(textfilter archive export plugins components htdocs tmp spool misc data lib)
 
     SubDirs  = { :htdocs => [:include], :tmp => ['.work'] }
 
@@ -147,7 +147,7 @@ module Backbite
         end
       sources = [Backbite::Source.join('skel'), sources].compact
 
-      %w'plugins components export misc archive'.each do |w|
+      %w'textfilter plugins components export misc archive'.each do |w|
         sources.each do |source|
           (st = source.join(w)).entries.grep(/^[^\.]/).each do |e|
             t = @directory.join(w)

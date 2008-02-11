@@ -11,11 +11,12 @@ describe Backbite::Post do
 
   it "should accept a post via hash " do
     post = @target.post(:test, :hash =>
-                        { :topic => 'Hello from rspec ahash',
+                        { :topic => 'Hello from rspec ahash >>>np',
                           :body  => 'foo ahash',
                           :tags  => 'batz, bar, bumm, ahash'
                         })
     post.save.should
+    pp post
     post.class.should == Backbite::Post::Ways::Hash
   end
 
@@ -76,6 +77,7 @@ describe Backbite::Post do
     post.save.should
     post.class.should == Backbite::Post::Ways::Hash
   end
+
   it "should accept a post via hash to another component, metadate #1" do
     post = @target.post(:foo, :hash =>
                         { :topic => 'Hello from rspec keke',

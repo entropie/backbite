@@ -27,7 +27,7 @@ class Date < Plugin
     #f.first + filter + f.last
     #extd = Helper::HumanEyes.time_diff(field.value)
     #extd.gsub!(/(\d+)/, '<span class="d">\1</span>')
-    #<span class=\"ext\">#{extd.capitalize} ago</span> &mdash; 
+    #<span class=\"ext\">#{extd.capitalize} ago</span> &mdash;
     field.value.strftime("<span class=\"d\">%d</span>%b%y <span class=\"hour\">%H</span><span class=\"minute\">%M</span> %Z")
   end
 

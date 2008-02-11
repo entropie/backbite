@@ -7,6 +7,18 @@ class Backbite::Post
 
   class Fields < Array
 
+    def filter(filtername, post)
+      r = { }
+      each do |field|
+        text = field.apply_filter(filtername)
+        text = field.apply_textfilter(post, filtername,
+                                      { field.to_sym => text.to_s })[field.to_sym]
+        text = field.apply_markup(filtername, text)
+        r[field.to_sym] = text
+      end
+      r
+    end
+
     def [](name)
       select{ |f| f.to_sym == name.to_sym }.first
     end
@@ -51,7 +63,7 @@ class Backbite::Post
     end
 
     # InputField represents a single field in a post.
-    class InputField  # :nodoc: All
+    class InputField
 
       PluginException = Backbite::NastyDream(self)
       
@@ -91,6 +103,10 @@ class Backbite::Post
         filter = "#{filter}_filter".to_sym
         respond_to?(:plugin) and plugin.respond_to?(filter)
       end
+
+      def apply_textfilter(post, filter, text)
+        component.tlog.textfilter.apply(post, filter, text)
+      end
       
       def apply_filter(filter, def_filter = :filter)
         filter = "#{filter}_filter".to_sym
@@ -102,6 +118,8 @@ class Backbite::Post
           end
         end
         value
+      rescue SyntaxError, NoMethodError
+        raise PluginException, $!.to_s
       end
 
       def initialize(name = nil, defi = nil, comp = nil)

@@ -135,24 +135,22 @@ module Backbite
         @result ||= { }
         @result[:content] =
           if respond_to?(:metadata_inject)
-            #pp value.class
-            if value.to_s.empty?
-              nam = send(:metadata_inject)
-              Info << " - Plugin[#{name}]#metadata_inject: value from #{nam}"
-              md = way.metadata[nam]
-            else
-              field.value
-            end
+            nam = send(:metadata_inject)
+            Info << " - Plugin[#{name}]#metadata_inject: value from #{nam}"
+            md = way.metadata[nam]
           elsif respond_to?(:input)
             Info << " - Plugin[#{name}]#input"
             fcontent = send(:input)
             yield fcontent, self if block_given?
             way.run(field, params)
           end
-
-        if respond_to?(:transform!) and @result[:content]
-          @result[:content] = send(:transform!, @result[:content])
-          Info << " - Plugin#transform='#{@result[:content].inspect}'"
+        if respond_to?(:transform!)
+          unless @result[:content]
+            Warn << "field.name: cannot #transform!, no input"
+          else
+            @result[:content] = send(:transform!, @result[:content])
+            Info << " - Plugin#transform='#{@result[:content].inspect}'"
+          end
         end
       end
 

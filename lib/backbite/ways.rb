@@ -158,7 +158,8 @@ module Backbite
             result[nam] = value
           }
           result[:metadata] = metadata
-          tlog.textfilter.apply(:yaml, result).to_yaml
+          result = tlog.textfilter.apply(nil, :yaml, result.dup)
+          result.to_yaml
         end
         private :to_yaml
 

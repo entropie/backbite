@@ -20,12 +20,14 @@ module Backbite
     def self.export(tlog, params)
       psts = { }
       what = params[:date]
-      all_posts = tlog.archive + tlog.posts
+      all_posts = tlog.archive
       all_posts.each do |post|
         y,m,d = (dd=post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format]).split('/'))
         [y, "#{y}/#{m}"].each do |sd|
           date = self.date(sd)
           psts[date] ||= []
+          pp post.file if post.date.kind_of?(Array)
+          
           psts[date] << post.pid if post.date.year == date.year
           psts[date].uniq!
         end

@@ -11,6 +11,14 @@ module Backbite
       include Helper::CacheAble
 
       require 'RMagick'
+
+      def spath=(o)
+        @spath = o
+      end
+      
+      def spath
+        @spath ||= 'cache'
+      end
       
       def thumbnail_and_safe(img, geo = '320x240')
 

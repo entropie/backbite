@@ -45,7 +45,7 @@ describe Backbite::Posts do
   end
 
   it "should have archived posts" do
-    @target.posts.size.should == 7
+    @target.posts(:force => true).size.should == 7
   end
 end
 
