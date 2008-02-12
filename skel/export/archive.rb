@@ -7,51 +7,36 @@ module Backbite
 
   module Repository::Export::ARCHIVE
 
-    DateFormat = '%Y%m%d'
-
-    def self.date(o)
-      if o.include?('/')
-        Date.new(*o.split('/').map{ |i| i.to_i})
-      else
-        Date.new(o.to_i)
-      end
-    end
+    include Backbite::Helper
     
     def self.export(tlog, params)
       psts = { }
       what = params[:date]
       all_posts = tlog.archive + tlog.posts
+
+      result = ''
+
       all_posts.each do |post|
-        y,m,d = (dd=post.metadata[:date].strftime(tlog.config[:defaults][:archive_date_format]).split('/'))
-        [y, "#{y}/#{m}"].each do |sd|
-          date = self.date(sd)
-          psts[date] ||= []
-          psts[date] << post.pid if post.date.year == date.year
-          psts[date].uniq!
-        end
-        
-        fname = dd
-        (psts[[y,m,d]] ||= []) << post.pid
+        date = post.metadata[:date]
+        datestr = date.strftime(tlog.config[:defaults][:archive_date_format]).to_s
+        psts[datestr] ||= []
+        psts[datestr] << post.pid
       end
 
       archive_dir = tlog.repository.working_dir('archive')
-      result = ''
-
       psts.each_pair do |d, pids|
-        next if what and what != d
-        d = d.to_s.split('-') if d.kind_of?(Date)
-        FileUtils.mkdir_p(archive_dir.join(*d))
-
-        file = archive_dir.join(*d).join('index.html')
+        dates = d.to_s.split('/')
+        FUtils.mkdir_p(ad = archive_dir.join(*dates))
+        file = ad.join('index.html')
+        Debug << "ARCHIVE: #{file} pids=#{pids.join(',')}"
         tree = Tree.new(d, file, tlog.dup, params)
-        Debug << "ARCHIVE: #{d} pids=#{pids.join(',')}"
         tree.export_date(*pids)
         result << tree.write
       end
       result
     end
 
-    class Tree < Repository::ExportTree # :nodoc: All
+    class Tree < Repository::ExportTree
 
       def initialize(date, filename, tlog, params)
         super(tlog, params)
