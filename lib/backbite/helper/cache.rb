@@ -31,7 +31,7 @@ module Backbite
 
       def http_cache_dir(*dirs)
         path = (['cache', pid.to_s] + dirs.map(&:to_s)).join('/')
-        cd = tlog.http_path(path)
+        tlog.http_path(path)
       end
       
       def cache_dir(*dirs)
@@ -57,8 +57,21 @@ module Backbite
         end
       end
 
-      
-      class Cache # :nodoc: All
+      def __mk_cache(cls, clls = Cache)
+        unless cls.class.const_defined?(:CacheData)
+          cls.class.const_set(:CacheData, clls.new(cls))
+        end
+        cls.class.const_get(:CacheData)
+      end
+      private :__mk_cache
+
+
+      def cache(cls)
+        __mk_cache(cls)
+      end
+      private :cache
+
+      class Cache
         attr_reader :cachefile
         
         def initialize(cls)
@@ -73,10 +86,10 @@ module Backbite
         def cache_key(key, &blk)
           @cache.transaction do
             if @cache[key].nil?
-              #Debug << "CCache << #{key}"
+              Debug << "CCache << #{key}"
               self[key] = blk.call              
             else
-              #Debug << "UCache << #{key}"
+              Debug << "UCache << #{key}"
               self[key]
             end
           end
@@ -90,23 +103,30 @@ module Backbite
         def []=(key,value)
           @cache[key] = value
         end
-        
       end
       
-      def __mk_cache(cls)
-        unless cls.class.const_defined?(:CacheData)
-          cls.class.const_set(:CacheData, Cache.new(cls))
-        end
-        cls.class.const_get(:CacheData)
-      end
-      private :__mk_cache
+    end
 
+    module SessionCache
+      include CacheAble
+
+      def SCache(key, &blk)
+        cache(self).cache_key(key, &blk)
+      end
 
       def cache(cls)
-        __mk_cache(cls)
+        __mk_cache(cls, SCache)
       end
-      private :cache
       
+      class SCache < CacheAble::Cache
+        SCacheFile = '/tmp/backbite.session'
+
+        
+        def initialize(cls)
+          File.delete(SCacheFile) if File.exists?(SCacheFile)
+          @cache, @klaz = PStore.new(SCacheFile), cls
+        end
+      end
     end
     
   end
