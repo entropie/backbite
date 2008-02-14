@@ -135,7 +135,7 @@ module Backbite
     end
 
     def read(what = :spool)
-      Info << "#{self.class}: read #{what}"
+      Debug << "#{self.class}: read #{what}"
       postfiles = (par = tlog.repository.join(what)).entries.
         reject{ |e| e.to_s =~ /^\.+/ }
       postfiles.inject(self) { |mem, file|

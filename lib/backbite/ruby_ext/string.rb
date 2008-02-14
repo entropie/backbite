@@ -23,7 +23,11 @@ class String
   }.each do |key, value|
     if Backbite.globals.colors?
       define_method key do
-        "\e[#{value}m" + self + "\e[0m"
+        if Backbite.globals.colors?
+          "\e[#{value}m" + self + "\e[0m"
+        else
+          self
+        end
       end
     else
       define_method key do
