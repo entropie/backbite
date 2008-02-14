@@ -19,6 +19,7 @@ module Backbite
       attr_reader :tlog, :timestamp, :written
       
       def initialize(tlog, params)
+        Debug << "#{"%-15s" % class_name} PARAMS:(#{params.keys.join(',')})"
         @tlog, @params = tlog, params.dup
         @timestamp = Time.new
         @written = false

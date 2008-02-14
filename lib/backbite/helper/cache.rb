@@ -119,10 +119,10 @@ module Backbite
       end
       
       class SCache < CacheAble::Cache
-        SCacheFile = '/tmp/backbite.session'
-
+        SCacheFile = "/tmp/backbite.session"
         
         def initialize(cls)
+          cf = SCacheFile + "-#{Time.now.to_i}"
           File.delete(SCacheFile) if File.exists?(SCacheFile)
           @cache, @klaz = PStore.new(SCacheFile), cls
         end

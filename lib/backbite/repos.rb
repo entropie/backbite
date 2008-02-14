@@ -44,19 +44,21 @@ module Backbite
       tas.inject(rstr) { |m,v|
         m << " " << v.join(':')
       }
-      
     end
     
 
     # Return a list of Posts
     def posts(params = { }, &blk)
       @posts = nil if params[:force]
-      @posts ||= Posts.new(@tlog).read.filter(params, &blk)
+      @posts ||= Posts.new(@tlog).read
+      @posts.filter(params, &blk)
     end
 
+    # Return a list of archived Posts
     def archive(params = { }, &blk)
       @archive = nil if params[:force]
-      @archive ||= Archive.new(@tlog).read.filter(params, &blk)
+      @archive ||= Archive.new(@tlog).read
+      @archive.filter(params, &blk)
     end
 
     # Returns a list of every known Component

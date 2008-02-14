@@ -13,7 +13,8 @@ module Backbite
     
     def run(field, params)
       Backbite[:colors] = false
-      result = src.scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/m).
+      src
+      result = @src.scan(/\[#{field.to_sym}_start\](.*)\[#{field.to_sym}_end\]/m).
         flatten.join
       super(field, result.strip)
     end

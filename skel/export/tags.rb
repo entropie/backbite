@@ -14,7 +14,6 @@ module Backbite
     def self.export(tlog, params)
       tag_dir = tlog.repository.working_dir('tags')
       tag_dir.mkdir unless tag_dir.exist?
-      result = ''
       all = []
       tags = params[:tags]
       if tags
@@ -28,13 +27,16 @@ module Backbite
         all = all.flatten.uniq
       end
       result = ''
-      all.each do |t|
+      all = all.flatten.sort
+      all.sort!.each_with_index do |t, i|
+        s = all.size.to_s.size
+        Info << "[%#{s}i/%i] #{t.green}" % [i, all.size]
         filename = tag_dir.join("#{sanitize_tag(t)}.html")
         tree = Tree.new(t, filename, tlog, params)
         tree.export_tag
-        result << tree.write
+        tree.write
+        tree = nil
       end
-      result
     end
     
     class Tree < Repository::ExportTree # :nodoc: All

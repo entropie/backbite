@@ -7,8 +7,6 @@ module Backbite
 
   module Post::Export::HTML
 
-    include Helper::Builder
-
     def to_html(name)
       t = tlog
       target = tlog.components[self.metadata[:component]]
@@ -32,7 +30,7 @@ module Backbite
   end
   
 
-  module Repository::Export::HTML # :nodoc: All
+  module Repository::Export::HTML
 
     def self.mkbody(tlog, params)
       tree = Tree.new(tlog, params.merge(:nobody => true))
@@ -46,10 +44,8 @@ module Backbite
     end
 
     class Tree < Repository::ExportTree
-      include Contrib[:Pyr]
 
-      include Helper::Builder
-      #include Helper::CacheAble
+      include Contrib[:Pyr]
 
       attr_reader :pyr
       attr_accessor :doctype

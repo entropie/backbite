@@ -36,10 +36,16 @@ module Backbite
       def apply(value)
         case value
         when String
-          value.gsub!(regexp) do |m, o|
+          value.gsub!(regexp) do |m|
             nam, opts = $1.to_sym, $2
-            args = opts.split(',').map{ |s| s.strip }
+            args = if opts
+              opts.split(',').map{ |s| s.strip }
+            else
+              []
+            end
             Info << "Filter[#{@name}]: #{nam}:#{args.join(',')}"
+            # FIXME: maybe
+            args.map!{ |a| a.gsub(/(^\(|\)$)/, '') }
             @filter.call(*args)
           end
           value
@@ -108,7 +114,7 @@ module Backbite
     end
     
     def mkregexp(rx)
-      />>>(#{rx.to_s})\((.*)?\)/
+      />>>(#{rx.to_s})(\(.*\))?/
     end
 
     def define_filter(name, regexp = nil, &blk)
