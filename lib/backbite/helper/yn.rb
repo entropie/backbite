@@ -9,6 +9,7 @@ module Backbite
 
     module YN
       def yn?(p = 'y', s = 'n', prompt = "#{p.upcase}/#{s}>")
+        return true if Backbite.globals.force?
         str = Readline.readline(prompt << " ")
         str = p if str.empty?
         str.strip =~ /^#{p}$/ and true

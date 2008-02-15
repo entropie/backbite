@@ -36,12 +36,12 @@ carry the subject 'polis skel #{exampleco.name}'
 #{gentext = Generators.generate(exampleco.to_sym, Generators[:post], tlog)}"
           s, GLOBALS[:colors] = GLOBALS[:colors], false
           str << "\n\nComponent list:\n"
-          str << "Send Mail with Subject '#{tlog.name} skel <component_name>' to <#{addr}>\n>\n"
+          str << "Send Mail with Subject '#{tlog.name} skel <component_name>' to <#{addr}>\n\n"
           tlog.components.each do |co|
             str << "" << co.to_s << "\n"
             str << " Subject: #{tlog.name} skel #{co.to_sym}\n"
             str << " Fieldset: "
-            str << co.fields.select{ |f| not f.interactive? }.map(&:to_sym).join(', ') << "\n>\n"
+            str << co.fields.select{ |f| not f.interactive? }.map(&:to_sym).join(', ') << "\n\n"
           end
         end
         GLOBALS[:colors] = s

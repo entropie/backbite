@@ -79,6 +79,11 @@ module Backbite
         end
       }
     end
+
+    def archive_spool
+      tlog.repository.export(:archive, :date => map{ |p| p.date })
+      tlog.repository.export(:tags, :tags => map{ |p| p.tags }.flatten.uniq)
+    end
     
     def next_id
       update!
@@ -197,25 +202,35 @@ module Backbite
     def remove!(with_export = true)
       Info << "rm $ #{pid} #{file}"
       file.unlink
+      tlog.posts.delete(self)
+      #tlog.repository.reload! if with_export
       tlog.archive.filter(:target => target).by_date!.last.unarchive!
-      tlog.repository.export(:html) if with_export
-      tlog.repository.export(:archive, { :date => date} ) if with_export
-      tlog.repository.export(:tags, { :tags => tags} ) if with_export
+      if with_export
+        tlog.repository.export(:html) 
+        tlog.repository.export(:archive, { :date => date} )
+        tlog.repository.export(:tags,    { :tags => tags} )
+      end
     end
-    
+
     def archive!(with_export = true)
       ret = Archive.archive_post(tlog, self)
-      tlog.repository.export(:html) if with_export
-      tlog.repository.export(:archive, { :date => date} ) if with_export
-      tlog.repository.export(:tags, { :tags => tags} ) if with_export
+      #tlog.repository.reload! if with_export
+      if with_export
+        tlog.repository.export(:html) 
+        tlog.repository.export(:archive, { :date => date} )
+        tlog.repository.export(:tags,    { :tags => tags} )
+      end
       ret
     end
 
     def unarchive!(with_export = true)
       ret = Archive.unarchive_post(tlog, self)
-      tlog.repository.export(:html, { :date => date} ) if with_export
-      tlog.repository.export(:tags, { :tags => tags} ) if with_export
-      tlog.repository.export(:archive, { :date => date} ) if with_export      
+      tlog.repository.reload! if with_export
+      if with_export
+        tlog.repository.export(:html) 
+        tlog.repository.export(:tags,    { :tags => tags} )
+        tlog.repository.export(:archive, { :date => date} )
+      end
       ret
     end
     
@@ -234,7 +249,7 @@ module Backbite
       rw.save and remove!
     end
     
-   
+    
     # setup! sets various attributes on our Plugin instances.
     def setup!(params)
       params.extend(Helper::ParamHash).

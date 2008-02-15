@@ -28,8 +28,9 @@ module Backbite
       end
       result = ''
       all = all.flatten.sort
+      s = all.size.to_s.size
       all.sort!.each_with_index do |t, i|
-        s = all.size.to_s.size
+
         Info << "[%#{s}i/%i] #{t.green}" % [i, all.size]
         filename = tag_dir.join("#{sanitize_tag(t)}.html")
         tree = Tree.new(t, filename, tlog, params)

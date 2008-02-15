@@ -136,14 +136,16 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
             args = args.first if args and not args.empty?
             nargs = Posts.parse_args(args)
             handler.filter(nargs).by_id!.each do |r|
-              puts r
-              puts ("-"*60).white
-              puts "remove me?".red
-              if Helper::YN::yn?
+              unless Backbite.globals.force?
+                puts r
+                puts ("-"*60).white
+                puts "remove me?".red
+                r.remove! if Helper::YN::yn?
+              else
                 r.remove!
-                tlog.repository.export.commit!
               end
             end
+            tlog.repository.export.commit!
           end
 
           op.declare(:edit, "edit posts") do |*args|
@@ -231,7 +233,10 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         puts handler.repository.export.ways.map(&:to_s).map(&:bold).join(', ')
       }
 
-      
+      op.declare(:synchronize, "synchronize your repos") {
+        tlog.posts.archive_spool
+        handler.repository.export.commit!
+      }
       
       op.declare(:export, "export your tumblog <how>") { |*how|
         if not how or how.empty? or how.to_s == 'all'
@@ -244,7 +249,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
         nhow.map(&:to_sym).each do |h|
           handler.repository.export(h)
         end
-          handler.repository.export.commit!
+        handler.repository.export.commit!
       }
     end
   end

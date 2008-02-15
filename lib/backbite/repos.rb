@@ -45,7 +45,12 @@ module Backbite
         m << " " << v.join(':')
       }
     end
-    
+
+    def reload!
+      Info << "Force reloading: archive, posts"
+      posts(:force => true)
+      archive(:force => true)
+    end
 
     # Return a list of Posts
     def posts(params = { }, &blk)

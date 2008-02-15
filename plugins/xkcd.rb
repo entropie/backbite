@@ -8,6 +8,7 @@ require 'pp'
 require 'pstore'
 require 'open-uri'
 require 'uri'
+require 'hpricot'
 
 class XKCD < Plugin
 
