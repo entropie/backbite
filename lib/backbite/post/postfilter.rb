@@ -52,7 +52,7 @@ module Backbite
         posto
       end
 
-      module NodeFilter # :nodoc: All
+      module NodeFilter
 
         RespondsTo = :node
 
@@ -60,6 +60,17 @@ module Backbite
           name = params[:name]
           reject!{ |post|
             not post.config[:target].include?(name)
+          }
+        end
+      end
+
+      module GrepFilter
+        RespondsTo = :grep
+
+        def filter(params, &blk)
+          g = params[:grep].to_s
+          reject!{ |post|
+            not post.fields.map{ |f| f.value.to_s }.any?{ |p| p.to_s =~ Regexp.new(g)}
           }
         end
       end
