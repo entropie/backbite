@@ -7,7 +7,8 @@ module Backbite
 
   module Post::Export::HTML
 
-    def to_html(name)
+    def to_html(name = nil)
+      name ||= "_atom"
       t = tlog
       target = tlog.components[self.metadata[:component]]
       fields = self.fields

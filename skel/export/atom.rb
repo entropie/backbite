@@ -15,13 +15,15 @@ module Backbite
       po, tl = self, tlog
       permurl = fields[:permalink].plugin.url.to_s
       fs = fields
+      ffs = fields.filter(:html, self)
       bdy = Pyr.build do
         ct = fs.each do |field|
+          #field = fs[i]
           opts = { }
           opts[:tag] = field.definitions[:tag] unless
             field.definitions[:tag].to_s.empty?
           opts[:tag] ||= :div
-          f, filtered = field.to_sym, field.apply_filter(:atom)
+          f, filtered = field.to_sym, ffs[field.to_sym]
           send(opts[:tag], filtered)
         end
       end
@@ -30,7 +32,7 @@ module Backbite
         id(permurl)
         opts = { }
         title(po.identifier)
-        author{ name(tl.author(0).to_s) }
+        author{ CGI.escapeHTML(name(tl.author(1).to_s)) }
         updated(po.metadata[:date].iso8601)
         content(CGI.escapeHTML(bdy.to_s), :type => 'html')
       end

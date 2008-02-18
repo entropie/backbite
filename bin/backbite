@@ -132,6 +132,14 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
               puts "%s Bytes".red % [tlog.post(c.to_sym, :way => way).save.to_s.yellow]
             }
           end
+
+          op.declare(:grep, "find posts by regular expression") do |regex|
+            handler.filter(:grep => regex).by_id!.each do |post|
+              puts post
+              puts
+            end
+          end
+          
           op.declare(:rm, "remove posts") do |*args|
             args = args.first if args and not args.empty?
             nargs = Posts.parse_args(args)
@@ -234,6 +242,7 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
       }
 
       op.declare(:synchronize, "synchronize your repos") {
+        handler.repository.export(:html)
         tlog.posts.archive_spool
         handler.repository.export.commit!
       }

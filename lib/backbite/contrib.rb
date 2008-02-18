@@ -18,7 +18,7 @@ module Backbite
       CONTRIB_DIR.join(name.to_s)
     end
 
-    def self.reset
+    def self.clear
       LOADED_CONTRIBS.clear
     end
     
@@ -58,11 +58,6 @@ module Backbite
   end
 
 end
-
-# %w(pyr).each do |l|
-#   require "backbite/contrib/"+ l
-# end
-
 
 =begin
 Local Variables:
