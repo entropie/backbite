@@ -5,19 +5,29 @@
 
 
 Backbite.wo_debug do
-  require 'text/format'
-end
-
-module Backbite
-  module Helper
-    module Text
-      def paragraphify(text, prfx = 16)
-        ::Text::Format.new.format(text)[0..-2].split("\n").
-          join("\n"+(" "*prfx))
+  begin
+    require 'text/format'
+  rescue LoadError
+    warn $! if $DEBUG
+    module Backbite::Helper::Text
+      def paragraphify(text, prfx)
+        text
+      end
+    end
+  else
+    module Backbite
+      module Helper
+        module Text
+          def paragraphify(text, prfx = 16)
+            ::Text::Format.new.format(text)[0..-2].split("\n").
+              join("\n"+(" "*prfx))
+          end
+        end
       end
     end
   end
 end
+
 
 =begin
 Local Variables:

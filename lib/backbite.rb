@@ -8,7 +8,10 @@ $:.unshift(File.dirname(__FILE__))
 require 'pp'
 require 'pathname'
 require 'fileutils'
-require 'rubygems'
+begin 
+  require 'rubygems' 
+  rescue LoadError
+end
 
 begin
   require 'log4r'

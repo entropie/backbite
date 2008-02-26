@@ -32,7 +32,7 @@ This is Backbite [#{Backbite.version}]
 
 
 To select a non-default tumblog just use its name as first argument.
-All arguments may shortened, write `#{'backbite post to editor'.white}` or
+All arguments be may shortened, write `#{'backbite post to editor'.white}` or
 `#{'backbite po to ed'.white}`)
   
   op.keyword(:help) do |op, handler|
@@ -52,6 +52,15 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
   #   }
   # end
 
+  op.keyword(:generator) do |op, handler|
+    op.desc "generate files"
+    Generators.generators do |name, gen|
+      op.declare(name.to_sym, "generates a new skelleton for #{name} named <name>") { |name|
+        raise "need a name for the generator" unless name
+        puts Generators.generate(name, gen, tlog)
+      }
+    end
+  end
   if tlog
     op.keyword(:mail, Backbite::Helper::Mail) do |op, handler|
       op.desc "mail stuff"
@@ -74,16 +83,6 @@ All arguments may shortened, write `#{'backbite post to editor'.white}` or
                        gentext,
                        to.to_s, tlog)
       }
-    end
-    
-    op.keyword(:generator) do |op, handler|
-      op.desc "generate files"
-      Generators.generators do |name, gen|
-        op.declare(name.to_sym, "generates a new skelleton for #{name} named <name>") { |name|
-          raise "need a name for the generator" unless name
-          puts Generators.generate(name, gen, tlog)
-        }
-      end
     end
     
     if tlog.valid?
