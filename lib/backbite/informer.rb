@@ -99,7 +99,7 @@ module Backbite
         $stdout.puts "%10s: %s" % [lvl, msg]
       end
     rescue
-      #puts $!
+      warn $! if $DEBUG
     end
   end
 

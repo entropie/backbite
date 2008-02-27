@@ -54,10 +54,10 @@ Backbite.wo_debug do
                 [ img.columns, img.rows, "#{cd}/#{b_imgname}", "#{cd}/#{t_imgname}"]
               rescue Magick::ImageMagickError
                 Warn << "no response from read in '#{pid}' -- '#{identifier}'"
-                ['', '', '', '']
+                return ['', '', '', '']
               end
             }
-            result = result[0..1] + result[-2..-1].map!{ |r| path_deep + r}
+            result = result[0..1] + result[-2..-1].map!{ |r| (path_deep||'') + r}
             result
           end
         end
