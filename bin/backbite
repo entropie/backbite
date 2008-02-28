@@ -242,8 +242,14 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
 
       op.declare(:synchronize, "synchronize your repos") {
         handler.repository.export(:html)
+        handler.repository.export(:atom)
+        handler.repository.export(:txt)
         tlog.posts.archive_spool
         handler.repository.export.commit!
+      }
+
+      op.declare(:upload, "uploades your repos") {
+        handler.repository.upload!
       }
       
       op.declare(:export, "export your tumblog <how>") { |*how|

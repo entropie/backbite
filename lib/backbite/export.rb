@@ -106,6 +106,7 @@ module Backbite
         return self unless way
         raise UnknownWay, way unless Repository::Export.known?(way)
         cway = Repository::Export::choose(way)
+        working_dir.mkdir unless working_dir.exist?
         @export =
           if cway
             Debug << "Exporting via #{way}"
@@ -123,6 +124,7 @@ module Backbite
       def commit!
         Info << "copy working dir to repository"
         system("cp -r #{working_dir}/* #{join('htdocs')}/")
+        system("rm -rf #{working_dir}")
       end
       
       def to_s

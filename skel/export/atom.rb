@@ -18,7 +18,6 @@ module Backbite
       ffs = fields.filter(:html, self)
       bdy = Pyr.build do
         ct = fs.each do |field|
-          #field = fs[i]
           opts = { }
           opts[:tag] = field.definitions[:tag] unless
             field.definitions[:tag].to_s.empty?

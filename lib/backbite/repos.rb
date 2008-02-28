@@ -28,7 +28,17 @@ module Backbite
       @name, @directory = name.to_sym, Pathname.new(directory)
     end
     
-
+    def upload!
+      if ub = tlog.config[:defaults][:upload] and shell = ub[:shell]
+        shell = [shell].flatten
+        shell.each do |cmd|
+          Info << "running: #{cmd.to_s.split(" ").first}"
+          system(cmd)
+        end
+      end
+    end
+    
+    
     def export(way = nil, params = { })
       return dup.extend(Export) unless way
       params[:path_deep] ||= './'
