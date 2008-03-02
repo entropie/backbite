@@ -219,10 +219,6 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
 
     op.desc "everything about your tumblog"
 
-    op.declare(:generate, "generates a tumblog named <name> to stdout") { |file|
-      puts Generators.generate(file, Tumblelog)
-    }
-
     if tlog
       op.declare(:clean, 'clean the repository (eg. flushes tempfiles)'){
         handler.posts.archive!
