@@ -223,26 +223,22 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
       puts Generators.generate(file, Tumblelog)
     }
 
-    op.declare(:setup, "populates repository with default skeleton") {
-      puts handler.repository.setup!
-    }
-
-    op.declare(:clean, 'clean the repository (eg. flushes tempfiles)'){
-      handler.posts.archive!
-      handler.repository.export.commit!
-      puts "%i files removed".bold % handler.repository.clean!
-    }
-    
     if tlog
+      op.declare(:clean, 'clean the repository (eg. flushes tempfiles)'){
+        handler.posts.archive!
+        handler.repository.export.commit!
+        puts "%i files removed".bold % handler.repository.clean!
+      }
+      op.declare(:setup, "populates repository with default skeleton") {
+        puts handler.repository.setup!
+      }
+
       op.declare(:ls, "basic information") {
         puts handler.repository
       }
       op.declare(:url, "the url to your tumblog") {
         puts handler.url
       }
-      # op.declare(:ways, "list the ways to post to the tumblog") {
-      #   puts handler.repository.export.ways.map(&:to_s).map(&:bold).join(', ')
-      # }
 
       op.declare(:synchronize, "synchronize your repos") {
         handler.repository.export(:html)
