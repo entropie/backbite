@@ -192,13 +192,30 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
     op.keyword(:register, tlog.register) do |op, handler|
       op.desc "basically a set of tumblogs and maybe a default"
 
+      op.declare(:tlog, "register tlog with <name> and <configfile>") {|name, cfgf|
+        if name and cfgf
+          tlog = Tumblelog.new(name.to_sym, cfgf)
+          Backbite.register[tlog.name] = cfgf
+        end
+        puts register
+      }
+      op.declare(:default, "set <default> tumblog"){ |*default|
+        unless default.empty?
+          default = default.shift
+          tlog = Backbite.register[default.to_sym]
+          Backbite.register.default = tlog
+        end
+        puts register
+      }
+
+      
       op.declare(:ls, "lists registers"){
         puts handler
       }
     end
   end
   
-  op.keyword(:tlog, tlog) do |op, handler|
+  op.keyword(:repository, tlog) do |op, handler|
 
     op.desc "everything about your tumblog"
 
@@ -206,7 +223,7 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
       puts Generators.generate(file, Tumblelog)
     }
 
-    op.declare(:setup, "lists tlog registers") {
+    op.declare(:setup, "populates repository with default skeleton") {
       puts handler.repository.setup!
     }
 
@@ -216,37 +233,16 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
       puts "%i files removed".bold % handler.repository.clean!
     }
     
-    op.declare(:lsr, "lists tlog registers") {
-      puts handler.register
-    }
-    
-    op.declare(:register, "register tlog with <name> and <configfile>") {|name, cfgf|
-      if name and cfgf
-        tlog = Tumblelog.new(name.to_sym, cfgf)
-        Backbite.register[tlog.name] = cfgf
-      end
-      puts register
-    }
-
-    op.declare(:default, "set <default> tumblog"){ |*default|
-      unless default.empty?
-        default = default.shift
-        tlog = Backbite.register[default.to_sym]
-        Backbite.register.default = tlog
-      end
-      puts register
-    }
-
-    if handler
+    if tlog
       op.declare(:ls, "basic information") {
         puts handler.repository
       }
       op.declare(:url, "the url to your tumblog") {
         puts handler.url
       }
-      op.declare(:ways, "list the ways to post to the tumblog") {
-        puts handler.repository.export.ways.map(&:to_s).map(&:bold).join(', ')
-      }
+      # op.declare(:ways, "list the ways to post to the tumblog") {
+      #   puts handler.repository.export.ways.map(&:to_s).map(&:bold).join(', ')
+      # }
 
       op.declare(:synchronize, "synchronize your repos") {
         handler.repository.export(:html)
