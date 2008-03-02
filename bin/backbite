@@ -46,15 +46,12 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
     }
   end
   
-  # op.keyword(:plugin, Backbite::Plugins) do |op, handler|
-  #   op.declare(:generate) { |name|
-  #     puts Generators.generate(name, handler)
-  #   }
-  # end
-
   op.keyword(:generator) do |op, handler|
     op.desc "generate files"
     Generators.generators do |name, gen|
+      if not name == 'tumblelog'
+        next if tlog.nil?
+      end
       op.declare(name.to_sym, "generates a new skelleton for #{name} named <name>") { |name|
         raise "need a name for the generator" unless name
         puts Generators.generate(name, gen, tlog)
@@ -130,12 +127,12 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
               }.join(', ')
             }
             
-            tlog.components.each do |comp|
-              op.declare(comp.to_sym, "post to #{comp.to_sym} with [editor]") do |*w|
-                way = unless w.empty? then tlog.way(w.to_s) else tlog.way end
-                tlog.post(comp.to_sym, :way => way).save
-              end
-            end
+            # tlog.components.each do |comp|
+            #   op.declare(comp.to_sym, "post to #{comp.to_sym} with [editor]") do |*w|
+            #     way = unless w.empty? then tlog.way(w.to_s) else tlog.way end
+            #     tlog.post(comp.to_sym, :way => way).save
+            #   end
+            # end
             
             op.declare(:to, 'post to <component> [way] to the tumblog') { |c,w|
               way = tlog.way(w)
