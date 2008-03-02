@@ -9,7 +9,7 @@ define_filter(:img) { |str|
 }
 
 define_filter(:tag){ |str|
-  %Q'<a href="#{ path_deep }tags/#{str}.html">#{str}</a>'
+  %Q'<a class="tag" href="#{ path_deep }tags/#{str}.html">#{str}</a>'
 }
 
 

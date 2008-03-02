@@ -13,7 +13,12 @@ module Backbite
     
     def to_atom
       po, tl = self, tlog
-      permurl = fields[:permalink].plugin.url.to_s
+      begin
+        permurl = fields[:permalink].plugin.url.to_s
+      rescue
+        puts self
+        exit
+      end
       fs = fields
       ffs = fields.filter(:html, self)
       bdy = Pyr.build do

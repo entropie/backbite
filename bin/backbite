@@ -74,6 +74,17 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
         end
       end
 
+      op.declare(:script, "send tiny ruby script to <address> to build skeleton (or stdout w/o argument)") {|*to|
+        script = Backbite::Helper::Script.generate(tlog, :posts)
+        unless to.empty?
+          to.each { |t|
+            handler.mailto("Backbite: #{tlog.name}, Ruby Generator Script", script, t, tlog)
+          }
+        else
+          puts script
+        end
+      }
+      
       op.declare(:skel, "mail component skelleton <name> to <receiver>") { |name,to|
         raise "need a Mail To" unless to
         raise "need component name" unless name

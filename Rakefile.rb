@@ -132,9 +132,7 @@ end
 
 
 task :console do
-  puts "You may want to to @a an ready to use tumblog object"
-  ENV['DEBUG'] = '1'
-  system("irb -r lib/backbite.rb")
+  Backbite::Helper::Console.start_session
 end
 
 
