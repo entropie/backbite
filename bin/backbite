@@ -188,31 +188,30 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
     end
   end
 
-  if tlog and tlog.register
-    op.keyword(:register, tlog.register) do |op, handler|
-      op.desc "basically a set of tumblogs and maybe a default"
+  op.keyword(:register, (tlog and tlog.register ? tlog.register : nil)) do |op, handler|
+    op.desc "basically a set of tumblogs and maybe a default"
 
-      op.declare(:tlog, "register tlog with <name> and <configfile>") {|name, cfgf|
-        if name and cfgf
-          tlog = Tumblelog.new(name.to_sym, cfgf)
-          Backbite.register[tlog.name] = cfgf
-        end
-        puts register
-      }
-      op.declare(:default, "set <default> tumblog"){ |*default|
-        unless default.empty?
-          default = default.shift
-          tlog = Backbite.register[default.to_sym]
-          Backbite.register.default = tlog
-        end
-        puts register
-      }
+    op.declare(:tlog, "register tlog with <name> and <configfile>") {|name, cfgf|
+      if name and cfgf
+        tlog = Tumblelog.new(name.to_sym, cfgf)
+        Backbite.register[tlog.name] = cfgf
+      end
+      puts register
+    }
 
-      
-      op.declare(:ls, "lists registers"){
-        puts handler
-      }
-    end
+    op.declare(:default, "set <default> tumblog"){ |*default|
+      unless default.empty?
+        default = default.shift
+        tlog = Backbite.register[default.to_sym]
+        Backbite.register.default = tlog
+      end
+      puts register
+    }  if tlog and tlog.register
+
+
+    op.declare(:ls, "lists registers"){
+      puts handler
+    } if tlog and tlog.register
   end
   
   op.keyword(:repository, tlog) do |op, handler|
