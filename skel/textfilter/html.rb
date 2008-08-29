@@ -5,7 +5,7 @@
 
 define_filter(:img) { |str|
   x, y, url, thumb = thumbnail_and_safe(str)
-  %Q'<a href="#{ path_deep }#{url}"><img height="#{y}" width="#{x}" src="#{thumb}" /></a>'
+  %Q'<a href="/#{url}"><img height="#{y}" width="#{x}" src="/#{thumb}" /></a>'
 }
 
 define_filter(:tag){ |str|

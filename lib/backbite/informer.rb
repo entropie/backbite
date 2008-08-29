@@ -20,22 +20,33 @@ module Backbite
   # * Fatal
   class Informer
 
+    attr_reader :logger
+    
     if defined? Log4r
+
       class Formatter < Log4r::Formatter # :nodoc: All
         def format(event)
-          t, buff = Time.now, ''
+          @ot ||= Time.now.to_f
+          t, buff = (Time.now.to_f-@ot).divmod(1), ''
+          @ot = Time.now.to_f
           lvl = Log4r::LNAMES[event.level]
-          buff << "[".white << "#{"%8s" % t.usec.to_s}".cyan << "]".white
+          et = "%05i" % [(t.last*1000000).abs]
+          buff << "[".white << " -#{"%3i" % t.first.to_s}.#{et[0..2]}".green << "]".white
           case lvl
-          when 'INFO'
-            buff += "  * ".green.bold + event.data.to_s.strip.white
-          when 'DEBUG'
-            return '' unless $DEBUG
-            buff += "  * ".white + event.data.to_s.strip.white
-          when 'WARN'
+          when 'Debug', 'Notice'
+            buff += " * ".white + event.data.to_s.strip.white
+          when 'Info'
+            buff += " * ".green.bold + event.data.to_s.strip.white
+          when 'Msg'
+            buff += " * ".cyan.bold + event.data.to_s.strip.magenta
+          when 'Warn', 'Error', 'Fatal'
             buff += "!!! ".red.bold + event.data.to_s.strip.white.bold
+          else
+            p lvl
           end
           buff << "\n"
+          Backbite.exit if lvl == 'FATAL'
+          buff
         end
       end
 
@@ -53,7 +64,9 @@ module Backbite
     def get_logger
       @logger =
         if defined? Log4r
-          Log4r::Logger.new 'backbite'
+          lgr = Log4r::Logger.new 'backbite'
+          lgr.level = (Backbite.globals.debug?||4).to_i
+          lgr
         else
           StdoutLogger.new
         end
@@ -80,7 +93,7 @@ module Backbite
     
     def self.log(msg)
       level =
-        if name =~ /informer$/i then :info
+        if name =~ /informer$/i then :debug
         else
           name.to_s.split('::').last.downcase.to_sym
         end
@@ -98,18 +111,19 @@ module Backbite
       else
         $stdout.puts "%10s: %s" % [lvl, msg]
       end
-    rescue
-      warn $! if $DEBUG
     end
   end
 
   class Debug < Informer # :nodoc: All
   end
 
+  class Notice < Informer # :nodoc: All
+  end
+
   class Info  < Informer # :nodoc: All
   end
 
-  class Warn  < Informer # :nodoc: All
+  class Msg  < Informer # :nodoc: All
   end
 
   class Error < Informer # :nodoc: All
@@ -118,10 +132,22 @@ module Backbite
   class Fatal < Informer # :nodoc: All
   end
 
+
   Informer.create
   Debug << "Starting logger for backbite."
   Debug << "debugmode is on."
-  
+
+  alias :__puts__ :puts
+  def puts(*a)
+    [a].flatten.each do |ac|
+      ac.to_s.split("\n").each do |str|
+        Msg << str
+      end
+    end
+  end
+  alias :kputs :__puts__
+
+  #Backbite.puts "asd"
 end
 
 

@@ -10,7 +10,7 @@ Backbite.wo_debug do
   rescue LoadError
     warn $! if $DEBUG
     module Backbite::Helper::Text
-      def paragraphify(text, prfx)
+      def paragraphify(text, prfx = 16)
         text
       end
     end

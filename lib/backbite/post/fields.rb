@@ -119,7 +119,7 @@ class Backbite::Post
         end
         value
       rescue SyntaxError, NoMethodError
-        raise PluginException, $!.to_s
+        raise PluginException, "#{to_sym}: #{$!.to_s}"
       end
 
       def initialize(name = nil, defi = nil, comp = nil)

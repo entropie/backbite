@@ -23,19 +23,32 @@ module Backbite
       
       class Generator
         def file
+          subject = Script.mail(@tlog)
+          to, sub = '', ''
           @file = "#!/usr/bin/env ruby\n\nrequire 'readline'\n@data = #{ PP.pp(@data, '').to_s }\n\n"
-          @file << "which = ARGV.shift.to_sym\n"
-          #@file << "which = :blog\n"
-          @file << 'str = "Subject: %s #{which}\nTo: %s\n"' % [tlog.name, Script.mail(@tlog)]
-          @file << "\n"
-          @file << '@data[which.to_sym].each {|f|
-s=Readline.readline(f.to_s + " > ", true).strip
-if s
-str << "[#{f}_start]\n\n#{s}\n\n[#{f}_end]\n\n"
-end
+          @file << "unless chunks = @data[section = ARGV.first.to_sym]\n  @data.each{|k,v| puts(\"%12s: %s\" % [k, v * \', \']) }\n  fail \"'\#{section}' is no valid section\"\nend"
 
-}' + "\n"
+          #subject, to = "polis #{section}", "entropie@ackro.org"
+          if ARGV.size > 1
+            to = "Subject: %s \#{which}"
+            sub = Script.mail(@tlog)
+          end
+          @file << "\n"
+          @file << "
+File.open(file = \"/tmp/\#{section}.polis\", 'w+') do |io|
+  chunks.each do |chunk|
+    io.puts \"[\#{chunk}_start]\",
+      Readline.readline(\"\#{chunk} > \", true).strip,
+      \"[\#{chunk}_end]\"
+  end
+end
+"
+          # if ARGV.size > 1
+          #   puts 1
+          # end
+          #system("mail -s '#{subject}' #{to} < #{file}")
           @file << "puts '','',str"
+          @file
         end
         
         attr_reader :tlog

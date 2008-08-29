@@ -42,6 +42,7 @@ module Backbite
         Info << "#{"%-15s" % class_name} #{"%10i" % to_s.size} Bytes to #{file}"
         file.dirname.mkdir unless file.dirname.exist?
         file.open('w+'){ |f| f.write(to_s)}
+        Msg << "#{"%10i" % to_s.size} B; #{"%-15s"% @file}"
         @written = true
         to_s
       end
@@ -109,10 +110,9 @@ module Backbite
         working_dir.mkdir unless working_dir.exist?
         @export =
           if cway
-            Debug << "Exporting via #{way}"
             ret = cway.export(tlog, params)
             if ret.respond_to?(:clean!)
-              Info << "#{way.to_s.upcase}: cleaning ./tmp"
+              Msg << "#{way.to_s.upcase}: cleaning ./tmp"
               ret.clean!(tlog, params)
             end
           else

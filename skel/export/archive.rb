@@ -35,22 +35,32 @@ module Backbite
       what = format_date_params(params[:date], tlog)
       all_posts = tlog.archive + tlog.posts
       result = ''
-      
+      pref_dates = params[:date]
       all_posts.each do |post|
         date = post.metadata[:date]
+        next if pref_dates and not [pref_dates].flatten.include?(date)
         datestr = mkdate(date, tlog)
+        datestr.split('/').inject([]) do |m, ds|
+          m << ds
+          psts[nds=m.join('/')] ||= []
+          all_posts.select{ |pst| mkdate(pst.date, tlog) == datestr }.each do |npst|
+            psts[nds] << npst.pid
+          end
+          m
+        end
         psts[datestr] ||= []
         next if not what.empty? and post.archived?
         psts[datestr] << post.pid 
       end
       archive_dir = tlog.repository.working_dir('archive')
       s, i = what.size.to_s.size, 0
-      psts.each_pair do |d, pids|
-        next if not what.empty? and not what.include?(d)
+
+      psts.sort_by{ |d,ps| d}.each do |d, pids|
+        #next if not what.empty? and not what.include?(d)
         dates = d.to_s.split('/')
         FUtils.mkdir_p(ad = archive_dir.join(*dates))
         file = ad.join('index.html')
-        Info << "[%#{s}i/%i] #{d.green}" % [i+=1, what.size]
+        Info << "[%#{s}i/%i] #{d.green}" % [i+=1, psts.size]
         Debug << "ARCHIVE: #{file} pids=#{pids.join(',')}"
         tree = Tree.new(d, file, tlog.dup, params)
         tree.export_date(*pids)

@@ -80,6 +80,7 @@ module Backbite
         alternate, _title, = "#{params[:path_deep]}everythingatom.xml", @params[:title]
 
         jss = tlog.config[:javascript][:files] rescue { }
+        jemb = tlog.config[:javascript][:embedded] rescue { }
         ssheets = tlog.config[:stylesheets]
         bsheets = { :screen => [:base, :generated] }
         
@@ -104,6 +105,9 @@ module Backbite
               jss.each do |js|
                 script(:src => "#{params[:path_deep]}include/#{js}.js",
                        :type => "text/javascript" )
+              end
+              jemb.each_pair do |n, str|
+                script(str.to_s, :type => "text/javascript")
               end
             end
           }

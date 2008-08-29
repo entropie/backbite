@@ -28,7 +28,8 @@ module Backbite
           value =
             case glblval
             when "0", "false", "no" then false
-            when "1", "true", "yes" then true
+            when "true", "yes" then true
+            when /(\d+)/ then $1
             else
               Error << "#{glbl} is unknown"
               Backbite::GlobalDefaults[glbl] || false

@@ -15,17 +15,18 @@ end
 
 begin
   require 'log4r'
+  require 'log4r/configurator'
+  Log4r::Configurator.custom_levels(:Debug, :Notice, :Info, :Msg, :Error, :Fatal)
   require 'log4r/outputter/syslogoutputter'
 rescue LoadError
-  $DEBUG = false
-else
-  $DEBUG = true if ENV['DEBUG']
 end
 
 # :include:../README.rdoc
 module Backbite
 
   GlobalDefaults = { :colors => true }
+
+  StartedAt = Time.now
   
   def self.wo_debug
     begin
@@ -39,7 +40,11 @@ module Backbite
   Version = %w'0 4 7'
 
   Source  = Pathname.new(File.dirname(File.expand_path(__FILE__))).parent
- 
+
+  def self.exit(code_or_codename = 23)
+    Kernel.exit(code_or_codename)
+  end
+  
   def self.version
     "backbite-#{Version.join('.')}"
   end
@@ -78,6 +83,8 @@ module Backbite
     Info << "No haml support."
     globals[:support_haml] = false
   end
+
+  $DEBUG = Backbite.globals.debug? or false
 
   include Helper::Text
   

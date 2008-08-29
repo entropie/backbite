@@ -20,8 +20,6 @@ Backbite.wo_debug do
 
           include Helper::CacheAble
 
-          
-
           def spath=(o)
             @spath = o
           end
@@ -30,8 +28,7 @@ Backbite.wo_debug do
             @spath ||= 'cache'
           end
           
-          def thumbnail_and_safe(img, geo = '320x240')
-
+          def thumbnail_and_safe(img, geo = '320x240', opts = { })
             result =
               Cache(img) {
               begin
@@ -47,13 +44,16 @@ Backbite.wo_debug do
                     bimg.dup
                   end
                 cd = "cache/#{pid}"
+                unless opts[:noframe]
+                  img = img.frame(5,5,5,5,2,2)
+                end
                 thumbnail = cache_dir.join(t_imgname = "thumb_"+File.basename(URI.parse(url).path))
-                img.dup.frame(5,5,5,5,2,2).write(thumbnail)
+                img.dup.write(thumbnail)
                 Info << "wrote #{b_imgname} in #{cache_dir} with thumbnail"
-                #[ img.columns, img.rows, "#{path_deep}#{cd}/#{b_imgname}", "#{path_deep}#{cd}/#{t_imgname}"]
                 [ img.columns, img.rows, "#{cd}/#{b_imgname}", "#{cd}/#{t_imgname}"]
               rescue Magick::ImageMagickError
-                Warn << "no response from read in '#{pid}' -- '#{identifier}'"
+                pp $!
+                Error << "no response from read in '#{pid}' -- '#{identifier}'"
                 return ['', '', '', '']
               end
             }

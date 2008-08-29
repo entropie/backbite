@@ -22,8 +22,9 @@ module Backbite
     
     def self.tags(tlog)
       tags = Hash.new { |hash, key| hash[key] = 0 }
-      (tlog.posts + tlog.archive).
-        each{ |post| post.tags.each{ |t| tags[t]+=1 }}
+      (tlog.posts + tlog.archive).each{ |post|
+        post.tags.each{ |t| tags[t]+=1 }
+      }
       tags
     end
     

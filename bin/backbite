@@ -11,7 +11,7 @@ tlog = nil
 ARGV << 'help' if ARGV.empty?
 
 if af = ARGV.first and r = Backbite.register[af.to_sym]
-  Info << "Using #{af}"
+  Debug << "Using #{af}"
   tlog = Backbite.register[ARGV.shift.to_sym]
 end
 
@@ -24,12 +24,14 @@ elsif not tlog
   warn "there's no default tumblog"
 end
 
+# Msg << "msg"
+# Info << "info"
+# Notice  << "notice"
+
 op = Backbite.optionparser do |op|
   
   op.banner %Q(
 This is Backbite [#{Backbite.version}]
-
-
 
 To select a non-default tumblog just use its name as first argument.
 All arguments be may shortened, write `#{'backbite post to editor'.white}` or
@@ -39,10 +41,10 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
     op.desc "The help!"
 
     op.declare(:index, 'this screen') {
-      puts op.to_s
+      kputs op.to_s
     }
     op.declare(:version, 'Versions information') {
-      puts Backbite.version
+      kputs Backbite.version
     }
   end
   
@@ -54,7 +56,7 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
       end
       op.declare(name.to_sym, "generates a new skelleton for #{name} named <name>") { |name|
         raise "need a name for the generator" unless name
-        puts Generators.generate(name, gen, tlog)
+        kputs Generators.generate(name, gen, tlog)
       }
     end
   end
@@ -78,7 +80,7 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
             handler.mailto("Backbite: #{tlog.name}, Ruby Generator Script", script, t, tlog)
           }
         else
-          puts script
+          kputs script
         end
       }
       
@@ -101,7 +103,7 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
           puts handler
         }
         op.declare(:generate, "generates a new component skelleton named <name>") { |name|
-          puts tlog.components.generate(tlog, name)
+          kputs tlog.components.generate(tlog, name)
         }
       end
 
@@ -115,7 +117,7 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
             nargs = Posts.parse_args(args.to_s)
 
             handler.filter(nargs).by_id!.each do |r|
-              puts r
+              kputs r
               r.send(s.to_s+'!') if Helper::YN::yn?
             end
           }
@@ -142,8 +144,8 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
 
           op.declare(:grep, "find posts by regular expression") do |regex|
             handler.filter(:grep => regex).by_id!.each do |post|
-              puts post
-              puts
+              kputs post
+              kputs
             end
           end
           
@@ -152,9 +154,9 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
             nargs = Posts.parse_args(args)
             handler.filter(nargs).by_id!.each do |r|
               unless Backbite.globals.force?
-                puts r
-                puts ("-"*60).white
-                puts "remove me?".red
+                kputs r
+                kputs ("-"*60).white
+                kputs "remove me?".red
                 r.remove! if Helper::YN::yn?
               else
                 r.remove!
@@ -178,8 +180,8 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
               nargs = Posts.parse_args(args)
 
               handler.filter(nargs).by_id!.each do |r|
-                puts r
-                puts
+                kputs r
+                kputs
               end
             }
           end
@@ -232,7 +234,7 @@ All arguments be may shortened, write `#{'backbite post to editor'.white}` or
         puts handler.repository
       }
       op.declare(:url, "the url to your tumblog") {
-        puts handler.url
+        kputs handler.url
       }
 
       op.declare(:synchronize, "synchronize your repos") {
