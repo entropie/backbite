@@ -65,7 +65,7 @@ module Backbite
       @logger =
         if defined? Log4r
           lgr = Log4r::Logger.new 'backbite'
-          lgr.level = (Backbite.globals.debug?||4).to_i
+          lgr.level = (Backbite.globals.debug?||4).to_i 
           lgr
         else
           StdoutLogger.new
