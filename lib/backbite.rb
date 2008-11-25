@@ -10,7 +10,7 @@ require 'pathname'
 require 'fileutils'
 begin 
   require 'rubygems' 
-  rescue LoadError
+rescue LoadError
 end
 
 begin

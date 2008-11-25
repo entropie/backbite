@@ -19,6 +19,7 @@ module Backbite
     def +(posts)
       dup.push(*posts)
     end
+
     
     def self.tags(tlog)
       tags = Hash.new { |hash, key| hash[key] = 0 }

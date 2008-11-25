@@ -91,7 +91,7 @@ class Backbite::Post
           return case markup
                  when :redcloth
                    require 'redcloth'
-                   RedCloth.new(str).to_html rescue ''
+                   RedCloth.new(str).to_html # rescue ''
                  else
                    str
                  end
